@@ -42,7 +42,6 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 // import org.photonvision.simulation.PhotonCameraSim;
 // import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -61,9 +60,13 @@ public class Vision {
 
     public Vision() {
         camera = new PhotonCamera(kCameraName);
+        // PhotonVision v2026: the multi-argument constructor and primary/fallback strategy
+        // setters are deprecated/forRemoval. Use the 2-arg constructor (fieldTags, robotToCamera)
+        // and call specific estimation methods (e.g. estimateCoprocMultiTagPose) instead of
+        // using the deprecated update(...) overloads.
+        // TODO: this Field looks incorrect - change to 2026 field when available
         kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
-        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToCam);
     }
 
     /**
@@ -79,9 +82,11 @@ public class Vision {
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var change : camera.getAllUnreadResults()) {
-            visionEst = photonEstimator.update(change);
+            // Use the explicit estimator for coprocessor multi-tag PNP results instead of
+            // the deprecated update(...) method.
+            visionEst = photonEstimator.estimateCoprocMultiTagPose(change);
             if(!visionEst.isPresent()) {
-            continue;
+                continue;
             }
             SmartDashboard.putBoolean("vision/has tag?", !visionEst.isEmpty());
 
@@ -154,9 +159,10 @@ public class Vision {
         return curStdDevs;
     }
 
-public Pose2d lastPose(){
-    return lastPose;
-}
+    public Pose2d lastPose(){
+        return lastPose;
+    }
+
     // ----- Simulation
 
     public void simulationPeriodic(Pose2d robotSimPose) {

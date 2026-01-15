@@ -90,7 +90,9 @@ public class Swerve extends SubsystemBase {
         yPID.setTolerance(positionTolerance.get());
         rPID.setTolerance(rotationTolerance.get());
     
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.CanBus);
+    // Phoenix6 Pigeon2 constructor with canBus string is deprecated/for removal;
+    // use the single-argument constructor (device ID) provided by phoenix6 v26.
+    gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 

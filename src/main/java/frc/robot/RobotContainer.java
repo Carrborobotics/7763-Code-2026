@@ -359,8 +359,6 @@ public class RobotContainer {
             // then slow down or stop the intake
             intake.setIntakeSpeed(0.20).withTimeout(0.1),
             intake.setIntakeSpeed(0.05).withTimeout(0.1)
-            // TODO: then reverse by some amount and let go.
-            // Or will the driver let it go somewhere else?
         );
 
     }*/
@@ -378,5 +376,4 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
 }

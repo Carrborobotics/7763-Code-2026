@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.FlippingUtil;
@@ -35,32 +36,23 @@ public final class Constants {
     }
 
     public static final class CANConstants {
-        public static final int pivotLeftId = 20;       
-        public static final int pivotRightId = 21;
-        public static final int elevatorLeftId = 30;
-        public static final int elevatorRightId = 31;
-        public static final int intakeId = 40;
+        // public static final int pivotLeftId = 20;       
+        // public static final int pivotRightId = 21;
+        // public static final int elevatorLeftId = 30;
+        // public static final int elevatorRightId = 31;
+        // public static final int intakeId = 40;
         public static final String canBus = "rio";
     }
 
-    public static final class elevatorConstants {
-        /* IDS for elevator motors*/
-        public static final int elevatorLeftId = 30;
-        public static final int elevatorRightId = 31;
+    // public static final class elevatorConstants {
+    //     /* IDS for elevator motors*/
+    //     public static final int elevatorLeftId = 30;
+    //     public static final int elevatorRightId = 31;
 
-        /* CANBus */
-        public static final String canBus = "rio";
+    //     /* CANBus */
+    //     public static final String canBus = "rio";
 
-        /* Elevator dimensions */
-        public static final double thickness = 2.0; // Thickness of the elevator (only for Mechanism2d visualization)
-        public static final double setback = 9.5; // Distance from front edge of robot (only for Mechanism2d visualization)
-        public static final double bellyHeight = 0.755; // Height of the top surface of the belly pan from the ground
-        public static final double baseHeight = 12.0 + bellyHeight; // Height of elevator in inches when it is at zero position
-        public static final double maxHeight = 72.0 + bellyHeight; // Height that elevator should never exceed
-        public static final double endEffectorHeight = 6.0; // Height of end effector "target" above elevator height
-        public static final double rotPerInch = 0.704;
-
-    }
+    // }
 
     public static final class Localization {
         public static final double fieldWidth = FlippingUtil.fieldSizeY;
@@ -129,38 +121,13 @@ public final class Constants {
             public final Pose2d alignBonusLeft, alignBonusRight;
             public final boolean algaeHigh;       
             
-            /*public static enum ReefFace { //Blue
-                AB(0, true),
-                CD(60, false),
-                EF(120, true),
-                GH(180, false),
-                IJ(-120, true),
-                KL(-60, false);
-                ReefFace(double directionDegrees, boolean algaeHigh) {
-                    approachABRight =  new Pose2d(new Translation2d(2.82,3.90),new Rotation2d(directionDegrees));
-                    approachABLeft =   new Pose2d(new Translation2d(2.82,4.18),new Rotation2d(directionDegrees));
-                    approachCDRight =  new Pose2d(new Translation2d(3.26,2.96),new Rotation2d(directionDegrees));
-                    approachCDLeft =   new Pose2d(new Translation2d(2.702,3.56),new Rotation2d(directionDegrees)); 
-                    approachEFRight =  new Pose2d(new Translation2d(),new Rotation2d(directionDegrees));
-                    approachEFLeft =   new Pose2d(new Translation2d(5.1,2.56),new Rotation2d(directionDegrees));
-                    approachGHRight =  new Pose2d(new Translation2d(2.82,3.90),new Rotation2d(directionDegrees));
-                    approachGHLeft = 
-                    approachGHRight =  new Pose2d(new Translation2d(2.82,3.90),new Rotation2d(directionDegrees));
-                    approachGHLeft = 
-                    approachIJRight =  new Pose2d(new Translation2d(2.82,3.90),new Rotation2d(directionDegrees));
-                    approachIJLeft = 
-                    approachKLRight =  new Pose2d(new Translation2d(2.82,3.90),new Rotation2d(directionDegrees));
-                    approachKLLeft = 
-                }
-*/
-
         }
     }
 
     public static final class Swerve {
 
         public static final int pigeonID = 10;
-        public static final String CanBus = "Drivetrain"; 
+        public static final CANBus CanBus = new CANBus("Drivetrain");
         public static final boolean focEnabled = true; 
         public static final boolean isOnCANivore = true;
 
