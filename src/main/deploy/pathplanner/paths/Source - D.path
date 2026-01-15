@@ -1,0 +1,102 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3207270408163265,
+        "y": 7.476052295918367
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6046991017361145,
+        "y": 7.174582090513646
+      },
+      "isLocked": false,
+      "linkedName": "Upper Source"
+    },
+    {
+      "anchor": {
+        "x": 3.97,
+        "y": 5.26
+      },
+      "prevControl": {
+        "x": 3.7978665528014055,
+        "y": 5.441301065511289
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "D"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.3925081433224755,
+      "maxWaypointRelativePos": 0.711726384364821,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Pivot to Shoot",
+      "waypointRelativePos": 0.2,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Pivot to Shoot"
+        }
+      }
+    },
+    {
+      "name": "Elevator L4",
+      "waypointRelativePos": 0.35,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Elevator L4"
+        }
+      }
+    },
+    {
+      "name": "Check",
+      "waypointRelativePos": 0.933224755700326,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Elevator L4"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.1,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "To Score",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -54.0
+  },
+  "useDefaultConstraints": true
+}
