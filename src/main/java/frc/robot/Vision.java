@@ -64,8 +64,7 @@ public class Vision {
         // setters are deprecated/forRemoval. Use the 2-arg constructor (fieldTags, robotToCamera)
         // and call specific estimation methods (e.g. estimateCoprocMultiTagPose) instead of
         // using the deprecated update(...) overloads.
-        // TODO: this Field looks incorrect - change to 2026 field when available
-        kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
         photonEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToCam);
     }
 
