@@ -2,8 +2,8 @@ package frc.robot.subsystems;
 
 import frc.lib.util.SwerveModule;
 import frc.robot.Constants;
-import frc.robot.Constants.Localization.ReefFace;
-import frc.robot.LimelightHelpers;
+//import frc.robot.Constants.Localization.ReefFace;
+//import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -11,12 +11,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
+//import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
-import java.lang.module.ModuleDescriptor.Builder;
+//import java.lang.module.ModuleDescriptor.Builder;
 
 //import java.lang.reflect.Field;
 //import java.util.function.BooleanSupplier;
@@ -39,14 +39,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+//import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Vision;
-import frc.robot.commands.LocalSwerve;
+//import frc.robot.commands.LocalSwerve;
 //import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.led.LedSubsystem;
-import frc.robot.subsystems.led.LedSubsystem.LedMode;
+//import frc.robot.subsystems.led.LedSubsystem;
+//import frc.robot.subsystems.led.LedSubsystem.LedMode;
 import frc.robot.util.LoggedTunableNumber;
 import edu.wpi.first.math.controller.PIDController;
 
@@ -79,7 +79,7 @@ public class Swerve extends SubsystemBase {
     
     private final Pigeon2 gyro;
     private final Vision vision = new Vision();
-    public ReefFace goalFace;
+    // public ReefFace goalFace;
 
     public Swerve() {
 
@@ -90,13 +90,13 @@ public class Swerve extends SubsystemBase {
         yPID.setTolerance(positionTolerance.get());
         rPID.setTolerance(rotationTolerance.get());
     
-    // Phoenix6 Pigeon2 constructor with canBus string is deprecated/for removal;
-    // use the single-argument constructor (device ID) provided by phoenix6 v26.
-    gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        // Phoenix6 Pigeon2 constructor with canBus string is deprecated/for removal;
+        // use the single-argument constructor (device ID) provided by phoenix6 v26.
+        gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
-        goalFace = ReefFace.KL;
+        // goalFace = ReefFace.KL;
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -294,33 +294,33 @@ public class Swerve extends SubsystemBase {
         return Robot.isRed() ? FlippingUtil.flipFieldRotation(rotation) : rotation;
     }
 
-    public static Rotation2d reefBearing(Translation2d position) {
-        Translation2d reefCenter = flipIfRed(Constants.Localization.reefCenter);
-        Translation2d relativePosition = reefCenter.minus(position);
+    // public static Rotation2d reefBearing(Translation2d position) {
+    //     Translation2d reefCenter = flipIfRed(Constants.Localization.reefCenter);
+    //     Translation2d relativePosition = reefCenter.minus(position);
 
-        return relativePosition.getAngle();
-    }
+    //     return relativePosition.getAngle();
+    // }
 
-    public ReefFace nearestFace(Translation2d position) {
-        Rotation2d reefBearing = flipIfRed(reefBearing(position));
-        double bearingAngle = MathUtil.inputModulus(reefBearing.getDegrees(), -180, 180);
+    // public ReefFace nearestFace(Translation2d position) {
+    //     Rotation2d reefBearing = flipIfRed(reefBearing(position));
+    //     double bearingAngle = MathUtil.inputModulus(reefBearing.getDegrees(), -180, 180);
 
-        SmartDashboard.putNumber("bearing angle", bearingAngle);
+    //     SmartDashboard.putNumber("bearing angle", bearingAngle);
 
-        if (bearingAngle > 150 || bearingAngle < -150) {
-            return ReefFace.GH;
-        } else if (bearingAngle > 90) {
-            return ReefFace.EF;
-        } else if (bearingAngle > 30) {
-            return ReefFace.CD;
-        } else if (bearingAngle > -30) {
-            return ReefFace.AB;
-        } else if (bearingAngle > -90) {
-            return ReefFace.KL;
-        } else { // bearingAngle > -150
-            return ReefFace.IJ;
-        }
-    }
+    //     if (bearingAngle > 150 || bearingAngle < -150) {
+    //         return ReefFace.GH;
+    //     } else if (bearingAngle > 90) {
+    //         return ReefFace.EF;
+    //     } else if (bearingAngle > 30) {
+    //         return ReefFace.CD;
+    //     } else if (bearingAngle > -30) {
+    //         return ReefFace.AB;
+    //     } else if (bearingAngle > -90) {
+    //         return ReefFace.KL;
+    //     } else { // bearingAngle > -150
+    //         return ReefFace.IJ;
+    //     }
+    // }
 
     public void zeroHeading() {
         if (Robot.isRed()) {
@@ -367,7 +367,6 @@ public class Swerve extends SubsystemBase {
                 est -> {
                     // Change our trust in the measurement based on the tags we can see
                     //var estStdDevs = vision.getEstimationStdDevs();
-
                     m_poseEstimator.addVisionMeasurement(
                             est.estimatedPose.toPose2d(), est.timestampSeconds);//, estStdDevs);
                 });
@@ -378,11 +377,11 @@ public class Swerve extends SubsystemBase {
 
         Pose2d pose = getPose();
         field.setRobotPose(pose);   
-        goalFace = nearestFace(pose.getTranslation());
+        // goalFace = nearestFace(pose.getTranslation());
 
         SmartDashboard.putString("actual pose", pose.toString());
-        SmartDashboard.putString("nearest face" , nearestFace(pose.getTranslation()).toString());
-        SmartDashboard.putString("goal face", goalFace.toString());    
+        // SmartDashboard.putString("nearest face" , nearestFace(pose.getTranslation()).toString());
+        // SmartDashboard.putString("goal face", goalFace.toString());    
         SmartDashboard.putBoolean("Align/x at set", xPID.atSetpoint());
         SmartDashboard.putBoolean("Align/y at set", yPID.atSetpoint());
         SmartDashboard.putBoolean("Align/r at set", rPID.atSetpoint());
