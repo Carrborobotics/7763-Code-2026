@@ -17,8 +17,7 @@ public class LedSubsystem extends SubsystemBase {
     private final int firelow = 7;
     private final int midlow = 64;
     private final int midhigh = 118;
-    private final int firehigh = 174;
-
+    //private final int firehigh = 174;
 
     public LedSubsystem() {
         ledStrip = new LedStrip();
@@ -128,9 +127,9 @@ public class LedSubsystem extends SubsystemBase {
     }
     
     // one color strobe
-    private void strobe(Color color, double duration) {
-        strobe(color, Color.kBlack, duration);
-    }
+    // private void strobe(Color color, double duration) {
+    //     strobe(color, Color.kBlack, duration);
+    // }
 
     private void wave(Color c1, Color c2, double cycleLength, double duration) {
         double waveExponent = 0.4;

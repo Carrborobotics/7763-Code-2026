@@ -25,15 +25,20 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-//import frc.robot.Constants.Localization.ReefFace;
-import frc.robot.commands.LocalSwerve;
-import frc.robot.commands.TeleopSwerve;
-import frc.robot.subsystems.Swerve;
+import frc.robot.commands.DriveCommands;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 // import frc.robot.subsystems.elevator.Elevator;
 // import frc.robot.subsystems.elevator.Elevator.ElevatorStop; // enum of stops
 // import frc.robot.subsystems.elevator.ElevatorIOReal;
 // import frc.robot.subsystems.elevator.ElevatorReal;
 // import frc.robot.subsystems.elevator.ElevatorIOSim;
+
 // import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.intake.IntakeIOReal;
 // import frc.robot.subsystems.led.LedSubsystem;
@@ -62,19 +67,21 @@ public class RobotContainer {
     // EnumMap<ReefFace, Command> pullAlgaeRightCommands = new EnumMap<>(ReefFace.class);
 
     /* Controllers */
-    CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController driverController = new CommandXboxController(0);
 
     /* Drive Controls */
-    private final Supplier<Double> translationAxis = driver::getLeftY;
-    private final Supplier<Double> strafeAxis = driver::getLeftX;
-    private final Supplier<Double> rotationAxis = driver::getRightX;
+    private final Supplier<Double> translationAxis = driverController::getLeftY;
+    private final Supplier<Double> strafeAxis = driverController::getLeftX;
+    private final Supplier<Double> rotationAxis = driverController::getRightX;
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
-    // private final Elevator elevators;
+    private final Drive drive;
     // private final Intake intake;
+    // private final Climber climber;
     // private final Pivot pivot;
     // private final LedSubsystem m_led = new LedSubsystem();
+
+    
     private final Field2d targetField;
     
     /* Alliance colors */
@@ -86,16 +93,28 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // if (Robot.isReal()) {
-        //     this.elevators = new Elevator(new ElevatorReal());
-        //     this.pivot = new Pivot(new PivotIOReal());
-        //     this.intake = new Intake(new IntakeIOReal());
-        // } else {
-        //     this.elevators = new Elevator(new ElevatorIOSim());
-        //     this.pivot = new Pivot(new PivotIOSim());
-        //     this.intake = new Intake(new IntakeIOReal()); 
-        // }
 
+        
+        if (Robot.isReal()) {
+            drive = new Drive(
+                        new GyroIOPigeon2(),
+                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFX(TunerConstants.FrontRight),
+                        new ModuleIOTalonFX(TunerConstants.BackLeft),
+                        new ModuleIOTalonFX(TunerConstants.BackRight));
+            // intake = new Intake(new IntakeIOReal());
+            // climber = new Climber(new ClimberIOReal());
+        } else {
+            drive = new Drive(
+                    new GyroIO() {},
+                    new ModuleIOSim(TunerConstants.FrontLeft),
+                    new ModuleIOSim(TunerConstants.FrontRight),
+                    new ModuleIOSim(TunerConstants.BackLeft),
+                    new ModuleIOSim(TunerConstants.BackRight));
+            // intake = new Intake(new IntakeIOSim()); 
+            // climber = new Climber(new ClimberIOSim());
+        }
+        
         // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
 
         // NamedCommands.registerCommand("Intake On", intake.setIntakeSpeed(-0.3));
@@ -114,10 +133,10 @@ public class RobotContainer {
         //     (new InstantCommand(() -> LimelightHelpers.setLEDMode_ForceOn("limelight")))
         //     .andThen (new RunCommand(
         //         () -> s_Swerve.drive(
-        //             MathUtil.applyDeadband(driver.getLeftY(), 0.125),
-        //             MathUtil.applyDeadband(driver.getLeftX(), 0.125),
+        //             MathUtil.applyDeadband(driverController.getLeftY(), 0.125),
+        //             MathUtil.applyDeadband(driverController.getLeftX(), 0.125),
         //             Translation2d.kZero,
-        //             MathUtil.applyDeadband(driver.getRightX(), 0.125),
+        //             MathUtil.applyDeadband(driverController.getRightX(), 0.125),
         //             true, false, true)))
         //             .until(intake ::hasCoral)
         //             .withTimeout(1.25)
@@ -140,16 +159,6 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
-                    s_Swerve,
-                    () -> -translationAxis.get(),
-                    () -> -strafeAxis.get(),
-                    () -> -rotationAxis.get(),
-                    () -> false, 
-                    () -> false
-            )
-        );
 
         // Configure the button bindings
         configureButtonBindings();
@@ -158,41 +167,53 @@ public class RobotContainer {
 
 
     private void configureButtonBindings() {
+
+        drive.setDefaultCommand(
+            DriveCommands.joystickDrive(
+                drive,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> -driverController.getRightX()
+            )
+        );
+
         /* Driver Buttons */
         
-        driver.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));        
-        driver.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
-        //driver.povLeft().onTrue(pivot.pivotTo(Pivots.Down).andThen(intake.setIntakeSpeed(0)));
+        //driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));        
+        //driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
 
-        // driver.a().onTrue(elevators.setNextStopCommand(ElevatorStop.L1)
+
+        //driverController.povLeft().onTrue(pivot.pivotTo(Pivots.Down).andThen(intake.setIntakeSpeed(0)));
+
+        // driverController.a().onTrue(elevators.setNextStopCommand(ElevatorStop.L1)
         //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L1))
         //     //.andThen(ledCommand(LedMode.SOLID, Color.kGreen, Color.kBlue)));
         //     //.andThen(ledCommand(LedMode.WAVE, Color.kGreen, Color.kBlue))
         //     );
 
-        // driver.x().onTrue(elevators.setNextStopCommand(ElevatorStop.L2)
+        // driverController.x().onTrue(elevators.setNextStopCommand(ElevatorStop.L2)
         //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L2))
         //     //.andThen(ledCommand(LedMode.WAVE2, Color.kBlue, Color.kPink))
         //     );
 
-        // driver.y().onTrue(elevators.setNextStopCommand(ElevatorStop.L3)
+        // driverController.y().onTrue(elevators.setNextStopCommand(ElevatorStop.L3)
         //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L3))
         //     //.andThen(ledCommand(LedMode.WATER, Color.kBlack, Color.kBlack))
         //     //.andThen(ledCommand(LedMode.WAVE2, Color.kPurple, Color.kOrange)));
         //     );
 
 
-        // driver.b().onTrue(elevators.setNextStopCommand(ElevatorStop.L4)
+        // driverController.b().onTrue(elevators.setNextStopCommand(ElevatorStop.L4)
         //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L4))
         //     //.andThen(ledCommand(LedMode.FIRE, Color.kBlack, Color.kBlack))
         //     );
 
-        // driver.leftBumper().onTrue(elevators.moveToNext().andThen(Commands.runOnce( () -> 
+        // driverController.leftBumper().onTrue(elevators.moveToNext().andThen(Commands.runOnce( () -> 
         //     { ElevatorStop nextStopElev = elevators.getNextStop();
         //         pivot.pivotToOnElevator(nextStopElev);
         //     }
         // )));
-        // driver.rightBumper().onTrue(
+        // driverController.rightBumper().onTrue(
         //     Commands.sequence(    
         //         intake.ejectCoralCmd(elevators),
         //         Commands.sequence(
@@ -201,14 +222,14 @@ public class RobotContainer {
         //         ).unless( () -> elevators.getNextStop() != ElevatorStop.L4 )
         //     )
         // );
-        // driver.leftTrigger().whileTrue(alignReef(true, elevators));
-        // driver.rightTrigger().whileTrue(alignReef(false,elevators));
+        // driverController.leftTrigger().whileTrue(alignReef(true, elevators));
+        // driverController.rightTrigger().whileTrue(alignReef(false,elevators));
 
-        // //driver.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
+        // //driverController.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
         
-        // driver.back().onTrue(pivot.pivotToOnElevator(elevators.getNextStop()));
+        // driverController.back().onTrue(pivot.pivotToOnElevator(elevators.getNextStop()));
 
-        // driver.start().onTrue(feed());
+        // driverController.start().onTrue(feed());
         // // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
         // Trigger coralSensed = new Trigger(() -> intake.hasCoral()).debounce(0.75, DebounceType.kBoth);
 
