@@ -29,6 +29,7 @@ import edu.wpi.first.math.util.Units;
 //import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
+    public static boolean isVisionSim = true;
     public static boolean disableHAL = false;
 
     public static final double stickDeadband = 0.12;

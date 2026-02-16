@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
-
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
 // import edu.wpi.first.wpilibj2.command.RunCommand;
 // import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -38,6 +37,10 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 // import frc.robot.subsystems.elevator.ElevatorIOReal;
 // import frc.robot.subsystems.elevator.ElevatorReal;
 // import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOSim;
+import frc.robot.subsystems.vision.VisionIOReal;
 
 // import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.intake.IntakeIOReal;
@@ -80,7 +83,7 @@ public class RobotContainer {
     // private final Climber climber;
     // private final Pivot pivot;
     // private final LedSubsystem m_led = new LedSubsystem();
-
+    private final Vision vision;
     
     private final Field2d targetField;
     
@@ -96,7 +99,7 @@ public class RobotContainer {
 
         
         if (Robot.isReal()) {
-            drive = new Drive(
+            drive = Drive.initialize(
                         new GyroIOPigeon2(),
                         new ModuleIOTalonFX(TunerConstants.FrontLeft),
                         new ModuleIOTalonFX(TunerConstants.FrontRight),
@@ -104,8 +107,9 @@ public class RobotContainer {
                         new ModuleIOTalonFX(TunerConstants.BackRight));
             // intake = new Intake(new IntakeIOReal());
             // climber = new Climber(new ClimberIOReal());
+            vision = Vision.initialize(new VisionIOReal(0));
         } else {
-            drive = new Drive(
+            drive = Drive.initialize(
                     new GyroIO() {},
                     new ModuleIOSim(TunerConstants.FrontLeft),
                     new ModuleIOSim(TunerConstants.FrontRight),
@@ -113,6 +117,7 @@ public class RobotContainer {
                     new ModuleIOSim(TunerConstants.BackRight));
             // intake = new Intake(new IntakeIOSim()); 
             // climber = new Climber(new ClimberIOSim());
+            vision = Vision.initialize(new VisionIOSim());
         }
         
         // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
