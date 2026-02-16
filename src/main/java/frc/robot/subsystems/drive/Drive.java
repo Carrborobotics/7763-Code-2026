@@ -410,6 +410,13 @@ public class Drive extends SubsystemBase {
     return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
   }
 
+  /** Returns the distance to the hub in meters. */
+  public double getDistanceToHub() {
+    Translation2d robotPose = getPose().getTranslation();
+    Translation2d hubPose = FieldConstants.Hub.centerPoint;
+    return robotPose.getDistance(hubPose);
+  }
+
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {

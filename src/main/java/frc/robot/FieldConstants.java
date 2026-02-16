@@ -92,6 +92,8 @@ public class FieldConstants {
         new Translation3d(
             FIELD_LAYOUT.getTagPose(26).get().getX() + width / 2.0, fieldWidth / 2.0, innerHeight);
 
+    public static final Translation2d centerPoint = new Translation2d(topCenterPoint.getX(), topCenterPoint.getY());
+    
     public static final Translation2d nearLeftCorner =
         new Translation2d(topCenterPoint.getX() - width / 2.0, fieldWidth / 2.0 + width / 2.0);
     public static final Translation2d nearRightCorner =

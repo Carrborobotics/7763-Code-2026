@@ -32,18 +32,28 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 // import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-// import frc.robot.subsystems.elevator.Elevator;
-// import frc.robot.subsystems.elevator.Elevator.ElevatorStop; // enum of stops
-// import frc.robot.subsystems.elevator.ElevatorIOReal;
-// import frc.robot.subsystems.elevator.ElevatorReal;
-// import frc.robot.subsystems.elevator.ElevatorIOSim;
+
+// import frc.robot.subsystems.Climber.Climber;
+// import frc.robot.subsystems.Climber.ClimberIOReal;
+// import frc.robot.subsystems.Climber.ClimberReal;
+// import frc.robot.subsystems.Climber.ClimberIOSim;
+
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionIOReal;
 
-// import frc.robot.subsystems.intake.Intake;
-// import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerIOReal;
+import frc.robot.subsystems.indexer.IndexerIOSim;
+
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIOReal;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIOSim;
+
 // import frc.robot.subsystems.led.LedSubsystem;
 // import frc.robot.subsystems.led.LedSubsystem.LedMode;
 // import frc.robot.subsystems.pivot.Pivot;
@@ -72,18 +82,14 @@ public class RobotContainer {
     /* Controllers */
     private final CommandXboxController driverController = new CommandXboxController(0);
 
-    /* Drive Controls */
-    private final Supplier<Double> translationAxis = driverController::getLeftY;
-    private final Supplier<Double> strafeAxis = driverController::getLeftX;
-    private final Supplier<Double> rotationAxis = driverController::getRightX;
-
     /* Subsystems */
     private final Drive drive;
-    // private final Intake intake;
-    // private final Climber climber;
-    // private final Pivot pivot;
-    // private final LedSubsystem m_led = new LedSubsystem();
+    private final Indexer indexer;
+    private final Shooter shooter;
     private final Vision vision;
+    private final Turret turret;
+    // private final Climber climber;
+    // private final LedSubsystem m_led = new LedSubsystem();
     
     private final Field2d targetField;
     
@@ -105,9 +111,11 @@ public class RobotContainer {
                         new ModuleIOTalonFX(TunerConstants.FrontRight),
                         new ModuleIOTalonFX(TunerConstants.BackLeft),
                         new ModuleIOTalonFX(TunerConstants.BackRight));
-            // intake = new Intake(new IntakeIOReal());
-            // climber = new Climber(new ClimberIOReal());
+            indexer = Indexer.initialize(new IndexerIOReal());
             vision = Vision.initialize(new VisionIOReal(0));
+            shooter = Shooter.initialize(new ShooterIOReal());
+            turret = Turret.initialize(new TurretIOReal());
+            // climber = new Climber(new ClimberIOReal());
         } else {
             drive = Drive.initialize(
                     new GyroIO() {},
@@ -115,9 +123,11 @@ public class RobotContainer {
                     new ModuleIOSim(TunerConstants.FrontRight),
                     new ModuleIOSim(TunerConstants.BackLeft),
                     new ModuleIOSim(TunerConstants.BackRight));
-            // intake = new Intake(new IntakeIOSim()); 
-            // climber = new Climber(new ClimberIOSim());
+            indexer = Indexer.initialize(new IndexerIOSim());
+            shooter = Shooter.initialize(new ShooterIOSim());
+            turret = Turret.initialize(new TurretIOSim() {});
             vision = Vision.initialize(new VisionIOSim());
+            // climber = new Climber(new ClimberIOSim());
         }
         
         // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
@@ -176,9 +186,9 @@ public class RobotContainer {
         drive.setDefaultCommand(
             DriveCommands.joystickDrive(
                 drive,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
-                () -> -driverController.getRightX()
+                () -> -driverController.getLeftY(), // translationAxis
+                () -> -driverController.getLeftX(), // strafeAxis
+                () -> -driverController.getRightX() // rotationAxis
             )
         );
 
