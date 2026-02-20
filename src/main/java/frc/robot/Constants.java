@@ -40,7 +40,7 @@ public final class Constants {
         // public static final int pivotRightId = 21;
         // public static final int elevatorLeftId = 30;
         // public static final int elevatorRightId = 31;
-        //public static final int intakeId = 40;
+        public static final int intakeId = 42;
         public static final int rackId = 41;
         public static final int rackId2=43;
 

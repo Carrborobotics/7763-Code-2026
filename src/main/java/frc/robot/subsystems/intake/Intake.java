@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.Elevator.ElevatorStop;
+//import frc.robot.subsystems.elevator.Elevator;
+//import frc.robot.subsystems.elevator.Elevator.ElevatorStop;
 // import frc.robot.subsystems.intake.IntakeIOInputsAutoLogged;
 // import frc.robot.subsystems.intake.IntakeVisualizer;
 import frc.robot.util.LoggedTunableNumber;
@@ -62,26 +62,6 @@ public class Intake extends SubsystemBase{
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
-    /** 
-     * Command to shoot out the coral
-     */
-    public Command ejectCoralCmd(Elevator elevator) {
-        double speed = defaultEjectSpeed;
-        if (elevator.getNextStop() == ElevatorStop.L1) {
-            speed = 0.25;
-            
-        } else if (elevator.getNextStop() == ElevatorStop.L4) {
-            speed = 0.1;
-        }  
-        return this.setIntakeSpeed(speed);
-    }
-
-    /** 
-     * Command to shoot out the coral
-     */
-    public Command ejectCoralCmd() {
-        return this.setIntakeSpeed(defaultEjectSpeed);
-    }
 
 
     /**
@@ -91,7 +71,7 @@ public class Intake extends SubsystemBase{
         return this.setIntakeSpeed(0);
     }
 
-    public boolean hasCoral() {
+    public boolean IsOverloaded() {
         return this.inputs.supplyCurrent.gt(Amps.of(6.5));
     }
 
@@ -100,7 +80,7 @@ public class Intake extends SubsystemBase{
         super.periodic();
         this.io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
-        SmartDashboard.putBoolean("Has Coral?", this.hasCoral());
+        SmartDashboard.putBoolean("Is Overloaded?", this.IsOverloaded());
         SmartDashboard.putString("intake/motor voltage", this.inputs.appliedVolts.toString());
         SmartDashboard.putString("intake/motor supply current", this.inputs.supplyCurrent.toString());
         SmartDashboard.putString("intake/motor torque current", this.inputs.torqueCurrent.toString());

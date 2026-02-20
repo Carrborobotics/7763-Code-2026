@@ -36,8 +36,8 @@ import frc.robot.subsystems.Swerve;
 // import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.rack.Rack;
 import frc.robot.subsystems.rack.RackIOReal;
-// import frc.robot.subsystems.intake.Intake;
-// import frc.robot.subsystems.intake.IntakeIOReal;\
+import frc.robot.subsystems.intake.Intake;
+ import frc.robot.subsystems.intake.IntakeIOReal;
 // import frc.robot.subsystems.led.LedSubsystem;
 // import frc.robot.subsystems.led.LedSubsystem.LedMode;
 // import frc.robot.subsystems.pivot.Pivot;
@@ -74,7 +74,7 @@ public class RobotContainer {
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     // private final Elevator elevators;
-    // private final Intake intake;
+     private final Intake intake;
     private final Rack rack;
     // private final Pivot pivot;
     // private final LedSubsystem m_led = new LedSubsystem();
@@ -91,9 +91,14 @@ public class RobotContainer {
     public RobotContainer() {
         if (Robot.isReal()) {
             this.rack = new Rack(new RackIOReal());
+            this.intake = new Intake(new IntakeIOReal());
         } else {
             this.rack = new Rack(new RackIOReal()); // Simulated rack for testing
+            this.intake = new Intake(new IntakeIOReal()); // Simulated intake for testing
         }
+
+
+
         //     this.elevators = new Elevator(new ElevatorReal());
         //     this.pivot = new Pivot(new PivotIOReal());
         //     this.intake = new Intake(new IntakeIOReal());
@@ -208,10 +213,17 @@ public class RobotContainer {
         //         ).unless( () -> elevators.getNextStop() != ElevatorStop.L4 )
         //     )
         // );
+
+        // rack goes out
         driver.leftTrigger().whileTrue(rack.setRackSpeed(0.5)).onFalse(rack.setRackSpeed(0));
-
-
+        
+        // rack goes in
         driver.rightTrigger().whileTrue(rack.setRackSpeed(-0.5)).onFalse(rack.setRackSpeed(0));
+        
+        // run the intake
+        driver.leftBumper().whileTrue(intake.setIntakeSpeed(-0.5)).onFalse(intake.stopCmd());
+
+
 
         // //driver.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
     
