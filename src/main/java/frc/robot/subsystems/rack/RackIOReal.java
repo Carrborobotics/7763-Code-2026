@@ -12,7 +12,8 @@ import frc.robot.Constants;
 import static edu.wpi.first.units.Units.*;
 
 public class RackIOReal implements RackIO {
-    private TalonFX intakeMotor;
+    private TalonFX intakeMotorLeft;
+    private TalonFX intakeMotorRight;
     private CANcoder intakeEncoder;
 
     // Leaving these here in case we want voltage limits for the intake 
@@ -22,7 +23,9 @@ public class RackIOReal implements RackIO {
 
     public RackIOReal() {
         // Create the intake kraken
-        intakeMotor = new TalonFX(Constants.CANConstants.rackId, Constants.CANConstants.canBus);
+        intakeMotorLeft = new TalonFX(Constants.CANConstants.rackId, Constants.CANConstants.canBus);
+        intakeMotorRight = new TalonFX(Constants.CANConstants.rackId2, Constants.CANConstants.canBus);
+        
         
         // Configure it differently than the swerves
         var intakeConfig = new TalonFXConfiguration();
@@ -46,7 +49,8 @@ public class RackIOReal implements RackIO {
         intakeConfig.Voltage.PeakForwardVoltage = 12;
         intakeConfig.Voltage.PeakReverseVoltage = 12;
 
-        intakeMotor.getConfigurator().apply(intakeConfig);
+        intakeMotorLeft.getConfigurator().apply(intakeConfig);
+        intakeMotorRight.getConfigurator().apply(intakeConfig);
 
         // Not really used except for tracking velocity but keep jic
         intakeEncoder = new CANcoder(Constants.CANConstants.rackId, Constants.CANConstants.canBus);
@@ -56,19 +60,31 @@ public class RackIOReal implements RackIO {
     public void updateInputs(RackIOInputs inputs) {
         
         inputs.velocity.mut_replace(intakeEncoder.getVelocity().getValueAsDouble(), DegreesPerSecond);
+        
 
-        inputs.appliedVolts.mut_replace(intakeMotor.getSupplyVoltage().getValueAsDouble(), Volts);
+        inputs.appliedVolts.mut_replace(intakeMotorLeft.getSupplyVoltage().getValueAsDouble(), Volts);
 
-        inputs.supplyCurrent.mut_replace(intakeMotor.getSupplyCurrent().getValueAsDouble(), Amps);
+        inputs.supplyCurrent.mut_replace(intakeMotorLeft.getSupplyCurrent().getValueAsDouble(), Amps);
 
-        inputs.torqueCurrent.mut_replace(intakeMotor.getTorqueCurrent().getValueAsDouble(), Amps);
+        inputs.torqueCurrent.mut_replace(intakeMotorLeft.getTorqueCurrent().getValueAsDouble(), Amps);
 
-        inputs.temperature.mut_replace(intakeMotor.getDeviceTemp().getValueAsDouble(), Celsius);
+        inputs.temperature.mut_replace(intakeMotorLeft.getDeviceTemp().getValueAsDouble(), Celsius);
+        
+
+
+        inputs.appliedVolts.mut_replace(intakeMotorRight.getSupplyVoltage().getValueAsDouble(), Volts);
+
+        inputs.supplyCurrent.mut_replace(intakeMotorRight.getSupplyCurrent().getValueAsDouble(), Amps);
+
+        inputs.torqueCurrent.mut_replace(intakeMotorRight.getTorqueCurrent().getValueAsDouble(), Amps);
+
+        inputs.temperature.mut_replace(intakeMotorRight.getDeviceTemp().getValueAsDouble(), Celsius);
     }
 
     @Override
     public void setSpeed(double speed) {
-        intakeMotor.set(speed);
+        intakeMotorLeft.set(speed);
+        intakeMotorRight.set(speed);
     }
 
     public void periodic() {
