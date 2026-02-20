@@ -40,8 +40,13 @@ public final class Constants {
         // public static final int pivotRightId = 21;
         // public static final int elevatorLeftId = 30;
         // public static final int elevatorRightId = 31;
-        // public static final int intakeId = 40;
-        public static final String canBus = "rio";
+        //public static final int intakeId = 40;
+        public static final int rackId = 41;
+
+         /* CANBus */
+        //public static final String canBus = "rio";
+        public static final String canBus = "Drivetrain"; // TEMPORARY
+
     }
 
     // public static final class elevatorConstants {

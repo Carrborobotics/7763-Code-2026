@@ -34,8 +34,10 @@ import frc.robot.subsystems.Swerve;
 // import frc.robot.subsystems.elevator.ElevatorIOReal;
 // import frc.robot.subsystems.elevator.ElevatorReal;
 // import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.rack.Rack;
+import frc.robot.subsystems.rack.RackIOReal;
 // import frc.robot.subsystems.intake.Intake;
-// import frc.robot.subsystems.intake.IntakeIOReal;
+// import frc.robot.subsystems.intake.IntakeIOReal;\
 // import frc.robot.subsystems.led.LedSubsystem;
 // import frc.robot.subsystems.led.LedSubsystem.LedMode;
 // import frc.robot.subsystems.pivot.Pivot;
@@ -73,6 +75,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     // private final Elevator elevators;
     // private final Intake intake;
+    private final Rack rack;
     // private final Pivot pivot;
     // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
@@ -86,7 +89,11 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // if (Robot.isReal()) {
+        if (Robot.isReal()) {
+            this.rack = new Rack(new RackIOReal());
+        } else {
+            this.rack = new Rack(new RackIOReal()); // Simulated rack for testing
+        }
         //     this.elevators = new Elevator(new ElevatorReal());
         //     this.pivot = new Pivot(new PivotIOReal());
         //     this.intake = new Intake(new IntakeIOReal());
@@ -201,11 +208,13 @@ public class RobotContainer {
         //         ).unless( () -> elevators.getNextStop() != ElevatorStop.L4 )
         //     )
         // );
-        // driver.leftTrigger().whileTrue(alignReef(true, elevators));
-        // driver.rightTrigger().whileTrue(alignReef(false,elevators));
+        driver.leftTrigger().whileTrue(rack.setRackSpeed(0.5)).onFalse(rack.setRackSpeed(0));
+
+
+        driver.rightTrigger().whileTrue(rack.setRackSpeed(-0.5)).onFalse(rack.setRackSpeed(0));
 
         // //driver.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
-        
+    
         // driver.back().onTrue(pivot.pivotToOnElevator(elevators.getNextStop()));
 
         // driver.start().onTrue(feed());
