@@ -1,6 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import frc.lib.util.SwerveModule;
 import frc.robot.Constants;
 //import frc.robot.Constants.Localization.ReefFace;
 //import frc.robot.LimelightHelpers;
@@ -18,7 +17,6 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 //import java.lang.module.ModuleDescriptor.Builder;
-
 //import java.lang.reflect.Field;
 //import java.util.function.BooleanSupplier;
 
@@ -31,7 +29,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.config.RobotConfig;
 
-import edu.wpi.first.math.MathUtil;
+//import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -94,8 +92,6 @@ public class Swerve extends SubsystemBase {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
-
-        // goalFace = ReefFace.KL;
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -296,16 +292,13 @@ public class Swerve extends SubsystemBase {
     // public static Rotation2d reefBearing(Translation2d position) {
     //     Translation2d reefCenter = flipIfRed(Constants.Localization.reefCenter);
     //     Translation2d relativePosition = reefCenter.minus(position);
-
     //     return relativePosition.getAngle();
     // }
 
     // public ReefFace nearestFace(Translation2d position) {
     //     Rotation2d reefBearing = flipIfRed(reefBearing(position));
     //     double bearingAngle = MathUtil.inputModulus(reefBearing.getDegrees(), -180, 180);
-
     //     SmartDashboard.putNumber("bearing angle", bearingAngle);
-
     //     if (bearingAngle > 150 || bearingAngle < -150) {
     //         return ReefFace.GH;
     //     } else if (bearingAngle > 90) {
@@ -373,11 +366,9 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putData("Gyro Data", gyro);
         SmartDashboard.putNumber("Gyro Yaw", getGyroYaw().getDegrees());
         SmartDashboard.putBoolean("is red?", Robot.isRed());
-
         Pose2d pose = getPose();
         field.setRobotPose(pose);   
         // goalFace = nearestFace(pose.getTranslation());
-
         SmartDashboard.putString("actual pose", pose.toString());
         // SmartDashboard.putString("nearest face" , nearestFace(pose.getTranslation()).toString());
         // SmartDashboard.putString("goal face", goalFace.toString());    

@@ -26,7 +26,7 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import static edu.wpi.first.units.Units.*;
 import frc.lib.util.COTSTalonFXSwerveConstants;
-import frc.lib.util.SwerveModuleConstants;
+import frc.robot.subsystems.swerve.SwerveModuleConstants;
 
 public final class Constants {
     public static final double stickDeadband = 0.12;
