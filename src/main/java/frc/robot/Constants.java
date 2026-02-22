@@ -42,11 +42,11 @@ public final class Constants {
         // public static final int elevatorRightId = 31;
         public static final int intakeId = 42;
         public static final int rackId = 41;
-        public static final int rackId2=43;
+        public static final int rackId2 = 43;
 
-         /* CANBus */
-        //public static final String canBus = "rio";
-        public static final String canBus = "Drivetrain"; // TEMPORARY
+        /* CANBus */
+        // TODO: This canbus is temporary - we put it on drivetrain now, but later will drive from the Rio ("rio").
+        public static final CANBus canBus = new CANBus("Drivetrain"); 
 
     }
 
