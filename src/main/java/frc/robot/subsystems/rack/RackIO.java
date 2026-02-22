@@ -7,7 +7,10 @@ import edu.wpi.first.units.measure.MutVoltage;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.littletonrobotics.junction.AutoLog;
+
 public interface RackIO {
+    @AutoLog
     class RackIOInputs {
         public boolean MotorConnected = true;
         

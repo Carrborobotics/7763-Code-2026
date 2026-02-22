@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.rack;
 // import org.littletonrobotics.junction.Logger;
 // import edu.wpi.first.math.geometry.Pose3d;
 // import edu.wpi.first.math.geometry.Rotation3d;
@@ -12,12 +12,9 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.util.Color;
 
 
-public class IntakeVisualizer {
-
-    public IntakeVisualizer(String key, Color color) {
+public class RackVisualizer {
+    public RackVisualizer(String key, Color color) {
     }
-
     public void update(double speed, Distance direction) {
     }
-
 }

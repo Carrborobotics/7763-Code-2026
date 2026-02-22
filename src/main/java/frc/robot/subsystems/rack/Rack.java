@@ -7,10 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
-// import frc.robot.subsystems.elevator.Elevator;
-// import frc.robot.subsystems.elevator.Elevator.ElevatorStop;
-//import frc.robot.subsystems.rack.RackIOInputsAutoLogged;
-// import frc.robot.subsystems.intake.RackVisualizer;
+import frc.robot.subsystems.rack.RackVisualizer;
 import frc.robot.util.LoggedTunableNumber;
 import static edu.wpi.first.units.Units.*;
 
@@ -34,9 +31,9 @@ public class Rack extends SubsystemBase{
 
     private final RackIOInputsAutoLogged inputs = new RackIOInputsAutoLogged();
 
-    // private final RackVisualizer measuredVisualizer;
-    // private final RackVisualizer setpointVisualizer;
-    // private final RackVisualizer goalVisualizer;
+    private final RackVisualizer measuredVisualizer;
+    private final RackVisualizer setpointVisualizer;
+    private final RackVisualizer goalVisualizer;
     private final RackIO io;
 
     private final RobotState actual;
@@ -53,9 +50,9 @@ public class Rack extends SubsystemBase{
         this.target = RobotState.getDesiredInstance();
         this.goal = RobotState.getGoalInstance();
     
-        // this.measuredVisualizer = new RackVisualizer("Measured", Color.kWhite);
-        // this.setpointVisualizer = new RackVisualizer("Setpoint", Color.kBlue);
-        // this.goalVisualizer = new RackVisualizer("Goal", Color.kGreen);
+        this.measuredVisualizer = new RackVisualizer("Measured", Color.kWhite);
+        this.setpointVisualizer = new RackVisualizer("Setpoint", Color.kBlue);
+        this.goalVisualizer = new RackVisualizer("Goal", Color.kGreen);
     }
 
     public Command setRackSpeed(double speed) {
@@ -76,16 +73,10 @@ public class Rack extends SubsystemBase{
     //     return this.setRackSpeed(speed);
     // }
 
-    // /** 
-    //  * Command to shoot out the coral
-    //  */
-    // public Command ejectCoralCmd() {
-    //     return this.setRackSpeed(defaultEjectSpeed);
-    // }
 
 
     /**
-     *  Command to stop the intake
+     *  Command to stop the rack
      */ 
     public Command stopCmd() {
         return this.setRackSpeed(0);
