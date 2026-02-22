@@ -32,6 +32,6 @@ public interface RackIO {
     default void setFF(double kS, double kG, double kV, double kA) {}
 
     default void setSpeed(double speed) {}
-
+    default void setVoltage(double volts) {}
 
 }

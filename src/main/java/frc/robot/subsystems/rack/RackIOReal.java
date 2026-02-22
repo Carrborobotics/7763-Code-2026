@@ -87,6 +87,12 @@ public class RackIOReal implements RackIO {
         rackMotorRight.set(speed);
     }
 
+    @Override 
+    public void setVoltage(double volts) {
+        rackMotorLeft.setVoltage(volts);
+        rackMotorRight.setVoltage(volts);
+    }
+
     public void periodic() {
     }
 
