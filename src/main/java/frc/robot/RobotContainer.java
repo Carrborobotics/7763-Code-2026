@@ -58,11 +58,6 @@ public class RobotContainer {
     /* Auto */
     private final SendableChooser<Command> autoChooser;
 
-    // EnumMap<ReefFace, Command> alignLeftCommands = new EnumMap<>(ReefFace.class);
-    // EnumMap<ReefFace, Command> alignRightCommands = new EnumMap<>(ReefFace.class);
-    // EnumMap<ReefFace, Command> pullAlgaeLeftCommands = new EnumMap<>(ReefFace.class);
-    // EnumMap<ReefFace, Command> pullAlgaeRightCommands = new EnumMap<>(ReefFace.class);
-
     /* Controllers */
     CommandXboxController driverController = new CommandXboxController(0);
 
@@ -132,10 +127,6 @@ public class RobotContainer {
         targetField = new Field2d();
         SmartDashboard.putData("Target Field", targetField);
 
-        //for (ReefFace face: ReefFace.values()) {
-        //    setReefCommands(face);
-        //}
-       
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
