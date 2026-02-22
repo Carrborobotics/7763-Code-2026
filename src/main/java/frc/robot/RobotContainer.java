@@ -36,8 +36,10 @@ import frc.robot.subsystems.Swerve;
 // import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.rack.Rack;
 import frc.robot.subsystems.rack.RackIOReal;
+import frc.robot.subsystems.rack.RackIOSim;
 import frc.robot.subsystems.intake.Intake;
- import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOSim;
 // import frc.robot.subsystems.led.LedSubsystem;
 // import frc.robot.subsystems.led.LedSubsystem.LedMode;
 // import frc.robot.subsystems.pivot.Pivot;
@@ -86,8 +88,8 @@ public class RobotContainer {
             this.rack = new Rack(new RackIOReal());
             this.intake = new Intake(new IntakeIOReal());
         } else {
-            this.rack = new Rack(new RackIOReal()); // Simulated rack for testing
-            this.intake = new Intake(new IntakeIOReal()); // Simulated intake for testing
+            this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
+            this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
         }
 
         // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers

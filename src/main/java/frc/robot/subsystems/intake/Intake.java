@@ -1,21 +1,14 @@
 package frc.robot.subsystems.intake;
-
 // import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
-//import frc.robot.subsystems.elevator.Elevator;
-//import frc.robot.subsystems.elevator.Elevator.ElevatorStop;
-// import frc.robot.subsystems.intake.IntakeIOInputsAutoLogged;
-// import frc.robot.subsystems.intake.IntakeVisualizer;
 import frc.robot.util.LoggedTunableNumber;
 import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.Logger;
-
 
 public class Intake extends SubsystemBase{
     
@@ -34,9 +27,6 @@ public class Intake extends SubsystemBase{
 
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-    private final IntakeVisualizer measuredVisualizer;
-    private final IntakeVisualizer setpointVisualizer;
-    private final IntakeVisualizer goalVisualizer;
     private final IntakeIO io;
 
     private final RobotState actual;
@@ -45,24 +35,17 @@ public class Intake extends SubsystemBase{
 
     public Intake(IntakeIO io) {
         this.io = io;
-
         this.io.setPID(0.15, 0, 0);
         this.io.setPID(kP.get(), kI.get(), kD.get());
         this.io.setFF(kS.get(), kG.get(), kV.get(), kA.get());
         this.actual = RobotState.getMeasuredInstance();
         this.target = RobotState.getDesiredInstance();
-        this.goal = RobotState.getGoalInstance();
-    
-        this.measuredVisualizer = new IntakeVisualizer("Measured", Color.kWhite);
-        this.setpointVisualizer = new IntakeVisualizer("Setpoint", Color.kBlue);
-        this.goalVisualizer = new IntakeVisualizer("Goal", Color.kGreen);
+        this.goal = RobotState.getGoalInstance();    
     }
 
     public Command setIntakeSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
     }
-
-
 
     /**
      *  Command to stop the intake
@@ -85,6 +68,5 @@ public class Intake extends SubsystemBase{
         SmartDashboard.putString("intake/motor supply current", this.inputs.supplyCurrent.toString());
         SmartDashboard.putString("intake/motor torque current", this.inputs.torqueCurrent.toString());
         SmartDashboard.putString("intake/motor temp", this.inputs.temperature.toString());        
-
     }
 }

@@ -12,7 +12,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
     @AutoLog
     class IntakeIOInputs {
-        public boolean MotorConnected = true;
+        public boolean MotorConnected = true;       
         
         public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
 
