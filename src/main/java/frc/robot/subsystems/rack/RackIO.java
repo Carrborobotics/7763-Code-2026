@@ -25,7 +25,7 @@ public interface RackIO {
         public MutTemperature temperature = Celsius.mutable(0);
 
     }   
-    void updateInputs(RackIOInputs inputs);
+    default void updateInputs(RackIOInputs inputs) {}
 
     default void setPID(double p, double i, double d) {}
 

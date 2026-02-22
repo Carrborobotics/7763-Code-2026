@@ -25,7 +25,7 @@ public interface IntakeIO {
         public MutTemperature temperature = Celsius.mutable(0);
 
     }   
-    void updateInputs(IntakeIOInputs inputs);
+    default void updateInputs(IntakeIOInputs inputs) {}
 
     default void setPID(double p, double i, double d) {}
 
