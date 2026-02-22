@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import frc.robot.Constants.Localization.ReefFace;
 import frc.robot.commands.LocalSwerve;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.subsystems.Swerve;
 // import frc.robot.subsystems.elevator.Elevator;
 // import frc.robot.subsystems.elevator.Elevator.ElevatorStop; // enum of stops
 // import frc.robot.subsystems.elevator.ElevatorIOReal;
@@ -37,6 +36,7 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.rack.Rack;
 import frc.robot.subsystems.rack.RackIOReal;
 import frc.robot.subsystems.rack.RackIOSim;
+import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
