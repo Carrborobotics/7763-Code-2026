@@ -47,6 +47,10 @@ public class Rack extends SubsystemBase{
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
+    public Command setRackVoltage (double volts) {
+        return runOnce(() -> this.io.setVoltage(volts));
+    }
+    
     // /** 
     //  * Command to shoot out the coral
     //  */
