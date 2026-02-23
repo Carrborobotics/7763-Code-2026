@@ -46,9 +46,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import frc.robot.subsystems.led.LedSubsystem.LedMode;
 import frc.robot.util.LoggedTunableNumber;
 import edu.wpi.first.math.controller.PIDController;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Swerve extends SubsystemBase {
-
+    static final Lock odometryLock = new ReentrantLock();
+    static final double ODOMETRY_FREQUENCY = 100.0; // Hz
 
     private static final LoggedTunableNumber kPx = new LoggedTunableNumber("LocalSwerve/Gains/kPx", 0.025);
     private static final LoggedTunableNumber kIx = new LoggedTunableNumber("LocalSwerve/Gains/kIx", 0.0);

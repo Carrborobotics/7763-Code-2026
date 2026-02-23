@@ -135,7 +135,7 @@ public final class Constants {
         /* Center to Center distance of front and rear module wheels in meters. */
         public static final double wheelBase = Units.inchesToMeters(25); 
         public static final double wheelCircumference = chosenModule.wheelCircumference;
-
+        public static final double wheelRadiusMeters = chosenModule.wheelDiameter / 2.0 ;
         /*
          * Swerve Kinematics
          * No need to ever change this unless you are not doing a traditional
