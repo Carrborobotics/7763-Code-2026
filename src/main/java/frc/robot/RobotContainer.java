@@ -33,9 +33,13 @@ import frc.robot.commands.TeleopSwerve;
 // import frc.robot.subsystems.elevator.ElevatorIOReal;
 // import frc.robot.subsystems.elevator.ElevatorReal;
 // import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.rack.Rack;
-import frc.robot.subsystems.rack.RackIOReal;
-import frc.robot.subsystems.rack.RackIOSim;
+import frc.robot.subsystems.extension.Extension;
+import frc.robot.subsystems.extension.ExtensionIO;
+import frc.robot.subsystems.extension.ExtensionIOReal;
+import frc.robot.subsystems.extension.ExtensionIOSim;
+//import frc.robot.subsystems.rack.Rack;
+//import frc.robot.subsystems.rack.RackIOReal;
+//import frc.robot.subsystems.rack.RackIOSim;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
@@ -71,7 +75,7 @@ public class RobotContainer {
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Intake intake;
-    private final Rack rack;
+    private final Extension rack;
     // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
     
@@ -85,10 +89,11 @@ public class RobotContainer {
      */
     public RobotContainer() {
         if (Robot.isReal()) {
-            this.rack = new Rack(new RackIOReal());
+            //this.rack = new Rack(new RackIOReal());
+            this.rack = new Extension(new ExtensionIOReal());
             this.intake = new Intake(new IntakeIOReal());
         } else {
-            this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
+            this.rack = new Extension(new ExtensionIOSim()); // Simulated rack for testing
             this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
         }
 
@@ -151,7 +156,7 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         /* driverController Buttons */
-        
+    
         driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));        
         driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
         //driverController.povLeft().onTrue(pivot.pivotTo(Pivots.Down).andThen(intake.setIntakeSpeed(0)));
@@ -195,9 +200,11 @@ public class RobotContainer {
         // );
 
         // rack extends (used to do this with setRackSpeed, but voltage control works in sim)
-        driverController.leftTrigger().whileTrue(rack.extendCmd()).onFalse(rack.stopCmd());
+        driverController.leftTrigger().onTrue(
+            Commands.runOnce(() -> rack.setExtensionSetpoint(1),
+                                rack));
         // rack retracts
-        driverController.rightTrigger().whileTrue(rack.retractCmd()).onFalse(rack.stopCmd());
+        //driverController.rightTrigger().whileTrue(rack.retractCmd()).onFalse(rack.stopCmd());
         // run the intake
         driverController.leftBumper().whileTrue(intake.spinCmd()).onFalse(intake.stopCmd());
         
