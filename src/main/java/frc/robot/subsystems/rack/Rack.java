@@ -47,10 +47,15 @@ public class Rack extends SubsystemBase{
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
-    public Command setRackVoltage (double volts) {
-        return runOnce(() -> this.io.setVoltage(volts));
+    public Command extendCmd() {
+        return runOnce(() -> this.io.setVoltage(6));
     }
-    
+    public Command retractCmd() {
+        return runOnce(() -> this.io.setVoltage(-6));
+    }
+    public Command stopCmd() {
+        return runOnce(() -> this.io.setVoltage(0));
+    }
     // /** 
     //  * Command to shoot out the coral
     //  */
@@ -64,15 +69,6 @@ public class Rack extends SubsystemBase{
     //     }  
     //     return this.setRackSpeed(speed);
     // }
-
-
-    /**
-     *  Command to stop the rack
-     */ 
-    public Command stopCmd() {
-        return this.setRackSpeed(0);
-    }
-
     // public boolean hasCoral() {
     //     return this.inputs.supplyCurrent.gt(Amps.of(6.5));
     // }

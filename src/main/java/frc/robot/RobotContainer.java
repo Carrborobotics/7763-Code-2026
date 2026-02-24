@@ -194,16 +194,13 @@ public class RobotContainer {
         //     )
         // );
 
-        // rack goes out
-        driverController.leftTrigger().whileTrue(rack.setRackSpeed(0.5)).onFalse(rack.setRackSpeed(0));
-        
-        // rack goes in
-        driverController.rightTrigger().whileTrue(rack.setRackSpeed(-0.5)).onFalse(rack.setRackSpeed(0));
-        
+        // rack extends (used to do this with setRackSpeed, but voltage control works in sim)
+        driverController.leftTrigger().whileTrue(rack.extendCmd()).onFalse(rack.stopCmd());
+        // rack retracts
+        driverController.rightTrigger().whileTrue(rack.retractCmd()).onFalse(rack.stopCmd());
         // run the intake
-        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(-0.5)).onFalse(intake.stopCmd());
-
-
+        driverController.leftBumper().whileTrue(intake.spinCmd()).onFalse(intake.stopCmd());
+        
 
         // //driverController.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
     

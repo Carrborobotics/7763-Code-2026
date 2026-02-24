@@ -46,12 +46,15 @@ public class Intake extends SubsystemBase{
     public Command setIntakeSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
     }
-
+    public Command spinCmd() {
+        return runOnce(() -> this.io.setVoltage(6));
+    }   
     /**
      *  Command to stop the intake
      */ 
     public Command stopCmd() {
-        return this.setIntakeSpeed(0);
+        return runOnce(() -> this.io.setVoltage(0));
+        //return this.setIntakeSpeed(0);
     }
 
     public boolean IsOverloaded() {
