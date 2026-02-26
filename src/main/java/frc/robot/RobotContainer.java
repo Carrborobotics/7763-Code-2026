@@ -201,7 +201,8 @@ public class RobotContainer {
         driverController.rightTrigger().whileTrue(rack.setRackSpeed(-0.5)).onFalse(rack.setRackSpeed(0));
         
         // run the intake
-        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(-0.5)).onFalse(intake.stopCmd());
+        //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
+        driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
 
 
 
