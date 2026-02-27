@@ -4,6 +4,9 @@ import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
 import edu.wpi.first.units.measure.MutTemperature;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.Distance;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -23,6 +26,9 @@ public interface RackIO {
         public MutCurrent torqueCurrent = Amps.mutable(0);
 
         public MutTemperature temperature = Celsius.mutable(0);
+        
+        public MutDistance setpointPosition = Inches.mutable(0);
+        public MutLinearVelocity setpointVelocity = InchesPerSecond.mutable(0.0);
 
     }   
     default void updateInputs(RackIOInputs inputs) {}
@@ -33,5 +39,7 @@ public interface RackIO {
 
     default void setSpeed(double speed) {}
     default void setVoltage(double volts) {}
+    default void runSetpoint(Distance position) {}
+
 
 }

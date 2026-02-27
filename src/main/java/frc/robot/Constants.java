@@ -31,6 +31,7 @@ import frc.robot.subsystems.swerve.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.12;
 
+    public static final double RACK_GEAR_RATIO = 9.0; // 9:1
     public static final double RACK_GEARING = 9.0; // 9:1
     public static final double INTAKE_GEARING = 1.25; // 12t:15t = 1.25:1
     public static final double TURRET_ROTATION_GEARING = 12.0; // 12:1

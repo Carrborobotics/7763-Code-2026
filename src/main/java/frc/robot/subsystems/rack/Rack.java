@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
 import static edu.wpi.first.units.Units.*;
+import edu.wpi.first.units.measure.Distance;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -32,6 +33,10 @@ public class Rack extends SubsystemBase{
     private final RobotState target;
     private final RobotState goal;
 
+    private Distance setpoint = Inches.of(0.0);
+    private Distance position = Inches.of(0.0);
+
+
     public Rack(RackIO io) {
         this.io = io;
 
@@ -51,20 +56,12 @@ public class Rack extends SubsystemBase{
         return runOnce(() -> this.io.setVoltage(volts));
     }
     
-    // /** 
-    //  * Command to shoot out the coral
-    //  */
-    // public Command ejectCoralCmd(Elevator elevator) {
-    //     double speed = defaultEjectSpeed;
-    //     if (elevator.getNextStop() == ElevatorStop.L1) {
-    //         speed = 0.25;
-            
-    //     } else if (elevator.getNextStop() == ElevatorStop.L4) {
-    //         speed = 0.1;
-    //     }  
-    //     return this.setRackSpeed(speed);
-    // }
-
+    public Command retractCmd() {
+        return runOnce(() ->  this.io.runSetpoint(Inches.of(0)));
+    }
+    public Command extendCmd() {
+        return runOnce(() ->  this.io.runSetpoint(Inches.of(-0.1)));
+    }
 
     /**
      *  Command to stop the rack

@@ -195,6 +195,11 @@ public class RobotContainer {
         // );
 
         // rack goes out
+
+        driverController.a().onTrue(rack.extendCmd());
+        
+        driverController.b().onTrue(rack.retractCmd());
+        
         driverController.leftTrigger().whileTrue(rack.setRackSpeed(0.5)).onFalse(rack.setRackSpeed(0));
         
         // rack goes in
