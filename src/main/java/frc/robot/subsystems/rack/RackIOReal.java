@@ -59,7 +59,7 @@ public class RackIOReal implements RackIO {
     @Override
     public void updateInputs(RackIOInputs inputs) {
         
-        inputs.velocity.mut_replace(rackEncoder.getVelocity().getValueAsDouble(), DegreesPerSecond);
+        inputs.velocity.mut_replace(rackEncoder.getVelocity().getValue());
         
 
         inputs.appliedVolts.mut_replace(rackMotorLeft.getSupplyVoltage().getValueAsDouble(), Volts);
