@@ -1,32 +1,31 @@
 package frc.robot;
 
-import java.util.EnumMap;
-import java.util.function.BooleanSupplier;
+// import java.util.EnumMap;
+// import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+// import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Distance;
+// import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.math.filter.Debouncer.DebounceType;
+// import edu.wpi.first.math.geometry.Translation2d;
+// import edu.wpi.first.units.Units;
+// import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
+// import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-
+// import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+// import edu.wpi.first.wpilibj2.command.RunCommand;
+// import edu.wpi.first.wpilibj2.command.WaitCommand;
+// import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import frc.robot.Constants.Localization.ReefFace;
-import frc.robot.commands.LocalSwerve;
+// import frc.robot.commands.LocalSwerve;
 import frc.robot.commands.TeleopSwerve;
 // import frc.robot.subsystems.elevator.Elevator;
 // import frc.robot.subsystems.elevator.Elevator.ElevatorStop; // enum of stops
@@ -37,6 +36,8 @@ import frc.robot.subsystems.rack.Rack;
 import frc.robot.subsystems.rack.RackIOReal;
 import frc.robot.subsystems.rack.RackIOSim;
 import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.swerve.ModuleIOReal;
+import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -69,25 +70,37 @@ public class RobotContainer {
     private final Supplier<Double> rotationAxis = driverController::getRightX;
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
+    private final Swerve s_Swerve;
     private final Intake intake;
     private final Rack rack;
     // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
     
     /* Alliance colors */
-    private final Color redBumper = Color.kDarkRed;
-    private final Color blueBumper = Color.kDarkBlue;
-    private Color original_color;
+    // private final Color redBumper = Color.kDarkRed;
+    // private final Color blueBumper = Color.kDarkBlue;
+    // private Color original_color;
 
       /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
         if (Robot.isReal()) {
+            this.s_Swerve = new Swerve(
+             new ModuleIOReal(Constants.Swerve.FrontLeft),
+             new ModuleIOReal(Constants.Swerve.FrontRight),
+             new ModuleIOReal(Constants.Swerve.BackLeft),
+             new ModuleIOReal(Constants.Swerve.BackRight)
+            );
             this.rack = new Rack(new RackIOReal());
             this.intake = new Intake(new IntakeIOReal());
         } else {
+            this.s_Swerve = new Swerve(
+             new ModuleIOSim(), 
+             new ModuleIOSim(), 
+             new ModuleIOSim(), 
+             new ModuleIOSim()
+            );
             this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
             this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
         }

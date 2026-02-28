@@ -3,6 +3,11 @@ package frc.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
@@ -26,7 +31,7 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import static edu.wpi.first.units.Units.*;
 import frc.lib.util.COTSTalonFXSwerveConstants;
-import frc.robot.subsystems.swerve.SwerveModuleConstants;
+//import frc.robot.subsystems.swerve.SwerveModuleConstants;
 
 public final class Constants {
     public static final double stickDeadband = 0.12;
@@ -220,46 +225,155 @@ public final class Constants {
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
+
+
+
+
+        // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
+        // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
+        private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+        private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    // Swerve azimuth does not require much torque output, so we can set a relatively low
+                    // stator current limit to help avoid brownouts without impacting performance.
+                    .withStatorCurrentLimit(Amps.of(60))
+                    .withStatorCurrentLimitEnable(true)
+            );
+        private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
+            
+        private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreator =
+        new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+            // .withDriveMotorGearRatio(kDriveGearRatio)
+            // .withSteerMotorGearRatio(kSteerGearRatio)
+            // .withCouplingGearRatio(kCoupleRatio)
+            // .withWheelRadius(kWheelRadius)
+            // .withSteerMotorGains(steerGains)
+            // .withDriveMotorGains(driveGains)
+            // .withSteerMotorClosedLoopOutput(kSteerClosedLoopOutput)
+            // .withDriveMotorClosedLoopOutput(kDriveClosedLoopOutput)
+            // .withSlipCurrent(kSlipCurrent)
+            // .withSpeedAt12Volts(kSpeedAt12Volts)
+            // .withDriveMotorType(kDriveMotorType)
+            // .withSteerMotorType(kSteerMotorType)
+            // .withFeedbackSource(kSteerFeedbackType)
+            .withDriveMotorInitialConfigs(driveInitialConfigs)
+            .withSteerMotorInitialConfigs(steerInitialConfigs)
+            .withEncoderInitialConfigs(encoderInitialConfigs)
+            // .withSteerInertia(kSteerInertia)
+            // .withDriveInertia(kDriveInertia)
+            // .withSteerFrictionVoltage(kSteerFrictionVoltage)
+            // .withDriveFrictionVoltage(kDriveFrictionVoltage)
+            ;
+
         /* Module Specific Constants */
-        /* Front Left Module - Module 0 */
-        public static final class Mod0 { 
-            public static final int driveMotorID = 1;
-            public static final int angleMotorID = 2;
-            public static final int canCoderID = 15;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(90.0);
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
-        }
+        
+        private static final boolean kInvertLeftSide = false;
+        private static final boolean kInvertRightSide = true;
 
-        /* Front Right Module - Module 1 */
-        public static final class Mod1 {
-            public static final int driveMotorID = 3;
-            public static final int angleMotorID = 4;
-            public static final int canCoderID = 12;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-135.0);
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
-        }
 
-        /* Back Left Module - Module 2 */
-        public static final class Mod2 { 
-            public static final int driveMotorID = 7;
-            public static final int angleMotorID = 8;
-            public static final int canCoderID = 13;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-90.0);//-135
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
-        }
+        // FRONT LEFT MODULE - Module 0
+        public static final int kFrontLeftSteerMotorId = 2;
+        public static final int kFrontLeftDriveMotorId = 1;
+        public static final int kFrontLeftEncoderId = 15;
+        //public static final Rotation2d kFrontLeftEncoderOffset = Rotation2d.fromDegrees(90.0);
+        public static final double kFrontLeftEncoderOffset = Rotation2d.fromDegrees(90.0).getRadians();
+        public static final double kFrontLeftXPos = wheelBase / 2.0;
+        public static final double kFrontLeftYPos = trackWidth / 2.0;
+        private static final boolean kFrontLeftSteerMotorInverted = false;
+        private static final boolean kFrontLeftEncoderInverted = false;
 
-        /* Back Right Module - Module 3 */
-        public static final class Mod3 { 
-            public static final int driveMotorID = 5;
-            public static final int angleMotorID = 6;
-            public static final int canCoderID = 14;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(135.0);//180
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
-        }
+        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft =
+        ConstantCreator.createModuleConstants(
+            kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset,
+            kFrontLeftXPos, kFrontLeftYPos, kInvertLeftSide, kFrontLeftSteerMotorInverted, kFrontLeftEncoderInverted
+        );
+
+        // FRONT RIGHT MODULE - Module 1
+        public static final int kFrontRightSteerMotorId = 4;
+        public static final int kFrontRightDriveMotorId = 3;
+        public static final int kFrontRightEncoderId = 12;
+        public static final double kFrontRightEncoderOffset = Rotation2d.fromDegrees(-135.0).getRadians();
+        public static final double kFrontRightXPos = wheelBase / 2.0;
+        public static final double kFrontRightYPos = -trackWidth / 2.0;
+        private static final boolean kFrontRightSteerMotorInverted = false;
+        private static final boolean kFrontRightEncoderInverted = true;
+        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight =
+        ConstantCreator.createModuleConstants(
+            kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId, kFrontRightEncoderOffset,
+            kFrontRightXPos, kFrontRightYPos, kInvertRightSide, kFrontRightSteerMotorInverted, kFrontRightEncoderInverted
+        );
+
+        // BACK LEFT MODULE - Module 2
+        public static final int kBackLeftSteerMotorId = 8;
+        public static final int kBackLeftDriveMotorId = 7;
+        public static final int kBackLeftEncoderId = 13;
+        public static final double kBackLeftEncoderOffset = Rotation2d.fromDegrees(-90.0).getRadians();
+        public static final double kBackLeftXPos = -wheelBase / 2.0;
+        public static final double kBackLeftYPos = trackWidth / 2.0;
+        private static final boolean kBackLeftSteerMotorInverted = false;
+        private static final boolean kBackLeftEncoderInverted = false;
+        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft =
+        ConstantCreator.createModuleConstants(
+            kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId, kBackLeftEncoderOffset,
+            kBackLeftXPos, kBackLeftYPos, kInvertLeftSide, kBackLeftSteerMotorInverted, kBackLeftEncoderInverted
+        );
+
+        // BACK RIGHT MODULE - Module 3
+        public static final int kBackRightSteerMotorId = 6;
+        public static final int kBackRightDriveMotorId = 5;
+        public static final int kBackRightEncoderId = 14;
+        public static final double kBackRightEncoderOffset = Rotation2d.fromDegrees(135.0).getRadians();
+        public static final double kBackRightXPos = -wheelBase / 2.0;
+        public static final double kBackRightYPos = -trackWidth / 2.0;
+        private static final boolean kBackRightSteerMotorInverted = false;
+        private static final boolean kBackRightEncoderInverted = true;
+        public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight =
+        ConstantCreator.createModuleConstants(
+            kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset,
+            kBackRightXPos, kBackRightYPos, kInvertRightSide, kBackRightSteerMotorInverted, kBackRightEncoderInverted
+            );
+            
+        // /* Front Left Module - Module 0 */
+        // public static final class Mod0 { 
+        //     public static final int driveMotorID = 1;
+        //     public static final int angleMotorID = 2;
+        //     public static final int canCoderID = 15;
+        //     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(90.0);
+        //     //public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+        //     //        canCoderID, angleOffset);
+        // }
+            
+        // /* Front Right Module - Module 1 */
+        // public static final class Mod1 {
+        //     public static final int driveMotorID = 3;
+        //     public static final int angleMotorID = 4;
+        //     public static final int canCoderID = 12;
+        //     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-135.0);
+        //     //public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+        //     //        canCoderID, angleOffset);
+            
+        // }
+
+        // /* Back Left Module - Module 2 */
+        // public static final class Mod2 { 
+        //     public static final int driveMotorID = 7;
+        //     public static final int angleMotorID = 8;
+        //     public static final int canCoderID = 13;
+        //     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-90.0);//-135
+        //     //public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+        //     //        canCoderID, angleOffset);
+        // }
+
+        // /* Back Right Module - Module 3 */
+        // public static final class Mod3 { 
+        //     public static final int driveMotorID = 5;
+        //     public static final int angleMotorID = 6;
+        //     public static final int canCoderID = 14;
+        //     public static final Rotation2d angleOffset = Rotation2d.fromDegrees(135.0);//180
+        //     // public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+        //     //         canCoderID, angleOffset);
+        // }
     }
 
     public static final class AutoConstants { 

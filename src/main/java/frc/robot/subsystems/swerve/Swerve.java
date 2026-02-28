@@ -5,6 +5,7 @@ import frc.robot.Constants;
 //import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.subsystems.vision.Vision;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -71,7 +72,8 @@ public class Swerve extends SubsystemBase {
     public final double rotationKS = 0.02;
 
 
-    public SwerveModule[] mSwerveMods;
+    private final Module[] modules = new Module[4]; // FL, FR, BL, BR
+
     public boolean doRejectUpdate = false;
 
     private final SwerveDrivePoseEstimator m_poseEstimator;
@@ -79,9 +81,12 @@ public class Swerve extends SubsystemBase {
     
     private final Pigeon2 gyro;
     private final Vision vision = new Vision();
-    // public ReefFace goalFace;
-
-    public Swerve() {
+    
+    public Swerve(
+        ModuleIO flModuleIO,
+        ModuleIO frModuleIO,
+        ModuleIO blModuleIO,
+        ModuleIO brModuleIO) {
 
         xPID = new PIDController(kPx.get(), kIx.get(), kDx.get()); 
         yPID = new PIDController(kPx.get(), kIx.get(), kDx.get());
@@ -96,12 +101,10 @@ public class Swerve extends SubsystemBase {
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
-        mSwerveMods = new SwerveModule[] {
-                new SwerveModule(0, Constants.Swerve.Mod0.constants),
-                new SwerveModule(1, Constants.Swerve.Mod1.constants),
-                new SwerveModule(2, Constants.Swerve.Mod2.constants),
-                new SwerveModule(3, Constants.Swerve.Mod3.constants)
-        };
+        modules[0] = new Module(flModuleIO, 0);
+        modules[1] = new Module(frModuleIO, 1);
+        modules[2] = new Module(blModuleIO, 2);
+        modules[3] = new Module(brModuleIO, 3);
 
         // Let the field be visible in elastic
         field = new Field2d();
@@ -153,34 +156,34 @@ public class Swerve extends SubsystemBase {
             builder.setSmartDashboardType("SwerveDrive");
 
             builder.addDoubleProperty(
-                "Front Left Angle", () -> mSwerveMods[0].getState().angle.getRadians(), null);
+                "Front Left Angle", () -> modules[0].getState().angle.getRadians(), null);
             builder.addDoubleProperty(
-                "Front Left Velocity", () -> mSwerveMods[0].getState().speedMetersPerSecond * 20, null);
+                "Front Left Velocity", () -> modules[0].getState().speedMetersPerSecond * 20, null);
 
             builder.addDoubleProperty(
-                "Front Right Angle", () -> mSwerveMods[1].getState().angle.getRadians(), null);
+                "Front Right Angle", () -> modules[1].getState().angle.getRadians(), null);
             builder.addDoubleProperty(
-                "Front Right Velocity", () -> mSwerveMods[1].getState().speedMetersPerSecond * 20, null);
+                "Front Right Velocity", () -> modules[1].getState().speedMetersPerSecond * 20, null);
 
             builder.addDoubleProperty(
-                "Back Left Angle", () -> mSwerveMods[2].getState().angle.getRadians(), null);
+                "Back Left Angle", () -> modules[2].getState().angle.getRadians(), null);
             builder.addDoubleProperty(
-                "Back Left Velocity", () -> mSwerveMods[2].getState().speedMetersPerSecond * 20, null);
+                "Back Left Velocity", () -> modules[2].getState().speedMetersPerSecond * 20, null);
 
             builder.addDoubleProperty(
-                "Back Right Angle", () -> mSwerveMods[3].getState().angle.getRadians(), null);
+                "Back Right Angle", () -> modules[3].getState().angle.getRadians(), null);
             builder.addDoubleProperty(
-                "Back Right Velocity", () -> mSwerveMods[3].getState().speedMetersPerSecond * 20, null);
+                "Back Right Velocity", () -> modules[3].getState().speedMetersPerSecond * 20, null);
 
             builder.addDoubleProperty("Robot Angle", () -> getHeading().getRadians(), null);
         });
     }
 
     /** 
-     *  @param xSpeed Speed of the robot in the x direction (forward)
+     * @param xSpeed Speed of the robot in the x direction (forward)
      * @param ySpeed Speed of the robot in the y direction (sideways)
      * @param rotation Angular rate of the robot
-     * @param fielRelative Wether the provided x and y speeds are relative to the field
+     * @param fieldRelative Whether the provided x and y speeds are relative to the field
      * @param rateLimit Whether to enable rate limiting for smoother control 
     */
    
@@ -201,8 +204,9 @@ public class Swerve extends SubsystemBase {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
         
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], true);
+        for (Module mod : modules) {
+            //mod.setDesiredState(swerveModuleStates[mod.index], true);
+            mod.runSetpoint(swerveModuleStates[mod.index]);
         }
     }
 
@@ -210,23 +214,24 @@ public class Swerve extends SubsystemBase {
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+        for (Module mod : modules) {
+            //mod.setDesiredState(desiredStates[mod.index], false);
+            mod.runSetpoint(desiredStates[mod.index]);
         }
     }
 
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
-        for (SwerveModule mod : mSwerveMods) {
-            states[mod.moduleNumber] = mod.getState();
+        for (Module mod : modules) {
+            states[mod.index] = mod.getState();
         }
         return states;
     }
 
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
-        for (SwerveModule mod : mSwerveMods) {
-            positions[mod.moduleNumber] = mod.getPosition();
+        for (Module mod : modules) {
+            positions[mod.index] = mod.getPosition();
         }
         return positions;
     }
@@ -254,18 +259,18 @@ public class Swerve extends SubsystemBase {
                 .toSwerveModuleStates(desiredChassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        for (Module mod : modules) {
+            //mod.setDesiredState(swerveModuleStates[mod.index], isOpenLoop);
+            mod.runSetpoint(swerveModuleStates[mod.index]);
         }
     }
 
-    public void alignStraight() {
-        SwerveModuleState aligned = new SwerveModuleState(0.0, new Rotation2d());
-
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(aligned, false);
-        }
-    }
+    // public void alignStraight() {
+    //     SwerveModuleState aligned = new SwerveModuleState(0.0, new Rotation2d());
+    //     for (Module mod : modules) {
+    //         mod.setDesiredState(aligned, false);
+    //     }
+    // }
 
     public Rotation2d getHeading() {
         return getPose().getRotation();
@@ -298,25 +303,6 @@ public class Swerve extends SubsystemBase {
     //     return relativePosition.getAngle();
     // }
 
-    // public ReefFace nearestFace(Translation2d position) {
-    //     Rotation2d reefBearing = flipIfRed(reefBearing(position));
-    //     double bearingAngle = MathUtil.inputModulus(reefBearing.getDegrees(), -180, 180);
-    //     SmartDashboard.putNumber("bearing angle", bearingAngle);
-    //     if (bearingAngle > 150 || bearingAngle < -150) {
-    //         return ReefFace.GH;
-    //     } else if (bearingAngle > 90) {
-    //         return ReefFace.EF;
-    //     } else if (bearingAngle > 30) {
-    //         return ReefFace.CD;
-    //     } else if (bearingAngle > -30) {
-    //         return ReefFace.AB;
-    //     } else if (bearingAngle > -90) {
-    //         return ReefFace.KL;
-    //     } else { // bearingAngle > -150
-    //         return ReefFace.IJ;
-    //     }
-    // }
-
     public void zeroHeading() {
         if (Robot.isRed()) {
             // setHeading(new Rotation2d(Math.PI));
@@ -334,10 +320,11 @@ public class Swerve extends SubsystemBase {
 
     public Command resetModulesToAbsolute() {
         return Commands.runOnce(
-                () -> {
-                    for (SwerveModule mod : mSwerveMods) {
-                        mod.resetToAbsolute();
-                    }
+            () -> {
+                    //TODO: unclear how to do this with new module code, may need to add a resetToAbsolute method to Module that calls the CANcoder method and sets the motor position accordingly
+                    // for (Module mod : modules) {
+                    //     mod.resetToAbsolute();
+                    // }
                 },
                 this);
     }
@@ -381,11 +368,14 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putBoolean("Align/viz at set", visionDifference() < Units.inchesToMeters(1.5));
 
 
-        for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
+        for (Module mod : modules) {
+            mod.periodic();
+            //SmartDashboard.putNumber("Swerve/Mod " + mod.index + " CANcoder", mod.getCANcoder().getDegrees());
+            SmartDashboard.putNumber("Swerve/Mod " + mod.index + " Angle", mod.getPosition().angle.getDegrees());
+            SmartDashboard.putNumber("Swerve/Mod " + mod.index + " Velocity", mod.getState().speedMetersPerSecond);
         } 
             
+        field.setRobotPose(getPose());
+        SmartDashboard.putData("Field", field);
     }
 }
