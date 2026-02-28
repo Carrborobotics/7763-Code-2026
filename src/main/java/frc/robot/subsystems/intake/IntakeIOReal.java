@@ -1,6 +1,6 @@
 package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VoltageOut;
+//import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -16,9 +16,9 @@ public class IntakeIOReal implements IntakeIO {
     private CANcoder intakeEncoder;
 
     // Leaving these here in case we want voltage limits for the intake 
-    private final VoltageOut intakeVoltage = new VoltageOut(2).withEnableFOC(true);
-    private final VoltageOut shootVoltage = new VoltageOut(2).withEnableFOC(true);
-    private final VoltageOut boostVoltage = new VoltageOut(2).withEnableFOC(true);
+    // private final VoltageOut intakeVoltage = new VoltageOut(2).withEnableFOC(true);
+    // private final VoltageOut shootVoltage = new VoltageOut(2).withEnableFOC(true);
+    // private final VoltageOut boostVoltage = new VoltageOut(2).withEnableFOC(true);
 
     public IntakeIOReal() {
         // Create the intake kraken
