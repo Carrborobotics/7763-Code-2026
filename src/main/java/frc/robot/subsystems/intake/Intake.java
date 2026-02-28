@@ -23,8 +23,6 @@ public class Intake extends SubsystemBase{
     private static final LoggedTunableNumber kA = new LoggedTunableNumber("Pivot/Gains/kA", 0.1);
     private static final LoggedTunableNumber kG = new LoggedTunableNumber("Pivot/Gains/kG", 0.1);
     
-    private static final double defaultEjectSpeed = 0.2;
-
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     private final IntakeIO io;

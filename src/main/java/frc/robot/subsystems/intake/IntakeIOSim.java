@@ -24,13 +24,21 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void setSpeed(double speed) {
-    double rad_per_sec = speed * 2 * Math.PI; // Convert from rotations per second to radians per second
-    motor.setAngularVelocity(rad_per_sec);
+    // In the real IO, setSpeed uses a percent output ([-1,1]) on the TalonFX.
+    // Simulate that by driving the motor with an equivalent voltage (percent * 12V).
+    // Previously this code forced the simulated angular velocity directly which
+    // produced a short spike and then decayed toward physical behavior. Instead
+    // set the input voltage so the motor model updates naturally.
+    double volts = Math.max(-12.0, Math.min(12.0, speed * 12.0));
+    motor.setInputVoltage(volts);
   }
   
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
         motor.update(0.02); // 20ms update
+        // motor.getAngularVelocity() returns radians/sec. The rest of the codebase
+        // records intake velocity as degrees/sec (see IntakeIOReal). Convert here
+        // to keep logged units consistent.
         inputs.velocity.mut_replace(motor.getAngularVelocity());
         inputs.appliedVolts.mut_replace(motor.getInputVoltage(), Volts);
         inputs.supplyCurrent.mut_replace(motor.getCurrentDrawAmps(), Amps);
@@ -38,7 +46,5 @@ public class IntakeIOSim implements IntakeIO {
         inputs.temperature.mut_replace(0, Celsius);
         //inputs.setpointPosition.mut_replace(controller.getSetpoint(), Meters);
         //inputs.setpointVelocity.mut_replace(0, MetersPerSecond);
-
-
   }
 }
