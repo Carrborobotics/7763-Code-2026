@@ -42,10 +42,17 @@ import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 // import frc.robot.subsystems.led.LedSubsystem;
 // import frc.robot.subsystems.led.LedSubsystem.LedMode;
-// import frc.robot.subsystems.pivot.Pivot;
-// import frc.robot.subsystems.pivot.Pivot.Pivots;
-// import frc.robot.subsystems.pivot.PivotIOReal;
-// import frc.robot.subsystems.pivot.PivotIOSim;   
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIOSim;   
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIOReal;
+import frc.robot.subsystems.shooter.ShooterIOSim;   
+import frc.robot.subsystems.floor.Floor;
+import frc.robot.subsystems.floor.FloorIOReal;
+import frc.robot.subsystems.floor.FloorIOSim;   
+
+import static edu.wpi.first.units.Units.Degrees;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -72,6 +79,10 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Intake intake;
     private final Rack rack;
+    private final Floor floor;
+    private final Shooter shooter;
+    private final Turret turret;
+
     // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
     
@@ -87,9 +98,15 @@ public class RobotContainer {
         if (Robot.isReal()) {
             this.rack = new Rack(new RackIOReal());
             this.intake = new Intake(new IntakeIOReal());
+            this.floor = new Floor(new FloorIOReal());
+            this.shooter = new Shooter(new ShooterIOReal());
+            this.turret = new Turret(new TurretIOReal());
         } else {
             this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
             this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
+            this.floor = new Floor(new FloorIOSim());
+            this.shooter = new Shooter(new ShooterIOSim());
+            this.turret = new Turret(new TurretIOSim());
         }
 
         // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
@@ -204,7 +221,10 @@ public class RobotContainer {
         //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
         driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
 
-
+        driverController.a().onTrue(shooter.setShooterSpeed(0.25)).onFalse(shooter.stopCmd());
+        driverController.b().onTrue(floor.setFloorSpeed(0.25)).onFalse(floor.stopCmd());
+        driverController.x().onTrue(turret.setPosition(Degrees.of(45.0)));
+        driverController.y().onTrue(turret.setPosition(Degrees.of(0)));
 
         // //driverController.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
     
