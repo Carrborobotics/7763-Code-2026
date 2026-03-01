@@ -17,14 +17,14 @@ public class RobotState {
     private static RobotState goalInstance;
 
     private MutDistance elevatorPosition;
-    private MutAngle pivotPosition;
+    private MutAngle turretPosition;
     private MutAngularVelocity intakeVelocity;
     private MutCurrent intakeSupplyCurrent;
     private MutCurrent intakeTorqueCurrent;
 
     private RobotState() {
         elevatorPosition = Inches.mutable(0);
-        pivotPosition = Degrees.mutable(0);
+        turretPosition = Degrees.mutable(0);
         intakeVelocity = DegreesPerSecond.mutable(0);
         intakeSupplyCurrent = Amps.mutable(0);
         intakeTorqueCurrent = Amps.mutable(0);
@@ -59,12 +59,12 @@ public class RobotState {
         elevatorPosition.mut_replace(position);
     }
 
-    public Angle getPivotPosition() {
-        return pivotPosition;
+    public Angle getTurretPosition() {
+        return turretPosition;
     }
     
-    public void updatePivotAngle(Angle position) {
-        pivotPosition.mut_replace(position);
+    public void updateTurretAngle(Angle position) {
+        turretPosition.mut_replace(position);
     }
 
     public AngularVelocity getIntakeVelocity(){

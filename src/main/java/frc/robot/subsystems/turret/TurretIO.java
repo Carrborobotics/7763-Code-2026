@@ -1,4 +1,4 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.turret;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -8,12 +8,13 @@ import edu.wpi.first.units.measure.MutCurrent;
 import edu.wpi.first.units.measure.MutTemperature;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import org.littletonrobotics.junction.AutoLog;
 
 import static edu.wpi.first.units.Units.*;
 
-public interface PivotIO {
-    // Removed Autolog because it was finicky so implemented manually.
-    class PivotIOInputs {
+public interface TurretIO {
+    @AutoLog
+    class TurretIOInputs {
         public boolean leaderMotorConnected = true;
         public boolean followerMotorConnected = true;
 
@@ -36,7 +37,7 @@ public interface PivotIO {
         public MutAngularVelocity setpointVelocity = DegreesPerSecond.mutable(0);
     }
 
-    void updateInputs(PivotIOInputs inputs);
+    void updateInputs(TurretIOInputs inputs);
 
     default void runSetpoint(Angle position) {}
 
