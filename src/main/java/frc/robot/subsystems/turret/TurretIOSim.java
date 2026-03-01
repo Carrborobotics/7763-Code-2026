@@ -18,7 +18,7 @@ import static edu.wpi.first.units.Units.*;
 
 public class TurretIOSim implements TurretIO {
     
-    private final DCMotor armMotors = DCMotor.getNeoVortex(2);
+    private final DCMotor armMotors = DCMotor.getKrakenX60(1);
     private final double gearing = 22.5;
     private final Distance armLength = Inches.of(5);
     private final Mass armWeight = Pounds.of(6);
