@@ -71,6 +71,10 @@ public class IntakeIOReal implements IntakeIO {
         intakeMotor.set(speed);
     }
 
+    @Override
+    public void setVoltage(double volts) {
+        intakeMotor.setVoltage(volts);
+    }
     public void periodic() {
     }
 

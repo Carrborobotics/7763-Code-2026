@@ -7,9 +7,12 @@ import edu.wpi.first.units.measure.MutVoltage;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.littletonrobotics.junction.AutoLog;
+
 public interface IntakeIO {
+    @AutoLog
     class IntakeIOInputs {
-        public boolean MotorConnected = true;
+        public boolean MotorConnected = true;       
         
         public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
 
@@ -22,13 +25,14 @@ public interface IntakeIO {
         public MutTemperature temperature = Celsius.mutable(0);
 
     }   
-    void updateInputs(IntakeIOInputs inputs);
+    default void updateInputs(IntakeIOInputs inputs) {}
 
     default void setPID(double p, double i, double d) {}
 
     default void setFF(double kS, double kG, double kV, double kA) {}
 
     default void setSpeed(double speed) {}
+    default void setVoltage(double volts) {}
 
 
 }

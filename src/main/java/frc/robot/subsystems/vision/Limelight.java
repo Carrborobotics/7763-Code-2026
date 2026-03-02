@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.vision;
 
 import java.util.ArrayList;
 
@@ -6,16 +6,15 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers;
 
-public class limelight extends SubsystemBase{
+public class Limelight extends SubsystemBase{
 
     // Setup basics objects for the limelight
     private final NetworkTable m_lime;
     private final String m_name;
     private final ArrayList<double[]> m_poses = new ArrayList<double[]>();
 
-    public limelight(String name) {
+    public Limelight(String name) {
         m_lime = NetworkTableInstance.getDefault().getTable(name);
         m_lime.getEntry("ledmode").setDouble(3.0);
         m_name = name;

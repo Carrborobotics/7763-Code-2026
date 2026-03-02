@@ -10,7 +10,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.Matrix;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
+//import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -26,108 +26,95 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import static edu.wpi.first.units.Units.*;
 import frc.lib.util.COTSTalonFXSwerveConstants;
-import frc.lib.util.SwerveModuleConstants;
+import frc.robot.subsystems.swerve.SwerveModuleConstants;
 
 public final class Constants {
     public static final double stickDeadband = 0.12;
 
-    public static final class VortexMotorConstants {
-        public static final double kFreeSpeedRpm = 0.5;
-    }
+    public static final double RACK_GEARING = 9.0; // 9:1
+    public static final double INTAKE_GEARING = 1.25; // 12t:15t = 1.25:1
+    public static final double TURRET_ROTATION_GEARING = 12.0; // 12:1
+    public static final double TURRET_HOOD_GEARING = 715.5; // 715.5:1 (wow)
+    
 
     public static final class CANConstants {
-        // public static final int pivotLeftId = 20;       
-        // public static final int pivotRightId = 21;
-        // public static final int elevatorLeftId = 30;
-        // public static final int elevatorRightId = 31;
         public static final int intakeId = 42;
         public static final int rackId = 41;
-        public static final int rackId2=43;
+        public static final int rackId2 = 43;
 
-         /* CANBus */
-        //public static final String canBus = "rio";
-        public static final String canBus = "Drivetrain"; // TEMPORARY
+        /* CANBus */
+        // TODO: This canbus is temporary - we put it on drivetrain now, but later will drive from the Rio ("rio").
+        public static final CANBus canBus = new CANBus("Drivetrain"); 
 
     }
 
-    // public static final class elevatorConstants {
-    //     /* IDS for elevator motors*/
-    //     public static final int elevatorLeftId = 30;
-    //     public static final int elevatorRightId = 31;
-
-    //     /* CANBus */
-    //     public static final String canBus = "rio";
-
-    // }
-
     public static final class Localization {
+
+        // Field Dimensions
         public static final double fieldWidth = FlippingUtil.fieldSizeY;
         public static final double fieldLength = FlippingUtil.fieldSizeX;
 
-        public static final double reefElevatorZoneRadius = Units.inchesToMeters(80.0); // TODO Revisit
-        public static final double autoUpDistance = Units.inchesToMeters(44.0);
-        public static final double wingLength = Units.inchesToMeters(280);
-
-        public static final double robotFrameLength = Units.inchesToMeters(30);
+        // Robot Dimensions
+        public static final double robotFrameLength = Units.inchesToMeters(27.5);
         public static final double bumperWidth = Units.inchesToMeters(3);
-        public static final double reefStandoff = Units.inchesToMeters(1.5);
-        public static final double reefOffset = robotFrameLength / 2.0 + bumperWidth + reefStandoff;
-        public static final double reefExtraOffset = Units.inchesToMeters(18.0); // reef wood to outside of tape line
-        public static final double bonusStandoff = Units.inchesToMeters(4.0);
+
+        // public static final double reefStandoff = Units.inchesToMeters(1.5);
+        // public static final double reefOffset = robotFrameLength / 2.0 + bumperWidth + reefStandoff;
+        // public static final double reefExtraOffset = Units.inchesToMeters(18.0); // reef wood to outside of tape line
+        // public static final double bonusStandoff = Units.inchesToMeters(4.0);
 
         // Locations from the Blue Alliance perspective
         // 144-14+(93.5/2)
-        public static final Translation2d reefCenter = new Translation2d(Units.inchesToMeters(176.75), fieldWidth / 2.0);
+        // public static final Translation2d reefCenter = new Translation2d(Units.inchesToMeters(176.75), fieldWidth / 2.0);
         // center - distance from wall to face 176.75 - 144 = 36.75
-        public static final double reefToFaceDistance = reefCenter.getX() - Units.inchesToMeters(144.0);
-        public static final double branchSeparation = Units.inchesToMeters(12.0 + 15.0 / 16.0);
-
+        // public static final double reefToFaceDistance = reefCenter.getX() - Units.inchesToMeters(144.0);
+        // public static final double branchSeparation = Units.inchesToMeters(12.0 + 15.0 / 16.0);
         // Offset to the reef face, not at the branches, but on the faces directly in front
-        public static final Translation2d centerOffset = new Translation2d(reefToFaceDistance +reefOffset - reefStandoff, 0.0);
+        // public static final Translation2d centerOffset = new Translation2d(reefToFaceDistance +reefOffset - reefStandoff, 0.0);
         //public static final Translation2d centerOffset = new Translation2d(reefToFaceDistance + reefOffset, 0.0);
-        private static final Translation2d leftOffset = new Translation2d(reefToFaceDistance + reefOffset, -branchSeparation / 2.0);
-        private static final Translation2d rightOffset = new Translation2d(reefToFaceDistance + reefOffset, branchSeparation / 2.0);
-        private static final Translation2d extraOffset = new Translation2d(reefExtraOffset, 0.0);
-        private static final Translation2d centerApproachOffset = centerOffset.plus(extraOffset);
-        private static final Translation2d leftApproachOffset = leftOffset.plus(extraOffset);
-        private static final Translation2d rightApproachOffset = rightOffset.plus(extraOffset);
-        private static final Translation2d bonusOffset = new Translation2d(bonusStandoff, 0.0);
-        private static final Translation2d leftBonusOffset = leftOffset.plus(bonusOffset);
-        private static final Translation2d rightBonusOffset = rightOffset.plus(bonusOffset);
+        // private static final Translation2d leftOffset = new Translation2d(reefToFaceDistance + reefOffset, -branchSeparation / 2.0);
+        // private static final Translation2d rightOffset = new Translation2d(reefToFaceDistance + reefOffset, branchSeparation / 2.0);
+        // private static final Translation2d extraOffset = new Translation2d(reefExtraOffset, 0.0);
+        // private static final Translation2d centerApproachOffset = centerOffset.plus(extraOffset);
+        // private static final Translation2d leftApproachOffset = leftOffset.plus(extraOffset);
+        // private static final Translation2d rightApproachOffset = rightOffset.plus(extraOffset);
+        // private static final Translation2d bonusOffset = new Translation2d(bonusStandoff, 0.0);
+        // private static final Translation2d leftBonusOffset = leftOffset.plus(bonusOffset);
+        // private static final Translation2d rightBonusOffset = rightOffset.plus(bonusOffset);
 
         // Dont climb the reef
-        public static final double elevatorNoDownDistance = reefToFaceDistance + reefOffset + Units.inchesToMeters(12.0);
+        // public static final double elevatorNoDownDistance = reefToFaceDistance + reefOffset + Units.inchesToMeters(12.0);
        
        
-       public static enum ReefFace {
-            AB(-180, true),
-            CD(-120, false),
-            EF(-60, true),
-            GH(0, false),
-            IJ(60, true),
-            KL(120, false);
+    //    public static enum ReefFace {
+    //         AB(-180, true),
+    //         CD(-120, false),
+    //         EF(-60, true),
+    //         GH(0, false),
+    //         IJ(60, true),
+    //         KL(120, false);
 
-            ReefFace(double directionDegrees, boolean algaeHigh) {
-                directionFromCenter = Rotation2d.fromDegrees(directionDegrees);
-                alignMiddle = new Pose2d(reefCenter.plus(centerOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                alignLeft = new Pose2d(reefCenter.plus(leftOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                alignRight = new Pose2d(reefCenter.plus(rightOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                approachMiddle = new Pose2d(reefCenter.plus(centerApproachOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                approachLeft = new Pose2d(reefCenter.plus(leftApproachOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                approachRight = new Pose2d(reefCenter.plus(rightApproachOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                alignBonusLeft = new Pose2d(reefCenter.plus(leftBonusOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                alignBonusRight = new Pose2d(reefCenter.plus(rightBonusOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
-                approachRightMaths = new Pose2d(new Translation2d(2.82,3.90),new Rotation2d(0));
-                this.algaeHigh = algaeHigh;
-            }
+    //         ReefFace(double directionDegrees, boolean algaeHigh) {
+    //             directionFromCenter = Rotation2d.fromDegrees(directionDegrees);
+    //             alignMiddle = new Pose2d(reefCenter.plus(centerOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             alignLeft = new Pose2d(reefCenter.plus(leftOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             alignRight = new Pose2d(reefCenter.plus(rightOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             approachMiddle = new Pose2d(reefCenter.plus(centerApproachOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             approachLeft = new Pose2d(reefCenter.plus(leftApproachOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             approachRight = new Pose2d(reefCenter.plus(rightApproachOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             alignBonusLeft = new Pose2d(reefCenter.plus(leftBonusOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             alignBonusRight = new Pose2d(reefCenter.plus(rightBonusOffset).rotateAround(reefCenter, directionFromCenter), directionFromCenter.plus(Rotation2d.k180deg));
+    //             approachRightMaths = new Pose2d(new Translation2d(2.82,3.90),new Rotation2d(0));
+    //             this.algaeHigh = algaeHigh;
+    //         }
 
-            public final Rotation2d directionFromCenter;
-            public final Pose2d alignLeft, alignMiddle, alignRight;
-            public final Pose2d approachLeft, approachMiddle, approachRight, approachRightMaths;
-            public final Pose2d alignBonusLeft, alignBonusRight;
-            public final boolean algaeHigh;       
+    //         public final Rotation2d directionFromCenter;
+    //         public final Pose2d alignLeft, alignMiddle, alignRight;
+    //         public final Pose2d approachLeft, approachMiddle, approachRight, approachRightMaths;
+    //         public final Pose2d alignBonusLeft, alignBonusRight;
+    //         public final boolean algaeHigh;       
             
-        }
+    //     }
     }
 
     public static final class Swerve {
@@ -148,7 +135,7 @@ public final class Constants {
         /* Center to Center distance of front and rear module wheels in meters. */
         public static final double wheelBase = Units.inchesToMeters(25); 
         public static final double wheelCircumference = chosenModule.wheelCircumference;
-
+        public static final double wheelRadiusMeters = chosenModule.wheelDiameter / 2.0 ;
         /*
          * Swerve Kinematics
          * No need to ever change this unless you are not doing a traditional
@@ -297,29 +284,17 @@ public final class Constants {
         public static final double kTagHeight = 1.27;
         public static final double kCamPitch = Math.PI / 4; // ~45 degrees (pi/4 rad)
         public static final String kCameraName = "Arducam_OV9281_USB_Camera";
-        /*  E-chain side mount
-        public static final Transform3d kRobotToCam = new Transform3d(
-            new Translation3d(Units.inchesToMeters(30.0/2.0 - 7), Units.inchesToMeters(17), Units.inchesToMeters(12)),
-                    new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(15.0), 25.0));
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-        */
-       /*  public static final Transform3d kRobotToCam = new Transform3d(
-            new Translation3d(Units.inchesToMeters(30.0/2.0 - 6.65), Units.inchesToMeters(-11.84), Units.inchesToMeters(17)), // X and Y were swapped?
-                  new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(15.0), 25.0));
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-    } */
 
-    public static final Transform3d kRobotToCam = new Transform3d(
+        public static final Transform3d kRobotToCam = new Transform3d(
             new Translation3d(Units.inchesToMeters(9.15), Units.inchesToMeters(0.0), Units.inchesToMeters(7.25)), // X and Y were swapped?
                   new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(-10), Units.degreesToRadians(0)));
+
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
     }
 
 
-      public static final class PathPlanner {
+    public static final class PathPlanner {
         public static final RobotConfig robotConfig = new RobotConfig(
             Mass.ofRelativeUnits(138, Pounds),
             MomentOfInertia.ofRelativeUnits(7.0, KilogramSquareMeters),

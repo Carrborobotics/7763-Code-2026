@@ -2,11 +2,11 @@
 FRC 7763 Code repository for 2026 Rebuilt
 
 # Intake
-+ 2x kraken x60 linear
-+ kraken x60 rollers
++ `rack`: 2x kraken x60 (linear tooth-gear)
++ `intake`: kraken x60 (drive intake roller)
 
 # Hopper Early Feed
-+ kraken x60 hopper spindexer
++ `indexer`: kraken x60 (hopper spindexer)
 
 # Shooter
 + kraken x60 - hopper feed the shooter

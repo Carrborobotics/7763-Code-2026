@@ -2,15 +2,10 @@ package frc.robot.subsystems.rack;
 
 // import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
-// import frc.robot.subsystems.elevator.Elevator;
-// import frc.robot.subsystems.elevator.Elevator.ElevatorStop;
-//import frc.robot.subsystems.rack.RackIOInputsAutoLogged;
-// import frc.robot.subsystems.intake.RackVisualizer;
 import frc.robot.util.LoggedTunableNumber;
 import static edu.wpi.first.units.Units.*;
 
@@ -30,13 +25,7 @@ public class Rack extends SubsystemBase{
     private static final LoggedTunableNumber kA = new LoggedTunableNumber("Pivot/Gains/kA", 0.1);
     private static final LoggedTunableNumber kG = new LoggedTunableNumber("Pivot/Gains/kG", 0.1);
     
-    private static final double defaultEjectSpeed = 0.2;
-
     private final RackIOInputsAutoLogged inputs = new RackIOInputsAutoLogged();
-
-    // private final RackVisualizer measuredVisualizer;
-    // private final RackVisualizer setpointVisualizer;
-    // private final RackVisualizer goalVisualizer;
     private final RackIO io;
 
     private final RobotState actual;
@@ -52,16 +41,16 @@ public class Rack extends SubsystemBase{
         this.actual = RobotState.getMeasuredInstance();
         this.target = RobotState.getDesiredInstance();
         this.goal = RobotState.getGoalInstance();
-    
-        // this.measuredVisualizer = new RackVisualizer("Measured", Color.kWhite);
-        // this.setpointVisualizer = new RackVisualizer("Setpoint", Color.kBlue);
-        // this.goalVisualizer = new RackVisualizer("Goal", Color.kGreen);
     }
 
     public Command setRackSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
+    public Command setRackVoltage (double volts) {
+        return runOnce(() -> this.io.setVoltage(volts));
+    }
+    
     // /** 
     //  * Command to shoot out the coral
     //  */
@@ -76,16 +65,9 @@ public class Rack extends SubsystemBase{
     //     return this.setRackSpeed(speed);
     // }
 
-    // /** 
-    //  * Command to shoot out the coral
-    //  */
-    // public Command ejectCoralCmd() {
-    //     return this.setRackSpeed(defaultEjectSpeed);
-    // }
-
 
     /**
-     *  Command to stop the intake
+     *  Command to stop the rack
      */ 
     public Command stopCmd() {
         return this.setRackSpeed(0);
