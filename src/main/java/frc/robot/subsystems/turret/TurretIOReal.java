@@ -54,10 +54,10 @@ public class TurretIOReal implements TurretIO {
         inputs.position.mut_replace(edu.wpi.first.math.util.Units.rotationsToRadians(positionRotations), Radians);
         inputs.velocity.mut_replace(edu.wpi.first.math.util.Units.rotationsToRadians(velocityRps), RadiansPerSecond);
 
-        inputs.appliedVoltsLeader.mut_replace(motor.getMotorVoltage().getValueAsDouble(), Volts);
-        inputs.supplyCurrentLeader.mut_replace(motor.getStatorCurrent().getValueAsDouble(), Amps);
-        inputs.torqueCurrentLeader.mut_replace(motor.getTorqueCurrent().getValueAsDouble(), Amps);
-        inputs.temperatureLeader.mut_replace(motor.getDeviceTemp().getValueAsDouble(), Celsius);
+        inputs.appliedVolts.mut_replace(motor.getMotorVoltage().getValueAsDouble(), Volts);
+        inputs.supplyCurrent.mut_replace(motor.getStatorCurrent().getValueAsDouble(), Amps);
+        inputs.torqueCurrent.mut_replace(motor.getTorqueCurrent().getValueAsDouble(), Amps);
+        inputs.temperature.mut_replace(motor.getDeviceTemp().getValueAsDouble(), Celsius);
     }
 
     @Override

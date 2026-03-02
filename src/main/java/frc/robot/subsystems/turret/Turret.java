@@ -45,40 +45,13 @@ public class Turret extends SubsystemBase {
 
     public Turret(TurretIO io) {
         this.io = io;
-        this.io.setPID(0.15, 0, 0);
+        //this.io.setPID(0.15, 0, 0);
         this.io.setPID(kP.get(), kI.get(), kD.get());
         this.io.setFF(kS.get(), kG.get(), kV.get(), kA.get());
         this.actual = RobotState.getMeasuredInstance();
         this.target = RobotState.getDesiredInstance();
         this.goal = RobotState.getGoalInstance();
     }
-
-    public enum Turrets {
-        Intake,
-        Shoot,
-        Up, 
-        Down,
-        Flip,
-        ShootL1,
-        Algae,
-        ShootL4
-    };
-
-    /*
-     * Ensure that the leader.getAbsoluteEncoder().getPosition() is returning the
-     *   correct value. If it is not, then the positionConversionFactor is likely
-     *   wrong.
-     */
-    // private final EnumMap<Turrets, Angle> turretsPos = new EnumMap<>(Map.ofEntries(
-    //         Map.entry(Turrets.Intake, Degrees.of(18.8)), //7.5
-    //         Map.entry(Turrets.Up, Degrees.of(10)), //11
-    //         Map.entry(Turrets.Shoot, Degrees.of(4.9)), //18
-    //         Map.entry(Turrets.Down, Degrees.of(0)),
-    //         Map.entry(Turrets.Flip, Degree.of(6)),
-    //         Map.entry(Turrets.ShootL1, Degrees.of(6.5)),
-    //         Map.entry(Turrets.Algae, Degrees.of(7)),
-    //         Map.entry(Turrets.ShootL4, Degrees.of(4))));
-    
     
     public Command turretTo(double degree_value) {
         return Commands.runOnce(() -> this.setpoint = Degrees.of(degree_value));

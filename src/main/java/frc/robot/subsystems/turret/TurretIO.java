@@ -15,24 +15,13 @@ import static edu.wpi.first.units.Units.*;
 public interface TurretIO {
     @AutoLog
     class TurretIOInputs {
-        public boolean leaderMotorConnected = true;
-        public boolean followerMotorConnected = true;
-
+        public boolean motorConnected = true;
         public MutAngle position = Degrees.mutable(0);
         public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
-
-        public MutVoltage appliedVoltsLeader = Volts.mutable(0);
-        public MutVoltage appliedVoltsFollower = Volts.mutable(0);
-
-        public MutCurrent supplyCurrentLeader = Amps.mutable(0);
-        public MutCurrent supplyCurrentFollower = Amps.mutable(0);
-
-        public MutCurrent torqueCurrentLeader = Amps.mutable(0);
-        public MutCurrent torqueCurrentFollower = Amps.mutable(0);
-
-        public MutTemperature temperatureLeader = Celsius.mutable(0);
-        public MutTemperature temperatureFollower = Celsius.mutable(0);
-
+        public MutVoltage appliedVolts = Volts.mutable(0);
+        public MutCurrent supplyCurrent = Amps.mutable(0);
+        public MutCurrent torqueCurrent = Amps.mutable(0);
+        public MutTemperature temperature = Celsius.mutable(0);
         public MutAngle setpointPosition = Degrees.mutable(0);
         public MutAngularVelocity setpointVelocity = DegreesPerSecond.mutable(0);
     }

@@ -67,22 +67,12 @@ public class TurretIOSim implements TurretIO {
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         sim.update(0.02); // 20ms update
-        
         inputs.position.mut_replace(sim.getAngleRads(), Radians);
         inputs.velocity.mut_replace(sim.getVelocityRadPerSec(), RadiansPerSecond);
-
-        inputs.appliedVoltsLeader.mut_replace(appliedVolts);
-        inputs.appliedVoltsFollower.mut_replace(appliedVolts);
-
-        inputs.supplyCurrentLeader.mut_replace(sim.getCurrentDrawAmps(), Amps);
-        inputs.supplyCurrentFollower.mut_replace(sim.getCurrentDrawAmps(), Amps);
-
-        inputs.torqueCurrentLeader.mut_replace(sim.getCurrentDrawAmps(), Amps);
-        inputs.torqueCurrentFollower.mut_replace(sim.getCurrentDrawAmps(), Amps);
-
-        inputs.temperatureLeader.mut_replace(0, Celsius);
-        inputs.temperatureFollower.mut_replace(0, Celsius);
-
+        inputs.appliedVolts.mut_replace(appliedVolts);
+        inputs.supplyCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
+        inputs.torqueCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
+        inputs.temperature.mut_replace(0, Celsius);
         inputs.setpointPosition.mut_replace(controller.getSetpoint().position, Degrees);
         inputs.setpointVelocity.mut_replace(controller.getSetpoint().velocity, DegreesPerSecond);
     }
