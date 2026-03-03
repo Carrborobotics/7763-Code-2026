@@ -40,29 +40,33 @@ public class RackIOReal implements RackIO {
         cfg.Voltage.PeakReverseVoltage = 12;
 
         // --- Soft limits ---
-        cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable    = true;
-        cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 10.5; // TODO: tune
-        cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable    = true;
-        cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.5; // TODO: tune
+        //cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable    = true;
+        //cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 10.5; // TODO: tune
+        //cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable    = true;
+        //cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.5; // TODO: tune
 
         // --- Slot 0 PID gains ---
-        cfg.Slot0.kP = 2.4;  // TODO: tune
+        cfg.Slot0.kP = 0.1;  // TODO: tune
         cfg.Slot0.kI = 0.0;
-        cfg.Slot0.kD = 0.1;  // TODO: tune
-        cfg.Slot0.kS = 0.25; // TODO: tune
-        cfg.Slot0.kV = 0.12; // TODO: tune
-        cfg.Slot0.kA = 0.01; // TODO: tune
+        cfg.Slot0.kD = 0.0;  // TODO: tune
+        cfg.Slot0.kS = 0.0; // TODO: tune
+        cfg.Slot0.kV = 0.0; // TODO: tune
+        cfg.Slot0.kA = 0.0; // TODO: tune
 
         // --- MotionMagic ---
-        cfg.MotionMagic.MotionMagicCruiseVelocity = 80;   // RPS   TODO: tune
-        cfg.MotionMagic.MotionMagicAcceleration   = 160;  // RPS/s TODO: tune
-        cfg.MotionMagic.MotionMagicJerk            = 1600; // RPS/s²
+        cfg.MotionMagic.MotionMagicCruiseVelocity = 2;   // RPS   TODO: tune
+        cfg.MotionMagic.MotionMagicAcceleration   = 4;  // RPS/s TODO: tune
+        cfg.MotionMagic.MotionMagicJerk            = 8; // RPS/s²
 
         // Apply config to leader only
         rackMotorLeft.getConfigurator().apply(cfg);
 
         // Right motor follows left, opposed because physically mirrored
-        rackMotorRight.setControl(new Follower(rackMotorLeft.getDeviceID(), MotorAlignmentValue.Opposed));
+        rackMotorRight.setControl(new Follower(rackMotorLeft.getDeviceID(), MotorAlignmentValue.Aligned));
+
+        //rackMotorLeft.getEncoder().setPosition(0);
+        rackMotorLeft.setPosition(0);
+
     }
 
     @Override

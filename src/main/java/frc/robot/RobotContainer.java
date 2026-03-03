@@ -195,14 +195,23 @@ public class RobotContainer {
         // );
 
         // rack goes out (deployed)
-        driverController.leftTrigger().onTrue(new InstantCommand(() -> rack.deploy()));
+        //driverController.leftTrigger().onTrue(new InstantCommand(() -> rack.deploy()));
+        //driverController.leftTrigger().onTrue(new InstantCommand(() -> rack.partial()));
+        driverController.a().onTrue(new InstantCommand(() -> rack.setPosition(-5.0)));
+        driverController.b().onTrue(new InstantCommand(() -> rack.setPosition(0.0)));
+        driverController.x().onTrue(new InstantCommand(() -> rack.setPosition(5.0)));
+        //driverController.y().onTrue(new InstantCommand(() -> rack.setPosition(-89.0)));
+        
 
         // rack goes in (retracted)
         driverController.rightTrigger().onTrue(new InstantCommand(() -> rack.retract()));
         
+        driverController.leftBumper().whileTrue(rack.setSpeed(0.1)).onFalse(rack.stopCmd());
+        driverController.rightBumper().whileTrue(rack.setSpeed(-0.1)).onFalse(rack.stopCmd());
+
         // run the intake
         //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
-        driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
+        //driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
 
 
 
