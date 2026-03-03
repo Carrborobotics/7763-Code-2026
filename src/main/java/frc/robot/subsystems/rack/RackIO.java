@@ -33,5 +33,5 @@ public interface RackIO {
 
     default void setSpeed(double speed) {}
     default void setVoltage(double volts) {}
-    default void goToSetpoint(double setpoint) {   }
+    default void setPosition(double rotations) {}
 }

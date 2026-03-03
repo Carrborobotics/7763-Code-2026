@@ -73,8 +73,8 @@ public class Rack extends SubsystemBase{
         return this.setRackSpeed(0);
     }
 
-    public Command goToSetpointCmd(double setpoint) {
-        return runOnce(() -> this.io.goToSetpoint(setpoint));
+    public Command setPositionCmd(double setpoint) {
+        return runOnce(() -> this.io.setPosition(setpoint));
     }
 
     // public boolean hasCoral() {

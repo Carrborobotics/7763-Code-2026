@@ -4,10 +4,9 @@ import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 //import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -22,6 +21,12 @@ public class RackIOReal implements RackIO {
     private TalonFX rackMotorLeft;
     private TalonFX rackMotorRight;
     private CANcoder rackEncoder;
+    private MotionMagicVoltage m_mmRequest = new MotionMagicVoltage(0);
+
+    public static final class Setpoints {
+        public static final double RETRACTED  = 0.0;   // TODO: tune
+        public static final double DEPLOYED   = 10.0;  // TODO: tune
+    }
 
     // Leaving these here in case we want voltage limits for the rack 
     // private final VoltageOut rackVoltage = new VoltageOut(2).withEnableFOC(true);
@@ -56,8 +61,32 @@ public class RackIOReal implements RackIO {
         rackConfig.Voltage.PeakForwardVoltage = 12;
         rackConfig.Voltage.PeakReverseVoltage = 12;
 
+         // --- Soft limits (protect your mechanism) ---
+        rackConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable    = true;
+        rackConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 10.5; // TODO: tune
+        rackConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable    = true;
+        rackConfig  .SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.5; // TODO: tune
+
+        // --- Slot 0 PID gains ---
+        // Start conservative; tune kP first, then kD, then kS/kV/kA
+        rackConfig.Slot0.kP = 2.4;   // TODO: tune — output per rotation of error
+        rackConfig.Slot0.kI = 0.0;
+        rackConfig.Slot0.kD = 0.1;   // TODO: tune
+        rackConfig.Slot0.kS = 0.25;  // TODO: tune — static friction (volts)
+        rackConfig.Slot0.kV = 0.12;  // TODO: tune — volts per RPS
+        rackConfig.Slot0.kA = 0.01;  // TODO: tune — volts per RPS²
+
+        // --- MotionMagic cruise / acceleration ---
+        rackConfig.MotionMagic.MotionMagicCruiseVelocity = 80;   // RPS   TODO: tune
+        rackConfig.MotionMagic.MotionMagicAcceleration   = 160;  // RPS/s TODO: tune
+        rackConfig.MotionMagic.MotionMagicJerk            = 1600; // RPS/s² — smooths the profile
+
+        // Apply config to leader
         rackMotorLeft.getConfigurator().apply(rackConfig);
-        rackMotorRight.getConfigurator().apply(rackConfig);
+
+        // Follower mirrors the leader (set opposeLeaderDirection=true if it's
+        // physically mirrored and needs to spin the opposite direction)
+        rackMotorRight.setControl(new Follower(rackMotorLeft.getDeviceID(), MotorAlignmentValue.Aligned));
 
         // Not really used except for tracking velocity but keep jic
         rackEncoder = new CANcoder(Constants.CANConstants.rackId, Constants.CANConstants.canBus);
@@ -100,53 +129,27 @@ public class RackIOReal implements RackIO {
         rackMotorRight.setVoltage(volts);
     }
 
-    /*
-    public void goToFrontEnd(){
-        while ((rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) || (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk)) {
-            if (rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
-                rackMotorRight.setSpeed(0.5);
-            } else {
-                rackMotorRight.setSpeed(0);
-            }
-            if (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
-                rackMotorLeft.setSpeed(0.5);
-            } else {
-                rackMotorLeft.setSpeed(0);
-            }
-        }
+     /** Move to an arbitrary position (motor rotations). */
+    public void setPosition(double rotations) {
+        rackMotorLeft.setControl(m_mmRequest.withPosition(rotations));
     }
 
-    public void goToBackEnd(){
-        while ((rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) || (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk)) {
-            if (rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
-                rackMotorRight.setSpeed(-0.5);
-            } else {
-                rackMotorRight.setSpeed(0);
-            }
-            if (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
-                rackMotorLeft.setSpeed(-0.5);
-            } else {
-                rackMotorLeft.setSpeed(0);
-            }
-        }
+    public void retract()  {
+        setPosition(Setpoints.RETRACTED); 
     }
-    */
-    @Override
-    public void goToSetpoint(double setpoint){     
 
-        // PID
-        var slot0Configs = new Slot0Configs();
-        slot0Configs.kP = 4.0;  
-        slot0Configs.kI = 0.0;
-        slot0Configs.kD = 0.1;
+    public void deploy()   {
+        setPosition(Setpoints.DEPLOYED);  
+    }
 
-        rackMotorLeft.getConfigurator().apply(slot0Configs);
-        rackMotorRight.getConfigurator().apply(slot0Configs);
+    /** Stop the motor and let brake mode hold position. */
+    public void stop() {
+        rackMotorLeft.stopMotor();
+    }
 
-        final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
-
-        rackMotorLeft.setControl(positionRequest.withPosition(setpoint));
-        rackMotorRight.setControl(positionRequest.withPosition(setpoint));
+    /** Seed the encoder — call this once at match start if you have a known home. */
+    public void resetPosition(double knownRotations) {
+        rackMotorLeft.setPosition(knownRotations);
     }
 
     public void periodic() {

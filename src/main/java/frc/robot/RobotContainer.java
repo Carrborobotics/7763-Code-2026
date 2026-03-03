@@ -204,8 +204,8 @@ public class RobotContainer {
         //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
         driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
 
-        driverController.a().onTrue(rack.goToSetpointCmd(100.0));
-        driverController.b().onTrue(rack.goToSetpointCmd(-100.0));
+        driverController.a().onTrue(rack.setPositionCmd(100.0));
+        driverController.b().onTrue(rack.setPositionCmd(-100.0));
         
         // //driverController.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
     
