@@ -1,15 +1,22 @@
 package frc.robot.subsystems.rack;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.PositionVoltage;
 //import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 //import frc.robot.Robot;
-
-import static edu.wpi.first.units.Units.*;
 
 public class RackIOReal implements RackIO {
     private TalonFX rackMotorLeft;
@@ -91,6 +98,55 @@ public class RackIOReal implements RackIO {
     public void setVoltage(double volts) {
         rackMotorLeft.setVoltage(volts);
         rackMotorRight.setVoltage(volts);
+    }
+
+    /*
+    public void goToFrontEnd(){
+        while ((rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) || (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk)) {
+            if (rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
+                rackMotorRight.setSpeed(0.5);
+            } else {
+                rackMotorRight.setSpeed(0);
+            }
+            if (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
+                rackMotorLeft.setSpeed(0.5);
+            } else {
+                rackMotorLeft.setSpeed(0);
+            }
+        }
+    }
+
+    public void goToBackEnd(){
+        while ((rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) || (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk)) {
+            if (rackMotorRight.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
+                rackMotorRight.setSpeed(-0.5);
+            } else {
+                rackMotorRight.setSpeed(0);
+            }
+            if (rackMotorLeft.getTorqueCurrent().getValueAsDouble() < uhhh idk) {
+                rackMotorLeft.setSpeed(-0.5);
+            } else {
+                rackMotorLeft.setSpeed(0);
+            }
+        }
+    }
+    */
+    @Override
+    public void goToSetpoint(double setpoint){     
+
+        // PID
+        var slot0Configs = new Slot0Configs();
+        slot0Configs.kP = 4.0;  
+        slot0Configs.kI = 0.0;
+        slot0Configs.kD = 0.1;
+
+        rackMotorLeft.getConfigurator().apply(slot0Configs);
+        rackMotorRight.getConfigurator().apply(slot0Configs);
+
+        final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
+
+        rackMotorLeft.setControl(positionRequest.withPosition(setpoint));
+        rackMotorRight.setControl(positionRequest.withPosition(setpoint));
     }
 
     public void periodic() {

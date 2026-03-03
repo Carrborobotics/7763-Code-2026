@@ -73,6 +73,10 @@ public class Rack extends SubsystemBase{
         return this.setRackSpeed(0);
     }
 
+    public Command goToSetpointCmd(double setpoint) {
+        return runOnce(() -> this.io.goToSetpoint(setpoint));
+    }
+
     // public boolean hasCoral() {
     //     return this.inputs.supplyCurrent.gt(Amps.of(6.5));
     // }

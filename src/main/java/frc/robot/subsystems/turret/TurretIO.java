@@ -1,4 +1,4 @@
-package frc.robot.subsystems.rack;
+package frc.robot.subsystems.turret;
 
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
@@ -9,7 +9,7 @@ import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface RackIO {
+public interface TurretIO {
     @AutoLog
     class RackIOInputs {
         public boolean MotorConnected = true;
@@ -31,7 +31,5 @@ public interface RackIO {
 
     default void setFF(double kS, double kG, double kV, double kA) {}
 
-    default void setSpeed(double speed) {}
-    default void setVoltage(double volts) {}
     default void goToSetpoint(double setpoint) {   }
 }
