@@ -13,7 +13,7 @@ public interface RackIO {
 
     @AutoLog
     class RackIOInputs {
-        public boolean motorConnected = true;
+        public boolean MotorConnected = true;
         public MutAngularVelocity velocity     = DegreesPerSecond.mutable(0);
         public MutVoltage appliedVolts         = Volts.mutable(0);
         public MutCurrent supplyCurrent        = Amps.mutable(0);
