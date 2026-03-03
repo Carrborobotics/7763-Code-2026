@@ -1,7 +1,7 @@
-package frc.robot.commands;
+package frc.robot.subsystems.turret;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.turret.Turret;
 
 /**
  * ShootCommand
@@ -16,7 +16,7 @@ import frc.robot.subsystems.TurretSubsystem;
  */
 public class ShootCommand extends Command {
 
-    private final TurretSubsystem turret;
+    private final Turret turret;
     private final double targetRPM;
     private final double hoodAngleDegrees;
     private final double turretAngleDegrees;
@@ -27,7 +27,7 @@ public class ShootCommand extends Command {
      * @param hoodAngleDegrees    Desired hood angle in degrees
      * @param turretAngleDegrees  Desired turret angle in degrees (0 = forward)
      */
-    public ShootCommand(TurretSubsystem turret, double targetRPM,
+    public ShootCommand(Turret turret, double targetRPM,
                         double hoodAngleDegrees, double turretAngleDegrees) {
         this.turret = turret;
         this.targetRPM = targetRPM;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.turret;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -6,13 +6,14 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class TurretSubsystem extends SubsystemBase {
+public class Turret extends SubsystemBase {
 
     // ── CAN IDs ────────────────────────────────────────────────────────────────
     private static final int SHOOTER_LEAD_CAN_ID   = 10; // primary shooter motor
@@ -95,7 +96,7 @@ public class TurretSubsystem extends SubsystemBase {
     private final ShuffleboardTab tab = Shuffleboard.getTab("Turret");
 
     // ──────────────────────────────────────────────────────────────────────────
-    public TurretSubsystem() {
+    public Turret() {
         configureShooter();
         configureHood();
         configureTurret();
@@ -120,7 +121,7 @@ public class TurretSubsystem extends SubsystemBase {
         shooterFollow.getConfigurator().apply(cfg);
 
         // Follower mirrors lead but is mounted inverted — opposeLeaderDirection = true
-        shooterFollow.setControl(new Follower(SHOOTER_LEAD_CAN_ID, /* opposeLeaderDirection */ true));
+        shooterFollow.setControl(new Follower(SHOOTER_LEAD_CAN_ID, MotorAlignmentValue.Opposed)); //This one was wonky w/ Claude
     }
 
     private void configureHood() {
