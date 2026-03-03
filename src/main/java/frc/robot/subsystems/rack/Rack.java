@@ -1,92 +1,118 @@
-package frc.robot.subsystems.rack;
+package frc.robot.subsystems;
 
-// import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.Commands;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
-import frc.robot.util.LoggedTunableNumber;
-import static edu.wpi.first.units.Units.*;
 
-import org.littletonrobotics.junction.Logger;
+public class RackAndPinionIntake extends SubsystemBase {
 
+    // ── Hardware ──────────────────────────────────────────────────────────────
+    private final TalonFX m_leader;
+    private final TalonFX m_follower;
 
-public class Rack extends SubsystemBase{
-    
-    // PID values
-    private static final LoggedTunableNumber kP = new LoggedTunableNumber("Pivot/Gains/kP", 0.15);
-    private static final LoggedTunableNumber kI = new LoggedTunableNumber("Pivot/Gains/kI", 0.0);
-    private static final LoggedTunableNumber kD = new LoggedTunableNumber("Pivot/Gains/kD", 0.0);
+    // ── Control request (reused every loop to avoid GC pressure) ─────────────
+    private final MotionMagicVoltage m_mmRequest = new MotionMagicVoltage(0)
+            .withSlot(0)
+            .withEnableFOC(false);   // set true once FOC license is setup
 
-    // Feedforward values
-    private static final LoggedTunableNumber kS = new LoggedTunableNumber("Pivot/Gains/kS", 0.1);
-    private static final LoggedTunableNumber kV = new LoggedTunableNumber("Pivot/Gains/kV", 1.45);
-    private static final LoggedTunableNumber kA = new LoggedTunableNumber("Pivot/Gains/kA", 0.1);
-    private static final LoggedTunableNumber kG = new LoggedTunableNumber("Pivot/Gains/kG", 0.1);
-    
-    private final RackIOInputsAutoLogged inputs = new RackIOInputsAutoLogged();
-    private final RackIO io;
-
-    private final RobotState actual;
-    private final RobotState target;
-    private final RobotState goal;
-
-    public Rack(RackIO io) {
-        this.io = io;
-
-        this.io.setPID(0.15, 0, 0);
-        this.io.setPID(kP.get(), kI.get(), kD.get());
-        this.io.setFF(kS.get(), kG.get(), kV.get(), kA.get());
-        this.actual = RobotState.getMeasuredInstance();
-        this.target = RobotState.getDesiredInstance();
-        this.goal = RobotState.getGoalInstance();
+    // ── Setpoints (rotations at the motor — adjust to your mechanism) ─────────
+    public static final class Setpoints {
+        public static final double RETRACTED  = 0.0;   // TODO: tune
+        public static final double DEPLOYED   = 10.0;  // TODO: tune
+        public static final double PARTIAL    = 5.0;   // TODO: tune (optional mid-point)
     }
 
-    public Command setRackSpeed(double speed) {
-        return runOnce(() -> this.io.setSpeed(speed));
+    // ── Tolerances ────────────────────────────────────────────────────────────
+    private static final double POSITION_TOLERANCE_ROTATIONS = 0.2;
+
+    // ── Constructor ───────────────────────────────────────────────────────────
+    public RackAndPinionIntake(int leaderCanId, int followerCanId) {
+        m_leader   = new TalonFX(leaderCanId,   "rio"); // change bus name if on CANivore
+        m_follower = new TalonFX(followerCanId, "rio");
+
+        configureMotors();
     }
 
-    public Command setRackVoltage (double volts) {
-        return runOnce(() -> this.io.setVoltage(volts));
+    // ── Configuration ─────────────────────────────────────────────────────────
+    private void configureMotors() {
+        TalonFXConfiguration cfg = new TalonFXConfiguration();
+
+        // --- Neutral mode ---
+        cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        // --- Soft limits (protect your mechanism) ---
+        cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable    = true;
+        cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 10.5; // TODO: tune
+        cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable    = true;
+        cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.5; // TODO: tune
+
+        // --- Slot 0 PID gains ---
+        // Start conservative; tune kP first, then kD, then kS/kV/kA
+        cfg.Slot0.kP = 2.4;   // TODO: tune — output per rotation of error
+        cfg.Slot0.kI = 0.0;
+        cfg.Slot0.kD = 0.1;   // TODO: tune
+        cfg.Slot0.kS = 0.25;  // TODO: tune — static friction (volts)
+        cfg.Slot0.kV = 0.12;  // TODO: tune — volts per RPS
+        cfg.Slot0.kA = 0.01;  // TODO: tune — volts per RPS²
+
+        // --- MotionMagic cruise / acceleration ---
+        cfg.MotionMagic.MotionMagicCruiseVelocity = 80;   // RPS   TODO: tune
+        cfg.MotionMagic.MotionMagicAcceleration   = 160;  // RPS/s TODO: tune
+        cfg.MotionMagic.MotionMagicJerk            = 1600; // RPS/s² — smooths the profile
+
+        // Apply config to leader
+        m_leader.getConfigurator().apply(cfg);
+
+        // Follower mirrors the leader (set opposeLeaderDirection=true if it's
+        // physically mirrored and needs to spin the opposite direction)
+        m_follower.setControl(new Follower(m_leader.getDeviceID(), /* opposeLeaderDirection= */ false));
     }
-    
-    // /** 
-    //  * Command to shoot out the coral
-    //  */
-    // public Command ejectCoralCmd(Elevator elevator) {
-    //     double speed = defaultEjectSpeed;
-    //     if (elevator.getNextStop() == ElevatorStop.L1) {
-    //         speed = 0.25;
-            
-    //     } else if (elevator.getNextStop() == ElevatorStop.L4) {
-    //         speed = 0.1;
-    //     }  
-    //     return this.setRackSpeed(speed);
-    // }
 
+    // ── Public API ────────────────────────────────────────────────────────────
 
-    /**
-     *  Command to stop the rack
-     */ 
-    public Command stopCmd() {
-        return this.setRackSpeed(0);
+    /** Move to an arbitrary position (motor rotations). */
+    public void setPosition(double rotations) {
+        m_leader.setControl(m_mmRequest.withPosition(rotations));
     }
 
-    // public boolean hasCoral() {
-    //     return this.inputs.supplyCurrent.gt(Amps.of(6.5));
-    // }
+    /** Convenience wrappers for named setpoints. */
+    public void retract()  { setPosition(Setpoints.RETRACTED); }
+    public void deploy()   { setPosition(Setpoints.DEPLOYED);  }
+    public void partial()  { setPosition(Setpoints.PARTIAL);   }
 
+    /** Stop the motor and let brake mode hold position. */
+    public void stop() {
+        m_leader.stopMotor();
+    }
+
+    /** Seed the encoder — call this once at match start if you have a known home. */
+    public void resetPosition(double knownRotations) {
+        m_leader.setPosition(knownRotations);
+    }
+
+    // ── Telemetry helpers ─────────────────────────────────────────────────────
+
+    public double getPosition() {
+        return m_leader.getPosition().getValueAsDouble();
+    }
+
+    public double getVelocity() {
+        return m_leader.getVelocity().getValueAsDouble();
+    }
+
+    public boolean atSetpoint(double targetRotations) {
+        return Math.abs(getPosition() - targetRotations) < POSITION_TOLERANCE_ROTATIONS;
+    }
+
+    // ── Periodic ──────────────────────────────────────────────────────────────
     @Override
-    public void periodic(){
-        super.periodic();
-        this.io.updateInputs(inputs);
-        Logger.processInputs("Rack", inputs);
-        //SmartDashboard.putBoolean("Has Coral?", this.hasCoral());
-        SmartDashboard.putString("rack/motor voltage", this.inputs.appliedVolts.toString());
-        SmartDashboard.putString("rack/motor supply current", this.inputs.supplyCurrent.toString());
-        SmartDashboard.putString("rack/motor torque current", this.inputs.torqueCurrent.toString());
-        SmartDashboard.putString("rack/motor temp", this.inputs.temperature.toString());        
-
+    public void periodic() {
+        // Add SmartDashboard/logging here as needed, e.g.:
+        // SmartDashboard.putNumber("Intake/Position", getPosition());
+        // SmartDashboard.putNumber("Intake/Velocity", getVelocity());
     }
 }
