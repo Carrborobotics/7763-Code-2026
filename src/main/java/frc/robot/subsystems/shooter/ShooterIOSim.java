@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -7,13 +7,13 @@ import static edu.wpi.first.units.Units.*;
 
 import frc.robot.Constants;
 
-public class IntakeIOSim implements IntakeIO {
+public class ShooterIOSim implements ShooterIO {
   DCMotorSim motor =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
               DCMotor.getKrakenX60(1),
               0.001,
-              Constants.INTAKE_GEARING),
+              Constants.SHOOTER_GEARING),
           DCMotor.getKrakenX60(1));
 
 
@@ -34,10 +34,10 @@ public class IntakeIOSim implements IntakeIO {
   }
   
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(ShooterIOInputs inputs) {
         motor.update(0.02); // 20ms update
         // motor.getAngularVelocity() returns radians/sec. The rest of the codebase
-        // records intake velocity as degrees/sec (see IntakeIOReal). Convert here
+        // records shooter velocity as degrees/sec (see ShooterIOReal). Convert here
         // to keep logged units consistent.
         inputs.velocity.mut_replace(motor.getAngularVelocity());
         inputs.appliedVolts.mut_replace(motor.getInputVoltage(), Volts);

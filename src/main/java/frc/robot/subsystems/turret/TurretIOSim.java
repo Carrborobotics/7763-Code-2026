@@ -1,4 +1,4 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.turret;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -16,14 +16,14 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 import static edu.wpi.first.units.Units.*;
 
-public class PivotIOSim implements PivotIO {
+public class TurretIOSim implements TurretIO {
     
-    private final DCMotor armMotors = DCMotor.getNeoVortex(2);
+    private final DCMotor armMotors = DCMotor.getKrakenX60(1);
     private final double gearing = 22.5;
     private final Distance armLength = Inches.of(5);
     private final Mass armWeight = Pounds.of(6);
-    private final Angle minimumAngle = Degrees.of(-360);
-    private final Angle maximumAngle = Degrees.of(360);
+    private final Angle minimumAngle = Degrees.of(-170);
+    private final Angle maximumAngle = Degrees.of(170);
     private final Angle startingAngle = Degrees.of(0);
 
     private final SingleJointedArmSim sim = new SingleJointedArmSim(
@@ -65,24 +65,14 @@ public class PivotIOSim implements PivotIO {
     );
 
     @Override
-    public void updateInputs(PivotIOInputs inputs) {
+    public void updateInputs(TurretIOInputs inputs) {
         sim.update(0.02); // 20ms update
-        
         inputs.position.mut_replace(sim.getAngleRads(), Radians);
         inputs.velocity.mut_replace(sim.getVelocityRadPerSec(), RadiansPerSecond);
-
-        inputs.appliedVoltsLeader.mut_replace(appliedVolts);
-        inputs.appliedVoltsFollower.mut_replace(appliedVolts);
-
-        inputs.supplyCurrentLeader.mut_replace(sim.getCurrentDrawAmps(), Amps);
-        inputs.supplyCurrentFollower.mut_replace(sim.getCurrentDrawAmps(), Amps);
-
-        inputs.torqueCurrentLeader.mut_replace(sim.getCurrentDrawAmps(), Amps);
-        inputs.torqueCurrentFollower.mut_replace(sim.getCurrentDrawAmps(), Amps);
-
-        inputs.temperatureLeader.mut_replace(0, Celsius);
-        inputs.temperatureFollower.mut_replace(0, Celsius);
-
+        inputs.appliedVolts.mut_replace(appliedVolts);
+        inputs.supplyCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
+        inputs.torqueCurrent.mut_replace(sim.getCurrentDrawAmps(), Amps);
+        inputs.temperature.mut_replace(0, Celsius);
         inputs.setpointPosition.mut_replace(controller.getSetpoint().position, Degrees);
         inputs.setpointVelocity.mut_replace(controller.getSetpoint().velocity, DegreesPerSecond);
     }

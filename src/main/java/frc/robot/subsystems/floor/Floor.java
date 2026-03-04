@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.floor;
 // import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,7 +10,7 @@ import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase{
+public class Floor extends SubsystemBase{
     
     // PID values
     private static final LoggedTunableNumber kP = new LoggedTunableNumber("Pivot/Gains/kP", 0.15);
@@ -23,15 +23,15 @@ public class Intake extends SubsystemBase{
     private static final LoggedTunableNumber kA = new LoggedTunableNumber("Pivot/Gains/kA", 0.1);
     private static final LoggedTunableNumber kG = new LoggedTunableNumber("Pivot/Gains/kG", 0.1);
     
-    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+    private final FloorIOInputsAutoLogged inputs = new FloorIOInputsAutoLogged();
 
-    private final IntakeIO io;
+    private final FloorIO io;
 
     private final RobotState actual;
     private final RobotState target;
     private final RobotState goal;
 
-    public Intake(IntakeIO io) {
+    public Floor(FloorIO io) {
         this.io = io;
         this.io.setPID(0.15, 0, 0);
         this.io.setPID(kP.get(), kI.get(), kD.get());
@@ -41,15 +41,15 @@ public class Intake extends SubsystemBase{
         this.goal = RobotState.getGoalInstance();    
     }
 
-    public Command setIntakeSpeed(double speed) {
+    public Command setFloorSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
     /**
-     *  Command to stop the intake
+     *  Command to stop the floor
      */ 
     public Command stopCmd() {
-        return this.setIntakeSpeed(0);
+        return this.setFloorSpeed(0);
     }
 
     public boolean IsOverloaded() {
@@ -60,11 +60,11 @@ public class Intake extends SubsystemBase{
     public void periodic(){
         super.periodic();
         this.io.updateInputs(inputs);
-        Logger.processInputs("Intake", inputs);
+        Logger.processInputs("Floor", inputs);
         SmartDashboard.putBoolean("Is Overloaded?", this.IsOverloaded());
-        SmartDashboard.putString("intake/motor voltage", this.inputs.appliedVolts.toString());
-        SmartDashboard.putString("intake/motor supply current", this.inputs.supplyCurrent.toString());
-        SmartDashboard.putString("intake/motor torque current", this.inputs.torqueCurrent.toString());
-        SmartDashboard.putString("intake/motor temp", this.inputs.temperature.toString());        
+        SmartDashboard.putString("floor/motor voltage", this.inputs.appliedVolts.toString());
+        SmartDashboard.putString("floor/motor supply current", this.inputs.supplyCurrent.toString());
+        SmartDashboard.putString("floor/motor torque current", this.inputs.torqueCurrent.toString());
+        SmartDashboard.putString("floor/motor temp", this.inputs.temperature.toString());        
     }
 }

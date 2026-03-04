@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.shooter;
 // import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,7 +10,7 @@ import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase{
+public class Shooter extends SubsystemBase{
     
     // PID values
     private static final LoggedTunableNumber kP = new LoggedTunableNumber("Pivot/Gains/kP", 0.15);
@@ -23,15 +23,15 @@ public class Intake extends SubsystemBase{
     private static final LoggedTunableNumber kA = new LoggedTunableNumber("Pivot/Gains/kA", 0.1);
     private static final LoggedTunableNumber kG = new LoggedTunableNumber("Pivot/Gains/kG", 0.1);
     
-    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+    private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
-    private final IntakeIO io;
+    private final ShooterIO io;
 
     private final RobotState actual;
     private final RobotState target;
     private final RobotState goal;
 
-    public Intake(IntakeIO io) {
+    public Shooter(ShooterIO io) {
         this.io = io;
         this.io.setPID(0.15, 0, 0);
         this.io.setPID(kP.get(), kI.get(), kD.get());
@@ -41,15 +41,15 @@ public class Intake extends SubsystemBase{
         this.goal = RobotState.getGoalInstance();    
     }
 
-    public Command setIntakeSpeed(double speed) {
+    public Command setShooterSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
     /**
-     *  Command to stop the intake
+     *  Command to stop the shooter
      */ 
     public Command stopCmd() {
-        return this.setIntakeSpeed(0);
+        return this.setShooterSpeed(0);
     }
 
     public boolean IsOverloaded() {
@@ -60,11 +60,11 @@ public class Intake extends SubsystemBase{
     public void periodic(){
         super.periodic();
         this.io.updateInputs(inputs);
-        Logger.processInputs("Intake", inputs);
+        Logger.processInputs("Shooter", inputs);
         SmartDashboard.putBoolean("Is Overloaded?", this.IsOverloaded());
-        SmartDashboard.putString("intake/motor voltage", this.inputs.appliedVolts.toString());
-        SmartDashboard.putString("intake/motor supply current", this.inputs.supplyCurrent.toString());
-        SmartDashboard.putString("intake/motor torque current", this.inputs.torqueCurrent.toString());
-        SmartDashboard.putString("intake/motor temp", this.inputs.temperature.toString());        
+        SmartDashboard.putString("shooter/motor voltage", this.inputs.appliedVolts.toString());
+        SmartDashboard.putString("shooter/motor supply current", this.inputs.supplyCurrent.toString());
+        SmartDashboard.putString("shooter/motor torque current", this.inputs.torqueCurrent.toString());
+        SmartDashboard.putString("shooter/motor temp", this.inputs.temperature.toString());        
     }
 }
