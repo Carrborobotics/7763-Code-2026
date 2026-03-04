@@ -221,13 +221,13 @@ public class RobotContainer {
         //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
         driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
 
-        driverController.a().onTrue(shooter.setShooterSpeed(0.25)).onFalse(shooter.stopCmd());
+        //driverController.a().onTrue(shooter.setShooterSpeed(0.25)).onFalse(shooter.stopCmd());
         //driverController.b().onTrue(floor.setFloorSpeed(0.25)).onFalse(floor.stopCmd());
-        //driverController.x().onTrue(turret.setPosition(Degrees.of(5.0)));
-        //driverController.y().onTrue(turret.setPosition(Degrees.of(0)));
-        driverController.x().onTrue(turret.turretTo(5.0));
+        driverController.x().whileTrue(turret.setSpeedCmd(-0.02)).onFalse(turret.setSpeedCmd(0));
+        driverController.y().whileTrue(turret.setSpeedCmd(0.02)).onFalse(turret.setSpeedCmd(0));
+        driverController.a().onTrue(turret.turretTo(3900.0));
         driverController.b().onTrue(turret.turretTo(0.0));
-        driverController.y().onTrue(turret.turretTo(-5.0));
+        //driverController.y().onTrue(turret.turretTo(-5.0));
         
 
         // //driverController.back().onTrue(pivot.pivotTo(Pivots.ShootL4));

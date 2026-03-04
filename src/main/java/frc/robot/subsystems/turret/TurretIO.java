@@ -28,6 +28,8 @@ public interface TurretIO {
 
     void updateInputs(TurretIOInputs inputs);
 
+    default void setSpeed(double speed) {}
+
     default void runSetpoint(Angle position) {}
 
     default void runVolts(Voltage volts) {}

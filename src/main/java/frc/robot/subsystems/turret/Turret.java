@@ -81,9 +81,13 @@ public class Turret extends SubsystemBase {
     // }
 
     public Command setPosition(Angle position) {
-        return runOnce(() -> this.setpoint = position);
-    }
+        double gearratio = 39;
+        return runOnce(() -> this.setpoint = Degrees.of(position.in(Degrees)));
 
+    }
+    public Command setSpeedCmd(double val) {
+        return runOnce(() -> this.io.setSpeed(val));
+    }   
     // public Command setSpeedCmd(double speed) {
     //     return runOnce(() -> this.io.runVolts(DegreesPerSecond.of(speed)));
     //     return this.setPosition(this.inputs.position.get());

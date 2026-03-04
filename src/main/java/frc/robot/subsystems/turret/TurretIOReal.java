@@ -28,9 +28,9 @@ public class TurretIOReal implements TurretIO {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Basic PID from TurretConstants (only kP/kI/kD applied to Slot0)
-        config.Slot0.kP = TurretConstants.TalonFXGains.kP();
-        config.Slot0.kI = TurretConstants.TalonFXGains.kI();
-        config.Slot0.kD = TurretConstants.TalonFXGains.kD();
+        config.Slot0.kP = 0.8; //TurretConstants.TalonFXGains.kP();
+        config.Slot0.kI = 0.0; //TurretConstants.TalonFXGains.kI();
+        config.Slot0.kD = 0.0; //TurretConstants.TalonFXGains.kD();
 
         // Set invert and apply configuration
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -63,8 +63,8 @@ public class TurretIOReal implements TurretIO {
     @Override
     public void runSetpoint(Angle position) {
         // Convert Angle -> rotations (rotations = radians / 2pi)
-        //double rotations = position.in(Radians) / (2.0 * Math.PI);
-        motor.setControl(positionRequest.withPosition(position));
+        double rotations = position.in(Radians) / (2.0 * Math.PI);
+        motor.setControl(positionRequest.withPosition(rotations));
     }
 
     @Override
@@ -73,5 +73,10 @@ public class TurretIOReal implements TurretIO {
         motor.setVoltage(volts.in(Volts));
     }
 
+    @Override
+    public void setSpeed(double speed) {
+        // Convert speed (in volts) to a voltage command
+        motor.set(speed);
+    }
 }
 
