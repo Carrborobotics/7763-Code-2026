@@ -2,11 +2,7 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [
-    "Start",
-    "To Score",
-    "To Source"
-  ],
+  "pathFolders": [],
   "autoFolders": [
     "Autos"
   ],
