@@ -45,9 +45,9 @@ public final class Constants {
         public static final int rackId = 41;
         public static final int rackId2 = 43;
 
+        public static final int turretId = 21;
+        public static final int shooterId = 22;
         public static final int floorId = 30;
-        public static final int turretId = 31;
-        public static final int shooterId = 32;
         public static final int shooterHoodId = 33;
 
         /* CANBus */

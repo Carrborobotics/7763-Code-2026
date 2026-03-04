@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 //import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +39,8 @@ public class Turret extends SubsystemBase {
     
     private Angle setpoint = Degrees.of(0.0);
 
+    private Angle position = Degrees.mutable(0.0);
+
     private final RobotState actual;
     private final RobotState target;
     private final RobotState goal;
@@ -45,7 +48,7 @@ public class Turret extends SubsystemBase {
 
     public Turret(TurretIO io) {
         this.io = io;
-        //this.io.setPID(0.15, 0, 0);
+        this.io.setPID(0.15, 0, 0);
         this.io.setPID(kP.get(), kI.get(), kD.get());
         this.io.setFF(kS.get(), kG.get(), kV.get(), kA.get());
         this.actual = RobotState.getMeasuredInstance();
@@ -81,6 +84,10 @@ public class Turret extends SubsystemBase {
         return runOnce(() -> this.setpoint = position);
     }
 
+    // public Command setSpeedCmd(double speed) {
+    //     return runOnce(() -> this.io.runVolts(DegreesPerSecond.of(speed)));
+    //     return this.setPosition(this.inputs.position.get());
+
     // public boolean isTurretSafe() {
     //     return (setpoint.compareTo(turretsPos.get(Turrets.Up)) > -0.5);
     // }
@@ -89,14 +96,21 @@ public class Turret extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
+        position = this.actual.getTurretPosition();
+
         this.io.updateInputs(inputs);
         Logger.processInputs("Turret", inputs);
-        SmartDashboard.putString("Turret/Position", this.inputs.position.toString());
+        SmartDashboard.putString("Turret/Position2", this.inputs.position.toString());
+        SmartDashboard.putString("Turret/Position", position.toString());
+        SmartDashboard.putString("Turret/setpointPosition", this.inputs.setpointPosition.toString());
+        SmartDashboard.putString("Turret/setpoint", this.setpoint.toString());
+        
 
         if(edu.wpi.first.wpilibj.RobotState.isDisabled()) {
             this.io.stop();
         } else {
             this.io.runSetpoint(this.setpoint);
+            this.inputs.setpointPosition.mut_replace(this.setpoint);
         }
 
         actual.updateTurretAngle(this.inputs.position);

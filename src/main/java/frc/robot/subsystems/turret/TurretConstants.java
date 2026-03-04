@@ -3,7 +3,7 @@ package frc.robot.subsystems.turret;
 public class TurretConstants {
 
     public static final TurretGains SimGains = new TurretGains(10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    public static final TurretGains TalonFXGains = new TurretGains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    public static final TurretGains TalonFXGains = new TurretGains(0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     
     record TurretGains(double kP, double kI, double kD, double kS, double kG, double kV, double kA) {
         public TurretGains {

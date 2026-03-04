@@ -19,7 +19,7 @@ import static edu.wpi.first.units.Units.*;
 public class TurretIOReal implements TurretIO {
 
     private final TalonFX motor;
-    private final PositionVoltage positionRequest = new PositionVoltage(0).withEnableFOC(true);
+    private final PositionVoltage positionRequest = new PositionVoltage(0);//.withEnableFOC(true);
 
     public TurretIOReal() {
         motor = new TalonFX(Constants.CANConstants.turretId, Constants.CANConstants.canBus);
@@ -63,8 +63,8 @@ public class TurretIOReal implements TurretIO {
     @Override
     public void runSetpoint(Angle position) {
         // Convert Angle -> rotations (rotations = radians / 2pi)
-        double rotations = position.in(Radians) / (2.0 * Math.PI);
-        motor.setControl(positionRequest.withPosition(rotations));
+        //double rotations = position.in(Radians) / (2.0 * Math.PI);
+        motor.setControl(positionRequest.withPosition(position));
     }
 
     @Override
