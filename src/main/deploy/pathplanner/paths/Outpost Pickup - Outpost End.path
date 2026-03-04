@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.5,
+        "y": 1.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.756515107494252,
+        "y": 1.7047694655894312
+      },
+      "isLocked": false,
+      "linkedName": "Outpost Side Pickup"
+    },
+    {
+      "anchor": {
+        "x": 7.75,
+        "y": 3.2
+      },
+      "prevControl": {
+        "x": 7.75,
+        "y": 1.7000000000000004
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Outpost Side Pickup END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5000000000000029,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Intake Speed Constraint",
+      "minWaypointRelativePos": 0.05,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.75,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Pickups",
+  "idealStartingState": {
+    "velocity": 1.0,
+    "rotation": -100.0
+  },
+  "useDefaultConstraints": true
+}
