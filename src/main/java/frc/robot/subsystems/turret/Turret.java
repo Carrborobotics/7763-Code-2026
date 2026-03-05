@@ -38,7 +38,6 @@ public class Turret extends SubsystemBase {
     private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
     
     private Angle setpoint = Degrees.of(0.0);
-
     private Angle position = Degrees.mutable(0.0);
 
     private final RobotState actual;
@@ -56,73 +55,34 @@ public class Turret extends SubsystemBase {
         this.goal = RobotState.getGoalInstance();
     }
     
-    public Command turretTo(double degree_value) {
+    public Command turretToCmd(double degree_value) {
         return Commands.runOnce(() -> this.setpoint = Degrees.of(degree_value));
     }
-
-    // /**
-    //  * Turn turret to the correct Shoot-angle based on the elevator setting.
-    //  * @param stop the ElevatorStop
-    //  */
-    // public Command turretToOnElevator(ElevatorStop stop) {
-    //     return Commands.runOnce( 
-    //         () -> {
-    //             if (stop == ElevatorStop.L4) {
-    //                 this.setpoint = turretsPos.get(Turrets.ShootL4);
-    //             }
-    //             else if (stop == ElevatorStop.L1) {
-    //                 this.setpoint = turretsPos.get(Turrets.ShootL1);
-    //             }
-    //             else {
-    //                 this.setpoint = turretsPos.get(Turrets.Shoot);    
-    //             }
-    //         }
-    //     );
-    // }
-
     public Command setPosition(Angle position) {
-        double gearratio = 39;
         return runOnce(() -> this.setpoint = Degrees.of(position.in(Degrees)));
-
     }
     public Command setSpeedCmd(double val) {
         return runOnce(() -> this.io.setSpeed(val));
     }   
-    // public Command setSpeedCmd(double speed) {
-    //     return runOnce(() -> this.io.runVolts(DegreesPerSecond.of(speed)));
-    //     return this.setPosition(this.inputs.position.get());
-
-    // public boolean isTurretSafe() {
-    //     return (setpoint.compareTo(turretsPos.get(Turrets.Up)) > -0.5);
-    // }
 
     @Override
     public void periodic() {
         super.periodic();
-
         position = this.actual.getTurretPosition();
-
         this.io.updateInputs(inputs);
         Logger.processInputs("Turret", inputs);
-        SmartDashboard.putString("Turret/Position2", this.inputs.position.toString());
-        SmartDashboard.putString("Turret/Position", position.toString());
-        SmartDashboard.putString("Turret/setpointPosition", this.inputs.setpointPosition.toString());
-        SmartDashboard.putString("Turret/setpoint", this.setpoint.toString());
-        
-
+        SmartDashboard.putNumber("Turret/position(actual)", this.inputs.position.in(Degrees));
+        SmartDashboard.putNumber("Turret/Position2", position.in(Degrees));
+        SmartDashboard.putNumber("Turret/setpointPosition(tgt)", this.inputs.setpointPosition.in(Degrees));
+        SmartDashboard.putNumber("Turret/setpoint(goal)", this.setpoint.in(Degrees));
         if(edu.wpi.first.wpilibj.RobotState.isDisabled()) {
             this.io.stop();
         } else {
             this.io.runSetpoint(this.setpoint);
             this.inputs.setpointPosition.mut_replace(this.setpoint);
         }
-
         actual.updateTurretAngle(this.inputs.position);
         target.updateTurretAngle(this.inputs.setpointPosition);
         goal.updateTurretAngle(this.setpoint);
-
     }
-
-    
-
 }

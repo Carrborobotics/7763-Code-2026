@@ -221,10 +221,16 @@ public class RobotContainer {
         
 
         // rack goes in (retracted)
-        driverController.rightTrigger().onTrue(new InstantCommand(() -> rack.retract()));
+        //driverController.rightTrigger().onTrue(new InstantCommand(() -> rack.retract()));
+
+        driverController.leftBumper().whileTrue(rack.setSpeedCmd(0.1)).onFalse(rack.setSpeedCmd(0));
+        driverController.rightBumper().whileTrue(rack.setSpeedCmd(-0.1)).onFalse(rack.setSpeedCmd(0));
         
-        driverController.leftBumper().whileTrue(rack.setSpeed(0.1)).onFalse(rack.stopCmd());
-        driverController.rightBumper().whileTrue(rack.setSpeed(-0.1)).onFalse(rack.stopCmd());
+        driverController.leftTrigger().onTrue(rack.rackToCmd(10.0));
+        driverController.rightTrigger().onTrue(rack.rackToCmd(0.0));
+
+        driverController.leftBumper().whileTrue(rack.setSpeedCmd(0.1)).onFalse(rack.setSpeedCmd(0));
+        driverController.rightBumper().whileTrue(rack.setSpeedCmd(-0.1)).onFalse(rack.setSpeedCmd(0));
 
         // run the intake
         //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
@@ -234,8 +240,8 @@ public class RobotContainer {
         //driverController.b().onTrue(floor.setFloorSpeed(0.25)).onFalse(floor.stopCmd());
         // driverController.x().whileTrue(turret.setSpeedCmd(-0.02)).onFalse(turret.setSpeedCmd(0));
         // driverController.y().whileTrue(turret.setSpeedCmd(0.02)).onFalse(turret.setSpeedCmd(0));
-        driverController.a().onTrue(turret.turretTo(3900.0));
-        driverController.b().onTrue(turret.turretTo(0.0));
+        driverController.a().onTrue(turret.turretToCmd(3900.0));
+        driverController.b().onTrue(turret.turretToCmd(0.0));
         //driverController.y().onTrue(turret.turretTo(-5.0));
         
 

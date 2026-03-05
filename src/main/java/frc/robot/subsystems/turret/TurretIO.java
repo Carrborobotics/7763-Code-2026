@@ -27,21 +27,13 @@ public interface TurretIO {
     }
 
     void updateInputs(TurretIOInputs inputs);
-
     default void setSpeed(double speed) {}
-
     default void runSetpoint(Angle position) {}
-
     default void runVolts(Voltage volts) {}
-
     default void runCurrent(Current current) {}
-
     default void setBrakeMode(boolean enabled) {}
-
     default void setPID(double p, double i, double d) {}
-
     default void setFF(double kS, double kG, double kV, double kA) {}
-
     default void stop() {}
 
 }

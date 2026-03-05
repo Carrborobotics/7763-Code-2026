@@ -62,9 +62,9 @@ public class Floor extends SubsystemBase{
         this.io.updateInputs(inputs);
         Logger.processInputs("Floor", inputs);
         SmartDashboard.putBoolean("Is Overloaded?", this.IsOverloaded());
-        SmartDashboard.putString("floor/motor voltage", this.inputs.appliedVolts.toString());
-        SmartDashboard.putString("floor/motor supply current", this.inputs.supplyCurrent.toString());
-        SmartDashboard.putString("floor/motor torque current", this.inputs.torqueCurrent.toString());
-        SmartDashboard.putString("floor/motor temp", this.inputs.temperature.toString());        
+        SmartDashboard.putNumber("floor/motor voltage", this.inputs.appliedVolts.in(Volts));
+        SmartDashboard.putNumber("floor/motor supply current", this.inputs.supplyCurrent.in(Amps));
+        SmartDashboard.putNumber("floor/motor torque current", this.inputs.torqueCurrent.in(Amps));
+        SmartDashboard.putNumber("floor/motor temp", this.inputs.temperature.in(Celsius));        
     }
 }
