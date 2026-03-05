@@ -223,9 +223,6 @@ public class RobotContainer {
         // rack goes in (retracted)
         //driverController.rightTrigger().onTrue(new InstantCommand(() -> rack.retract()));
 
-        driverController.leftBumper().whileTrue(rack.setSpeedCmd(0.1)).onFalse(rack.setSpeedCmd(0));
-        driverController.rightBumper().whileTrue(rack.setSpeedCmd(-0.1)).onFalse(rack.setSpeedCmd(0));
-        
         driverController.leftTrigger().onTrue(rack.rackToCmd(10.0));
         driverController.rightTrigger().onTrue(rack.rackToCmd(0.0));
 

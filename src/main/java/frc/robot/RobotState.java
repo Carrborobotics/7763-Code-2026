@@ -16,14 +16,14 @@ public class RobotState {
     private static RobotState desiredInstance;
     private static RobotState goalInstance;
 
-    private MutDistance rackPosition;
+    private MutAngle rackPosition;
     private MutAngle turretPosition;
     private MutAngularVelocity intakeVelocity;
     private MutCurrent intakeSupplyCurrent;
     private MutCurrent intakeTorqueCurrent;
 
     private RobotState() {
-        rackPosition = Inches.mutable(0);
+        rackPosition = Degrees.mutable(0);
         turretPosition = Degrees.mutable(0);
         intakeVelocity = DegreesPerSecond.mutable(0);
         intakeSupplyCurrent = Amps.mutable(0);
@@ -51,11 +51,11 @@ public class RobotState {
         return goalInstance;
     }
 
-    public Distance getRackPosition() {
+    public Angle getRackPosition() {
         return rackPosition;
     }
 
-    public void updateRackPosition(Distance position) {
+    public void updateRackAngle(Angle position) {
         rackPosition.mut_replace(position);
     }
 
