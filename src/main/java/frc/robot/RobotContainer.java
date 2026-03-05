@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.Constants;
 
 // import frc.robot.subsystems.led.LedSubsystem;
 // import frc.robot.subsystems.led.LedSubsystem.LedMode;
@@ -98,7 +100,7 @@ public class RobotContainer {
         }
 
         // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
-
+        NamedCommands.registerCommand("Aim Hub", Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret));
         // NamedCommands.registerCommand("Intake On", intake.setIntakeSpeed(-0.3));
         // NamedCommands.registerCommand("Pivot to Shoot", (pivot.pivotTo(Pivots.ShootL4).andThen(colorCommand(Color.kRed))));
         // NamedCommands.registerCommand("Elevator L4",
@@ -218,11 +220,14 @@ public class RobotContainer {
         
 
         // rack goes in (retracted)
-        driverController.rightTrigger().onTrue(new InstantCommand(() -> rack.retract()));
+        //driverController.rightTrigger().onTrue(new InstantCommand(() -> rack.retract()));
         
-        driverController.leftBumper().whileTrue(rack.setSpeed(0.1)).onFalse(rack.stopCmd());
-        driverController.rightBumper().whileTrue(rack.setSpeed(-0.1)).onFalse(rack.stopCmd());
+        //driverController.leftBumper().whileTrue(rack.setSpeed(0.1)).onFalse(rack.stopCmd());
+        //driverController.rightBumper().whileTrue(rack.setSpeed(-0.1)).onFalse(rack.stopCmd());
 
+        // Hold a button to auto-aim, release to go back to trigger control
+        driverController.leftBumper().whileTrue(Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret));
+        }
         // run the intake
         //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
         //driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
@@ -244,8 +249,15 @@ public class RobotContainer {
         //     .andThen(new WaitCommand(1)).andThen(colorCommand(Color.kBlue)));
         
         // //colorCommand(Color.kCoral).andThen(pivot.pivotTo(Pivots.Shoot))
-        
-    }
+
+        public double getAngleToHub() {
+            Pose2d robotPose = s_Swerve.getPose();
+            Translation2d toHub = Constants.Localization.hubPosition.minus(robotPose.getTranslation());
+            double fieldAngle = Math.toDegrees(Math.atan2(toHub.getY(), toHub.getX()));
+            double turretAngle = fieldAngle - robotPose.getRotation().getDegrees();
+            turretAngle = MathUtil.inputModulus(turretAngle, -180, 180);
+            return MathUtil.clamp(turretAngle, -135.0, 135.0);
+        }
 
     /*  
      * Top level commands to chain common operations

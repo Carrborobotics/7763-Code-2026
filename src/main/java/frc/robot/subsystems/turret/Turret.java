@@ -224,6 +224,7 @@ public class Turret extends SubsystemBase {
      * Set the turret rotation to a target angle in degrees (0 = forward).
      * @param degrees Target angle (clamped to soft limits automatically)
      */
+
     public void setTurretAngle(double degrees) {
         targetTurretDegrees = clamp(degrees, TURRET_MIN_DEGREES, TURRET_MAX_DEGREES);
         // MotionMagicVoltage takes motor shaft rotations, not degrees.
