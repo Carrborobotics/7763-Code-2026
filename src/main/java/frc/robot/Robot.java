@@ -79,6 +79,10 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     Logger.recordOutput("RobotPose", new Pose2d());
+
+    SmartDashboard.putNumber("Pose X", m_robotContainer.getSwerve().getPose().getX());
+    SmartDashboard.putNumber("Pose Y", m_robotContainer.getSwerve().getPose().getY());
+    SmartDashboard.putNumber("Pose Heading", m_robotContainer.getSwerve().getPose().getRotation().getDegrees());
     
     Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {new Pose3d()});
     Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {new Pose3d()});

@@ -49,9 +49,12 @@ import edu.wpi.first.math.controller.PIDController;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 public class Swerve extends SubsystemBase {
     static final Lock odometryLock = new ReentrantLock();
     static final double ODOMETRY_FREQUENCY = 100.0; // Hz
+
+    private ChassisSpeeds lastCommandedSpeeds = new ChassisSpeeds();
 
     private static final LoggedTunableNumber kPx = new LoggedTunableNumber("LocalSwerve/Gains/kPx", 0.025);
     private static final LoggedTunableNumber kIx = new LoggedTunableNumber("LocalSwerve/Gains/kIx", 0.0);
@@ -76,6 +79,8 @@ public class Swerve extends SubsystemBase {
 
     private final SwerveDrivePoseEstimator m_poseEstimator;
     private final Field2d field;
+
+    private Pose2d simPose = new Pose2d();
     
     private final Pigeon2 gyro;
     private final Vision vision = new Vision();
@@ -232,11 +237,15 @@ public class Swerve extends SubsystemBase {
     }
 
     public Pose2d  getPose() {
+        if (Robot.isSimulation()){
+            return simPose;
+        }
         return m_poseEstimator.getEstimatedPosition();
     }
 
     public void setPose(Pose2d pose) {
-        m_poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);   
+        m_poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        simPose = pose;
     }
 
     public ChassisSpeeds getSpeeds() {
@@ -244,6 +253,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public void driveRobotRelativeAuto(ChassisSpeeds desirChassisSpeeds) {
+        lastCommandedSpeeds = desirChassisSpeeds;
         driveRobotRelative(desirChassisSpeeds, false);
     }
 
@@ -356,6 +366,16 @@ public class Swerve extends SubsystemBase {
     public void periodic() {
 
         m_poseEstimator.update(getGyroYaw(), getModulePositions());
+
+        if (Robot.isSimulation()) {
+            ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(lastCommandedSpeeds, simPose.getRotation());
+    
+            simPose = new Pose2d(
+            simPose.getX() + fieldSpeeds.vxMetersPerSecond * 0.02,
+            simPose.getY() + fieldSpeeds.vyMetersPerSecond * 0.02,
+            simPose.getRotation().plus(Rotation2d.fromRadians(fieldSpeeds.omegaRadiansPerSecond * 0.02)));
+            SmartDashboard.putString("SimPoseRaw", simPose.toString());
+        }
 
         var visionEst = vision.getEstimatedGlobalPose();
         visionEst.ifPresent(

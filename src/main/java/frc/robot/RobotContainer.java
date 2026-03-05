@@ -29,11 +29,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import frc.robot.Constants.Localization.ReefFace;
 import frc.robot.commands.LocalSwerve;
 import frc.robot.commands.TeleopSwerve;
-// import frc.robot.subsystems.elevator.Elevator;
-// import frc.robot.subsystems.elevator.Elevator.ElevatorStop; // enum of stops
-// import frc.robot.subsystems.elevator.ElevatorIOReal;
-// import frc.robot.subsystems.elevator.ElevatorReal;
-// import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.rack.Rack;
 import frc.robot.subsystems.rack.RackIOReal;
 import frc.robot.subsystems.rack.RackIOSim;
@@ -44,22 +39,6 @@ import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.Constants;
 
-// import frc.robot.subsystems.led.LedSubsystem;
-// import frc.robot.subsystems.led.LedSubsystem.LedMode;
-// import frc.robot.subsystems.pivot.Pivot;
-// import frc.robot.subsystems.pivot.Pivot.Pivots;
-// import frc.robot.subsystems.pivot.PivotIOReal;
-// import frc.robot.subsystems.pivot.PivotIOSim;   
-
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
     /* Auto */
     private final SendableChooser<Command> autoChooser;
@@ -79,60 +58,28 @@ public class RobotContainer {
     private final Intake intake;
     private final Rack rack;
     private final Turret turret = new Turret();
-    // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
-    
+
+    public Swerve getSwerve() {
+        return s_Swerve;
+    }
+
     /* Alliance colors */
     private final Color redBumper = Color.kDarkRed;
     private final Color blueBumper = Color.kDarkBlue;
     private Color original_color;
 
-      /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
     public RobotContainer() {
         if (Robot.isReal()) {
             this.rack = new Rack(new RackIOReal());
             this.intake = new Intake(new IntakeIOReal());
         } else {
-            this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
-            this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
+            this.rack = new Rack(new RackIOSim());
+            this.intake = new Intake(new IntakeIOSim());
         }
 
-        // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
         NamedCommands.registerCommand("Aim Hub", Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret));
-        // NamedCommands.registerCommand("Intake On", intake.setIntakeSpeed(-0.3));
-        // NamedCommands.registerCommand("Pivot to Shoot", (pivot.pivotTo(Pivots.ShootL4).andThen(colorCommand(Color.kRed))));
-        // NamedCommands.registerCommand("Elevator L4",
-        //     Commands.sequence( 
-        //         elevators.setNextStopCommand(ElevatorStop.L4),
-        //         elevators.moveToNext(),
-        //         pivot.pivotTo(Pivots.ShootL4)
-        //     ));
-        // NamedCommands.registerCommand("Pivot to Out", intake.setIntakeSpeed(-0.3).andThen(new WaitCommand(.3)).andThen(pivot.pivotTo(Pivots.ShootL1)));
-        // NamedCommands.registerCommand("Shoot", autoShootCoral().andThen(colorCommand(Color.kGreen)));
-        // NamedCommands.registerCommand("Feed", feed());//.until(intake::hasCoral).andThen(pivot.pivotTo(Pivots.Shoot)).andThen(colorCommand(Color.kOrange)));
-        // NamedCommands.registerCommand("Wait for Coral", autoFeed());
-        // NamedCommands.registerCommand("FindCoral",
-        //     (new InstantCommand(() -> LimelightHelpers.setLEDMode_ForceOn("limelight")))
-        //     .andThen (new RunCommand(
-        //         () -> s_Swerve.drive(
-        //             MathUtil.applyDeadband(driverController.getLeftY(), 0.125),
-        //             MathUtil.applyDeadband(driverController.getLeftX(), 0.125),
-        //             Translation2d.kZero,
-        //             MathUtil.applyDeadband(driverController.getRightX(), 0.125),
-        //             true, false, true)))
-        //             .until(intake ::hasCoral)
-        //             .withTimeout(1.25)
-        //     .andThen(new InstantCommand(()-> LimelightHelpers.setLEDMode_ForceOff("limelight")))
-        // );
 
-        // // set color at startup
-        // original_color = Robot.isRed() ? redBumper : blueBumper;
-        // LedMode original_mode = Robot.isRed() ? LedMode.REDSTART : LedMode.BLUESTART;
-        // //LedMode original_mode = LedMode.PACMAN;
-        // m_led.setColor(original_color);
-        // m_led.setMode(original_mode); // original_color, original_color);
         targetField = new Field2d();
         SmartDashboard.putData("Target Field", targetField);
 
@@ -145,265 +92,47 @@ public class RobotContainer {
                     () -> -translationAxis.get(),
                     () -> -strafeAxis.get(),
                     () -> -rotationAxis.get(),
-                    () -> false, 
+                    () -> false,
                     () -> false
             )
         );
 
-        // Configure the button bindings
         configureButtonBindings();
-
     }
 
-
     private void configureButtonBindings() {
-        /* driverController Buttons */
-        
-        driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));        
+        driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
-        //driverController.povLeft().onTrue(pivot.pivotTo(Pivots.Down).andThen(intake.setIntakeSpeed(0)));
 
-        //Turret rotation with Triggers
+        // Turret rotation with Triggers
         turret.setDefaultCommand(
             Commands.run(() -> {
                 double raw = turretAxis.get();
-                // Deadband to prevent drift when triggers are fully released
                 if (Math.abs(raw) < 0.05) return;
                 turret.setTurretAngle(raw * 135.0);
             }, turret)
         );
-        // driverController.a().onTrue(elevators.setNextStopCommand(ElevatorStop.L1)
-        //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L1))
-        //     //.andThen(ledCommand(LedMode.SOLID, Color.kGreen, Color.kBlue)));
-        //     //.andThen(ledCommand(LedMode.WAVE, Color.kGreen, Color.kBlue))
-        //     );
 
-        // driverController.x().onTrue(elevators.setNextStopCommand(ElevatorStop.L2)
-        //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L2))
-        //     //.andThen(ledCommand(LedMode.WAVE2, Color.kBlue, Color.kPink))
-        //     );
-
-        // driverController.y().onTrue(elevators.setNextStopCommand(ElevatorStop.L3)
-        //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L3))
-        //     //.andThen(ledCommand(LedMode.WATER, Color.kBlack, Color.kBlack))
-        //     //.andThen(ledCommand(LedMode.WAVE2, Color.kPurple, Color.kOrange)));
-        //     );
-
-
-        // driverController.b().onTrue(elevators.setNextStopCommand(ElevatorStop.L4)
-        //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L4))
-        //     //.andThen(ledCommand(LedMode.FIRE, Color.kBlack, Color.kBlack))
-        //     );
-
-        // driverController.leftBumper().onTrue(elevators.moveToNext().andThen(Commands.runOnce( () -> 
-        //     { ElevatorStop nextStopElev = elevators.getNextStop();
-        //         pivot.pivotToOnElevator(nextStopElev);
-        //     }
-        // )));
-        // driverController.rightBumper().onTrue(
-        //     Commands.sequence(    
-        //         intake.ejectCoralCmd(elevators),
-        //         Commands.sequence(
-        //             new WaitCommand(.3),
-        //             pivot.pivotTo(Pivots.Flip)
-        //         ).unless( () -> elevators.getNextStop() != ElevatorStop.L4 )
-        //     )
-        // );
-
-        // rack goes out (deployed)
-        //driverController.leftTrigger().onTrue(new InstantCommand(() -> rack.deploy()));
-        //driverController.leftTrigger().onTrue(new InstantCommand(() -> rack.partial()));
         driverController.a().onTrue(new InstantCommand(() -> rack.setPosition(-5.0)));
         driverController.b().onTrue(new InstantCommand(() -> rack.setPosition(0.0)));
         driverController.x().onTrue(new InstantCommand(() -> rack.setPosition(5.0)));
-        //driverController.y().onTrue(new InstantCommand(() -> rack.setPosition(-89.0)));
-        
 
-        // rack goes in (retracted)
-        //driverController.rightTrigger().onTrue(new InstantCommand(() -> rack.retract()));
-        
-        //driverController.leftBumper().whileTrue(rack.setSpeed(0.1)).onFalse(rack.stopCmd());
-        //driverController.rightBumper().whileTrue(rack.setSpeed(-0.1)).onFalse(rack.stopCmd());
-
-        // Hold a button to auto-aim, release to go back to trigger control
-        driverController.leftBumper().whileTrue(Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret));
-        }
-        // run the intake
-        //driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.1)).onFalse(intake.stopCmd());
-        //driverController.rightBumper().whileTrue(intake.setIntakeSpeed(0.25)).onFalse(intake.stopCmd());
-
-
-
-        // //driverController.back().onTrue(pivot.pivotTo(Pivots.ShootL4));
-    
-        // driverController.back().onTrue(pivot.pivotToOnElevator(elevators.getNextStop()));
-
-        // driverController.start().onTrue(feed());
-        // // Current sense the intake but make sure it is high for > 0.75s to reduce false triggers
-        // Trigger coralSensed = new Trigger(() -> intake.hasCoral()).debounce(0.75, DebounceType.kBoth);
-
-        // //Wait command to stop coral from hitting cross-bar
-        // coralSensed.onTrue(
-        //     new WaitCommand(.1)
-        //     .andThen(pivot.pivotTo(Pivots.Shoot).andThen(ledCommand(LedMode.FLASH, Color.kCoral, Color.kBlack)))
-        //     .andThen(new WaitCommand(1)).andThen(colorCommand(Color.kBlue)));
-        
-        // //colorCommand(Color.kCoral).andThen(pivot.pivotTo(Pivots.Shoot))
-
-        public double getAngleToHub() {
-            Pose2d robotPose = s_Swerve.getPose();
-            Translation2d toHub = Constants.Localization.hubPosition.minus(robotPose.getTranslation());
-            double fieldAngle = Math.toDegrees(Math.atan2(toHub.getY(), toHub.getX()));
-            double turretAngle = fieldAngle - robotPose.getRotation().getDegrees();
-            turretAngle = MathUtil.inputModulus(turretAngle, -180, 180);
-            return MathUtil.clamp(turretAngle, -135.0, 135.0);
-        }
-
-    /*  
-     * Top level commands to chain common operations
-     * these are useful to bind to a button and can be
-     * reused as autobuilder commands so changes are made
-     * in 1 spot
-     */
-
-
-
-    // feed - get to feeder station with pivot and elevator in place, spin up intake when close, and wait for coral sensor, stop intake and pivot to shoot
-    // private Command feed() {
-    //     return Commands.sequence(
-    //         //ledCommand(LedMode.WAVE, Color.kPink, original_color),
-    //         elevators.moveToIntake(),
-    //         elevators.waitForLessThanPosition(Units.Inches.of(2)),
-    //         //new WaitCommand(1.5),
-    //         intake.setIntakeSpeed(-0.2),
-    //         pivot.pivotTo(Pivots.Intake)
-    //     );
-    // }
-
-    // scoreCoral - aligns, elevates, ensure proper position, outtake, waits for empty, stop intake, pivot up, lowers to safe, pivot to feed 
-    // private Command shootCoral() {
-    //     return (colorCommand(Color.kPurple))
-    //         .andThen(intake.ejectCoralCmd())
-    //         .andThen(new WaitCommand(0.5))
-    //         .andThen(intake.stopCmd())
-    //         .andThen(pivot.pivotTo(Pivots.Up))
-    //         .andThen(new WaitCommand(1.5))
-    //         .andThen(feed())
-    //         .andThen(colorCommand(original_color));
-    // }
-
-    // public Command autoShootCoral() {
-    //     return Commands.sequence(    
-    //             intake.ejectCoralCmd(elevators),
-    //             Commands.sequence(
-    //                 new WaitCommand(.3),
-    //                 pivot.pivotTo(Pivots.Flip)
-    //             ).unless( () -> elevators.getNextStop() != ElevatorStop.L4 ),
-    //             new WaitCommand(.2),
-    //             (pivot.pivotTo(Pivots.Up)));
-    // }
-
-    // public Command autoFeed() {
-    //         return Commands.waitUntil(() -> intake.hasCoral()).withTimeout(2.5);
-    // }   
-
-    // private Command colorCommand(Color acolor) {
-    //     return new InstantCommand(() -> m_led.setColor(acolor));
-    // }
-
-    // private Command ledCommand(LedMode mode, Color primaryColor, Color secondaryColor) {
-    //     return new InstantCommand( () -> {
-    //         m_led.setModeAndColors(mode, primaryColor, secondaryColor);
-    //     }
-    //     );
-    // }
-    
-
-    // private Command moveToReef(boolean left, Elevator elevator) {
-    //     return Commands.sequence(
-    //         // elevator.moveToNext(),
-    //         // new WaitCommand(0.5),
-    //         Commands.runOnce(() -> {
-    //             ReefFace currentFace = s_Swerve.goalFace; // Capture the current value
-    //             new LocalSwerve(s_Swerve, left ? currentFace.alignLeft : currentFace.alignRight, true, m_led)
-    //                 .withTimeout(3.5).schedule();
-    //                 })//,
-    //         //ledCommand(LedMode.STROBE, Color.kBlue, Color.kPurple)
-    //     );
-    // }
-
-    // private Command alignReef(boolean left, Elevator elevator) {
-    //     // If we have a coral align to left/right to shoot, if not, align to middle for
-    //     // algae
-    //     return Commands.either(
-    //         moveToReef(left, elevator),
-    //         pullAlgae(),
-    //         intake::hasCoral
-    //     );
-    // }
-    // private Command pullAlgae() {
-    //     return Commands.sequence(
-    //         colorCommand(Color.kCyan), // algae ball is cyan, yo.
-    //         pivot.pivotTo(Pivots.Algae),
-    //         Commands.runOnce(() -> {
-    //             ReefFace currentFace = s_Swerve.goalFace; // Capture the current value
-    //             elevators.setNextStopCommand(getAlgaeStop(currentFace)).schedule();
-    //         }),
-    //         elevators.moveToNext(),
-    //         intake.ejectCoralCmd(elevators),
-    //         Commands.runOnce(() -> {
-    //             ReefFace currentFace = s_Swerve.goalFace; // Capture the current value
-    //             new LocalSwerve(s_Swerve, currentFace.alignMiddle, true, m_led).withTimeout(2.0).schedule();
-    //         })
-    //     );
-
-
-    // pullAlgae - aligns, elevates, turns on intake for time period since algae wont hit sensor, reverses bot some
-    // private ElevatorStop getAlgaeStop(ReefFace face){
-    //     // Check the map to see if the algae is L2 or L3
-    //     ElevatorStop algaeHeight = face.algaeHigh ? ElevatorStop.L3_ALGAE : ElevatorStop.L3_ALGAE;
-    //     return algaeHeight;
-    // }
-    // private ElevatorStop getAlgaeBelowStop(ReefFace face) {
-    //     return face.algaeHigh ? ElevatorStop.L3 : ElevatorStop.L2;                  
-    // }
-
-    // scoreBarge - elevates to max, move forward?, reverse intake, back up?, lower elevator, pivot to feed
-    //private Command scoreBarge() {
-    //    return new InstantCommand(() -> m_led.setColors(Color.kBlue, Color.kGreen));
-    //}
-    /* 
-    private Command pullAlgae(ReefFace face) {
-        // NOTE: Check the map to see if the algae is L2 or L3
-        ElevatorStop algaeHeight = face.algaeHigh ? ElevatorStop.L3_ALGAE : ElevatorStop.L2_ALGAE;
-        // want to get underneath the algae if we are not already so we arent smashing
-        // down on it.
-        // if we were previously at (e.g.) L1 then no harm in going to L2.
-        ElevatorStop belowHeight = face.algaeHigh ? ElevatorStop.L3 : ElevatorStop.L2;
-
-        return Commands.sequence(
-            colorCommand(Color.kCyan),
-            // if we are higher than L2_ALGAE then move elevator to L2.    
-            elevators.moveTo(belowHeight),
-            // then move using auto to middle of the reef
-            new LocalSwerve(s_Swerve, face.approachMiddle, true),
-            // then move pivot to shooting position
-            pivot.pivotTo(Pivots.Shoot),
-            // then run intake motor as if it's shooting
-            intake.setIntakeSpeed(0.40).withTimeout(0.5),
-            // then raise to correct algae height
-            elevators.moveTo(algaeHeight),
-            // then slow down or stop the intake
-            intake.setIntakeSpeed(0.20).withTimeout(0.1),
-            intake.setIntakeSpeed(0.05).withTimeout(0.1)
+        // Hold left bumper to auto-aim at hub, release to go back to trigger control
+        driverController.leftBumper().whileTrue(
+            Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret)
         );
+    }
 
-    }*/
-    // Setup basic last foot options
-    //private void setReefCommands(ReefFace face) {
-    //    pullAlgaeLeftCommands.put(face, pullAlgae(face));
-    //    pullAlgaeRightCommands.put(face, pullAlgae(face));
-    //}
+    // ── Targeting ──────────────────────────────────────────────────────────────
+    private double getAngleToHub() {
+        Pose2d robotPose = s_Swerve.getPose();
+        Translation2d hub = Swerve.flipIfRed(Constants.Localization.hubPosition);
+        Translation2d toHub = robotPose.getTranslation().minus(hub);
+        double fieldAngle = Math.toDegrees(Math.atan2(toHub.getY(), toHub.getX()));
+        double turretAngle = fieldAngle - robotPose.getRotation().getDegrees();
+        turretAngle = MathUtil.inputModulus(turretAngle + 180, -180, 180);
+        return MathUtil.clamp(turretAngle, -135.0, 135.0);
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -411,10 +140,10 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        return autoChooser.getSelected()
+            .deadlineWith(Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret));
     }
 
-    //Turret (for advantagescope?)
     public Turret getTurret() {
         return turret;
     }
