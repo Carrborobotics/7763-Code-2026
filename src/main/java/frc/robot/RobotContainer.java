@@ -78,8 +78,6 @@ public class RobotContainer {
             this.intake = new Intake(new IntakeIOSim());
         }
 
-        NamedCommands.registerCommand("Aim Hub", Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret));
-
         targetField = new Field2d();
         SmartDashboard.putData("Target Field", targetField);
 
