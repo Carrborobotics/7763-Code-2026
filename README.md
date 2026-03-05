@@ -2,17 +2,17 @@
 FRC 7763 Code repository for 2026 Rebuilt
 
 # Intake
-+ `rack`: 2x kraken x60 (linear tooth-gear)
-+ `intake`: kraken x60 (drive intake roller)
++ `Rack`: 2x Kraken X60 (Rack and Pinion)
++ `Intake`: 1x Kraken X60 (2x Intake Rollers)
 
-# Hopper Early Feed
-+ `indexer`: kraken x60 (hopper spindexer)
+# Hopper and Indexer
++ `Indexer`: Kraken X60 (Roller Floor)
 
 # Shooter
-+ kraken x60 - hopper feed the shooter
-+ kraken x60 - flywheel
-+ kraken x60 - turret rotation
-+ kraken x44 - hood on shooter
++ 1x Kraken X60 - Feed the shooter
++ 2x Kraken X60 - Flywheel
++ 1x Kraken X60 - turret rotation
++ 1x Kraken X44 - Shooter hood
 
-# Climb
-+ 2x kraken x60 - climber
+# TBD Climb
++ 1x Kraken X60 - Climber
