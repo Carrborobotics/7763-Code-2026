@@ -261,6 +261,10 @@ public class Turret extends SubsystemBase {
         return rotationsToDegrees(turretMotor.getPosition().getValueAsDouble(), TURRET_DEGREES_PER_ROTATION);
     }
 
+    public double getTargetTurretDegrees() {
+        return targetTurretDegrees;
+    }
+
     public boolean isShooterAtSpeed() {
         return targetShooterRPM > 0
             && Math.abs(getShooterRPM() - targetShooterRPM) < SHOOTER_RPM_TOLERANCE;

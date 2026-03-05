@@ -37,9 +37,11 @@ import frc.robot.subsystems.rack.Rack;
 import frc.robot.subsystems.rack.RackIOReal;
 import frc.robot.subsystems.rack.RackIOSim;
 import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+
 // import frc.robot.subsystems.led.LedSubsystem;
 // import frc.robot.subsystems.led.LedSubsystem.LedMode;
 // import frc.robot.subsystems.pivot.Pivot;
@@ -67,11 +69,14 @@ public class RobotContainer {
     private final Supplier<Double> translationAxis = driverController::getLeftY;
     private final Supplier<Double> strafeAxis = driverController::getLeftX;
     private final Supplier<Double> rotationAxis = driverController::getRightX;
+    private final Supplier<Double> turretAxis = () ->
+        driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis();
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Intake intake;
     private final Rack rack;
+    private final Turret turret = new Turret();
     // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
     
@@ -156,6 +161,15 @@ public class RobotContainer {
         driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
         //driverController.povLeft().onTrue(pivot.pivotTo(Pivots.Down).andThen(intake.setIntakeSpeed(0)));
 
+        //Turret rotation with Triggers
+        turret.setDefaultCommand(
+            Commands.run(() -> {
+                double raw = turretAxis.get();
+                // Deadband to prevent drift when triggers are fully released
+                if (Math.abs(raw) < 0.05) return;
+                turret.setTurretAngle(raw * 135.0);
+            }, turret)
+        );
         // driverController.a().onTrue(elevators.setNextStopCommand(ElevatorStop.L1)
         //     .andThen(pivot.pivotToOnElevator(ElevatorStop.L1))
         //     //.andThen(ledCommand(LedMode.SOLID, Color.kGreen, Color.kBlue)));
@@ -386,5 +400,10 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    //Turret (for advantagescope?)
+    public Turret getTurret() {
+        return turret;
     }
 }

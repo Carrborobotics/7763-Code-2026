@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.turret.Turret;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -33,6 +34,8 @@ public class Robot extends LoggedRobot {
 
   private Command m_autonomousCommand;
 
+  private Turret m_turret;
+
   private RobotContainer m_robotContainer;
 
   /**
@@ -46,7 +49,7 @@ public class Robot extends LoggedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
+    m_turret = m_robotContainer.getTurret(); // grab after container builds
     Logger.addDataReceiver(new NT4Publisher());
     Logger.start();
   }
@@ -82,7 +85,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("FinalComponentPoses", new Pose3d[] {
       new Pose3d(
           0.16, 0.0, 0.32,
-          new Rotation3d(0.0, 0.0, 3 * Math.sin(Timer.getTimestamp()))
+          new Rotation3d(0.0, 0.0, Math.toRadians(m_turret.getTargetTurretDegrees()))
       ),
       new Pose3d(
           0.0 + Math.abs((Math.sin(Timer.getTimestamp())) / 3.3)
