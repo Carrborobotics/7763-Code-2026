@@ -13,12 +13,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Pickup - Outpost End"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Outpost Pickup End - Outpost End"
           }
         }

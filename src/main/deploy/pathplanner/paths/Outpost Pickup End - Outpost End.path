@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.75,
-        "y": 3.2
+        "x": 7.75,
+        "y": 4.7
       },
       "isLocked": false,
       "linkedName": "Outpost Side Pickup END"
@@ -97,13 +97,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 0.0
   },
   "reversed": false,
   "folder": "Traverse",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.5,
     "rotation": -90.0
   },
   "useDefaultConstraints": true
