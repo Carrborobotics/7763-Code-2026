@@ -103,13 +103,13 @@ public class RackIOReal implements RackIO {
     @Override
     public void runSetpoint(Distance position) {
         // Convert Angle -> rotations (rotations = radians / 2pi)
-        double rotations = position.in(Inches) / (2.0 * Math.PI);
+        double rotations = (position.in(Inches)*Math.PI)/9.0;
         rackMotorLeft.setControl(positionRequest.withPosition(rotations));
     }
 
     // public void updateInputs(RackIOInputs inputs) {
     //     inputs.appliedVolts.mut_replace(rackMotorLeft.getSupplyVoltage().getValueAsDouble(), Volts);
-    //     inputs.supplyCurrent.mut_replace(rackMotorLeft.getSupplyCurrent().getValueAsDouble(), Amps);
+    //     inputs.supplyCurrent.mut_replace(rackMotorLeft.getSup vvvvplyCurrent().getValueAsDouble(), Amps);
     //     inputs.torqueCurrent.mut_replace(rackMotorLeft.getTorqueCurrent().getValueAsDouble(), Amps);
     //     inputs.temperature.mut_replace(rackMotorLeft.getDeviceTemp().getValueAsDouble(), Celsius);
     //     inputs.velocity.mut_replace(rackMotorLeft.getVelocity().getValueAsDouble(), DegreesPerSecond);

@@ -86,7 +86,7 @@ public class Rack extends SubsystemBase {
         if(edu.wpi.first.wpilibj.RobotState.isDisabled()) {
             this.io.stop();
         } else {
-            //this.io.runSetpoint(this.setpoint); // TODO: this is very broken and commented out
+            this.io.runSetpoint(this.setpoint); // TODO: this is very broken and commented out
             this.inputs.setpointPosition.mut_replace(this.setpoint);
         }
 
