@@ -216,8 +216,6 @@ public class RobotContainer {
         //driverController.leftTrigger().onTrue(new InstantCommand(() -> rack.partial()));
         // driverController.a().onTrue(new InstantCommand(() -> rack.setPosition(-5.0)));
         // driverController.b().onTrue(new InstantCommand(() -> rack.setPosition(0.0)));
-        driverController.x().onTrue(rack.rackToCmd(-60.0));
-        driverController.y().onTrue(rack.rackToCmd(0.0));
         
 
         // rack goes in (retracted)
@@ -237,8 +235,10 @@ public class RobotContainer {
         //driverController.b().onTrue(floor.setFloorSpeed(0.25)).onFalse(floor.stopCmd());
         // driverController.x().whileTrue(turret.setSpeedCmd(-0.02)).onFalse(turret.setSpeedCmd(0));
         // driverController.y().whileTrue(turret.setSpeedCmd(0.02)).onFalse(turret.setSpeedCmd(0));
-        driverController.a().onTrue(turret.turretToCmd(3900.0));
+        driverController.a().onTrue(turret.turretToCmd(360.0));
         driverController.b().onTrue(turret.turretToCmd(0.0));
+        driverController.x().onTrue(turret.turretToCmd(180.0));
+        driverController.y().onTrue(turret.turretToCmd(355.0));
         //driverController.y().onTrue(turret.turretTo(-5.0));
         
 
