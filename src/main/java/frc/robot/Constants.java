@@ -34,7 +34,10 @@ public final class Constants {
     public static final double RACK_GEARING = 9.0; // 9:1
     public static final double INTAKE_GEARING = 1.25; // 12t:15t = 1.25:1
     public static final double TURRET_ROTATION_GEARING = 12.0; // 12:1
-    public static final double TURRET_HOOD_GEARING = 715.5; // 715.5:1 (wow)
+    public static final double SHOOTER_HOOD_GEARING = 715.5; // 715.5:1 (wow)
+    
+    public static final double SHOOTER_GEARING = 1.0; // TODO: Need real shooter motor gear ratio
+    public static final double FLOOR_GEARING = 1.0; // TODO: Need real floor motor gear ratio
     
 
     public static final class CANConstants {
@@ -42,9 +45,16 @@ public final class Constants {
         public static final int rackId = 41;
         public static final int rackId2 = 43;
 
-        /* CANBus */
-        // TODO: This canbus is temporary - we put it on drivetrain now, but later will drive from the Rio ("rio").
-        public static final CANBus canBus = new CANBus("Drivetrain"); 
+        public static final int turretId = 21; // on drivetrain
+
+        public static final int shooterId = 22;
+        public static final int floorId = 30;
+        public static final int shooterHoodId = 33;
+
+        /* CANBusses */
+        public static final CANBus canBus = new CANBus("rio");
+        public static final CANBus canBusDriveTrain = new CANBus("Drivetrain");
+         
 
     }
 

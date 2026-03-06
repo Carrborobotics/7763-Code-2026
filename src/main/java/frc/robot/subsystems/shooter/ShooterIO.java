@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
@@ -9,9 +9,9 @@ import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+public interface ShooterIO {
     @AutoLog
-    class IntakeIOInputs {
+    class ShooterIOInputs {
         public boolean MotorConnected = true;       
         
         public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
@@ -25,8 +25,8 @@ public interface IntakeIO {
         public MutTemperature temperature = Celsius.mutable(0);
 
     }   
-    default void updateInputs(IntakeIOInputs inputs) {}
-    default void setPosition(double inches) {}
+    default void updateInputs(ShooterIOInputs inputs) {}
+
     default void setPID(double p, double i, double d) {}
 
     default void setFF(double kS, double kG, double kV, double kA) {}

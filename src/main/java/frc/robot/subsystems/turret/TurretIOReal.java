@@ -1,4 +1,4 @@
-package frc.robot.subsystems.rack;
+package frc.robot.subsystems.turret;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -14,44 +14,45 @@ import frc.robot.Constants;
 import static edu.wpi.first.units.Units.*;
 
 /**
- * Real-world Rack IO using a CTRE TalonFX (KrakenX60) motor controller.
+ * Real-world Turret IO using a CTRE TalonFX (KrakenX60) motor controller.
  */
-public class RackIOReal implements RackIO {
+public class TurretIOReal implements TurretIO {
 
     private final TalonFX motor;
-    private final TalonFX motor2;
     private final PositionVoltage positionRequest = new PositionVoltage(0);//.withEnableFOC(true);
 
-    public RackIOReal() {
-        motor = new TalonFX(Constants.CANConstants.rackId, Constants.CANConstants.canBus);
-        motor2 = new TalonFX(Constants.CANConstants.rackId2, Constants.CANConstants.canBus);
+    public TurretIOReal() {
+        motor = new TalonFX(Constants.CANConstants.turretId, Constants.CANConstants.canBusDriveTrain);
 
         var config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        // Basic PID from RackConstants (only kP/kI/kD applied to Slot0)
-        config.Slot0.kP = 0.8; //RackConstants.TalonFXGains.kP();
-        config.Slot0.kI = 0.0; //RackConstants.TalonFXGains.kI();
-        config.Slot0.kD = 0.0; //RackConstants.TalonFXGains.kD();
+        // Basic PID from TurretConstants (only kP/kI/kD applied to Slot0)
+        config.Slot0.kP = 300.0; //TurretConstants.TalonFXGains.kP();
+        config.Slot0.kI = 0.0; //TurretConstants.TalonFXGains.kI();
+        config.Slot0.kD = 0.0; //TurretConstants.TalonFXGains.kD();
+        config.Slot0.kS = 0.1; //TurretConstants.TalonFXGains.kS();
+        config.Slot0.kV = 0.1; //TurretConstants.TalonFXGains.kV();
+    // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
+    // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
+    // the configurator applies it to the controller.
+    config.Feedback.SensorToMechanismRatio = 39.0;
 
         // Set invert and apply configuration
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motor.getConfigurator().apply(config);
-        motor2.getConfigurator().apply(config);
 
         // Zero the encoder
         try {
             motor.getConfigurator().setPosition(0.0);
-            motor2.getConfigurator().setPosition(0.0);
         } catch (Exception ignored) {
             // best-effort; some environments may not support the timeout variant
             motor.setPosition(0.0);
-            motor2.setPosition(0.0);
         }
     }
 
     @Override
-    public void updateInputs(RackIOInputs inputs) {
+    public void updateInputs(TurretIOInputs inputs) {
         // Position/velocity from TalonFX are reported in rotations; convert to radians
         double positionRotations = motor.getPosition().getValueAsDouble();
         double velocityRps = motor.getVelocity().getValueAsDouble();
@@ -70,21 +71,18 @@ public class RackIOReal implements RackIO {
         // Convert Angle -> rotations (rotations = radians / 2pi)
         double rotations = position.in(Radians) / (2.0 * Math.PI);
         motor.setControl(positionRequest.withPosition(rotations));
-        motor2.setControl(positionRequest.withPosition(rotations));
     }
 
     @Override
     public void runVolts(Voltage volts) {
         // Use direct voltage output for open-loop commands
         motor.setVoltage(volts.in(Volts));
-        motor2.setVoltage(volts.in(Volts));
     }
 
     @Override
     public void setSpeed(double speed) {
         // Convert speed (in volts) to a voltage command
         motor.set(speed);
-        motor2.set(speed);
     }
 }
 
