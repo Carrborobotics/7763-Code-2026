@@ -22,7 +22,7 @@ public class TurretIOReal implements TurretIO {
     private final PositionVoltage positionRequest = new PositionVoltage(0);//.withEnableFOC(true);
 
     public TurretIOReal() {
-        motor = new TalonFX(Constants.CANConstants.turretId, Constants.CANConstants.canBus);
+        motor = new TalonFX(Constants.CANConstants.turretId, Constants.CANConstants.canBusDriveTrain);
 
         var config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;

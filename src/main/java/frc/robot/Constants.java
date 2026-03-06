@@ -42,18 +42,19 @@ public final class Constants {
 
     public static final class CANConstants {
         public static final int intakeId = 42;
-        public static final int rackId = 41; // should be 41
+        public static final int rackId = 41;
         public static final int rackId2 = 43;
 
-        public static final int turretId = 21; //should be 21
+        public static final int turretId = 21; // on drivetrain
 
         public static final int shooterId = 22;
         public static final int floorId = 30;
         public static final int shooterHoodId = 33;
 
-        /* CANBus */
-        // TODO: This canbus is temporary - we put it on drivetrain now, but later will drive from the Rio ("rio").
-        public static final CANBus canBus = new CANBus("Drivetrain"); 
+        /* CANBusses */
+        public static final CANBus canBus = new CANBus("rio");
+        public static final CANBus canBusDriveTrain = new CANBus("Drivetrain");
+         
 
     }
 
