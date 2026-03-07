@@ -3,40 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.596301020408164,
-        "y": 6.304559948979591
+        "x": 7.167435669920142,
+        "y": 1.0934871339840277
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.253061224489795,
-        "y": 7.893909438775509
+        "x": 7.423950777414394,
+        "y": 1.798256599573459
       },
       "isLocked": false,
-      "linkedName": "E"
+      "linkedName": "Outpost Side Pickup"
     },
     {
       "anchor": {
-        "x": 1.3207270408163265,
-        "y": 7.476052295918367
+        "x": 7.75,
+        "y": 3.2
       },
       "prevControl": {
-        "x": 2.142450573979593,
-        "y": 7.296037946428572
+        "x": 7.75,
+        "y": 1.7000000000000004
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Upper Source"
+      "linkedName": "Outpost Side Pickup END"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5000000000000029,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.45,
+      "name": "Intake Speed Constraint",
+      "minWaypointRelativePos": 0.05,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 4.0,
-        "maxAcceleration": 2.0,
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -45,16 +50,9 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Feed",
-      "waypointRelativePos": 0.3,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.1,
+    "maxVelocity": 4.75,
     "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -62,14 +60,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -54.0
+    "velocity": 0.5,
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "To Source",
+  "folder": "Pickups",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -120.74872732168464
+    "velocity": 1.0,
+    "rotation": -100.0
   },
   "useDefaultConstraints": true
 }

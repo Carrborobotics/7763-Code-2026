@@ -68,6 +68,11 @@ public final class Constants {
         public static final double robotFrameLength = Units.inchesToMeters(27.5);
         public static final double bumperWidth = Units.inchesToMeters(3);
 
+        //Positions
+
+        //RED HUB ->
+        public static final Translation2d hubPosition = new Translation2d(4.625594, 4.034536);
+
         // public static final double reefStandoff = Units.inchesToMeters(1.5);
         // public static final double reefOffset = robotFrameLength / 2.0 + bumperWidth + reefStandoff;
         // public static final double reefExtraOffset = Units.inchesToMeters(18.0); // reef wood to outside of tape line
