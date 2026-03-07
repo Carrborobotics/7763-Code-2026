@@ -3,11 +3,11 @@ package frc.robot;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
+//import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutCurrent;
-import edu.wpi.first.units.measure.MutDistance;
+//import edu.wpi.first.units.measure.MutDistance;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -18,6 +18,8 @@ public class RobotState {
 
     private MutAngle rackPosition;
     private MutAngle turretPosition;
+    private MutAngle shooterHoodPosition;
+
     private MutAngularVelocity intakeVelocity;
     private MutCurrent intakeSupplyCurrent;
     private MutCurrent intakeTorqueCurrent;
@@ -25,6 +27,7 @@ public class RobotState {
     private RobotState() {
         rackPosition = Degrees.mutable(0);
         turretPosition = Degrees.mutable(0);
+        shooterHoodPosition = Degrees.mutable(0);
         intakeVelocity = DegreesPerSecond.mutable(0);
         intakeSupplyCurrent = Amps.mutable(0);
         intakeTorqueCurrent = Amps.mutable(0);
@@ -75,6 +78,14 @@ public class RobotState {
         return intakeSupplyCurrent;
     }
    
+    public Angle getShooterHoodPosition() {
+        return shooterHoodPosition;
+    }
+
+    public void updateShooterHoodAngle(Angle position) {
+        shooterHoodPosition.mut_replace(position);
+    }
+
     public Current getIntakeTorqueCurrent(){
         return intakeTorqueCurrent;
     }

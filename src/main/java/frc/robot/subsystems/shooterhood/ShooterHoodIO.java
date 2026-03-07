@@ -1,0 +1,39 @@
+package frc.robot.subsystems.shooterhood;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutCurrent;
+import edu.wpi.first.units.measure.MutTemperature;
+import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
+import org.littletonrobotics.junction.AutoLog;
+
+import static edu.wpi.first.units.Units.*;
+
+public interface ShooterHoodIO {
+    @AutoLog
+    class ShooterHoodIOInputs {
+        public boolean motorConnected = true;
+        public MutAngle position = Degrees.mutable(0);
+        public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
+        public MutVoltage appliedVolts = Volts.mutable(0);
+        public MutCurrent supplyCurrent = Amps.mutable(0);
+        public MutCurrent torqueCurrent = Amps.mutable(0);
+        public MutTemperature temperature = Celsius.mutable(0);
+        public MutAngle setpointPosition = Degrees.mutable(0);
+        public MutAngularVelocity setpointVelocity = DegreesPerSecond.mutable(0);
+    }
+
+    void updateInputs(ShooterHoodIOInputs inputs);
+    default void setSpeed(double speed) {}
+    default void runSetpoint(Angle position) {}
+    default void runVolts(Voltage volts) {}
+    default void runCurrent(Current current) {}
+    default void setBrakeMode(boolean enabled) {}
+    default void setPID(double p, double i, double d) {}
+    default void setFF(double kS, double kG, double kV, double kA) {}
+    default void stop() {}
+
+}
