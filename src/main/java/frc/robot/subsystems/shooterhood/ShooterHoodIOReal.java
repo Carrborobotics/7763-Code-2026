@@ -22,7 +22,7 @@ public class ShooterHoodIOReal implements ShooterHoodIO {
     private final PositionVoltage positionRequest = new PositionVoltage(0);//.withEnableFOC(true);
 
     public ShooterHoodIOReal() {
-        motor = new TalonFX(Constants.CANConstants.shooterHoodId, Constants.CANConstants.canBusDriveTrain);
+        motor = new TalonFX(Constants.CANConstants.shooterHoodId, Constants.CANConstants.canBus);
 
         var config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -33,13 +33,14 @@ public class ShooterHoodIOReal implements ShooterHoodIO {
         config.Slot0.kD = 0.0; //ShooterHoodConstants.TalonFXGains.kD();
         config.Slot0.kS = 0.1; //ShooterHoodConstants.TalonFXGains.kS();
         config.Slot0.kV = 0.1; //ShooterHoodConstants.TalonFXGains.kV();
-    // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
-    // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
-    // the configurator applies it to the controller.
-    config.Feedback.SensorToMechanismRatio = 39.0;
+    
+        // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
+        // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
+        // the configurator applies it to the controller.
+        config.Feedback.SensorToMechanismRatio = 45.0;
 
         // Set invert and apply configuration
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        //config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motor.getConfigurator().apply(config);
 
         // Zero the encoder

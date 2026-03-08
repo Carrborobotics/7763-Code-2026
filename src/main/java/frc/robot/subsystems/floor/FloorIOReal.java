@@ -34,7 +34,7 @@ public class FloorIOReal implements FloorIO {
         floorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Limit the current to the floor to max 70A
-        floorConfig.CurrentLimits.SupplyCurrentLimit = 10;
+        floorConfig.CurrentLimits.SupplyCurrentLimit = 80;
 
         // Wait for time at limit then lower the limit - useful to not brownout 
         floorConfig.CurrentLimits.SupplyCurrentLowerLimit = 8;

@@ -49,7 +49,7 @@ public class Intake extends SubsystemBase{
      *  Command to stop the intake
      */ 
     public Command stopCmd() {
-        return this.setIntakeSpeed(0);
+        return runOnce(() -> this.io.setSpeed(0));
     }
 
     public boolean IsOverloaded() {
@@ -61,10 +61,11 @@ public class Intake extends SubsystemBase{
         super.periodic();
         this.io.updateInputs(inputs);
         Logger.processInputs("Intake", inputs);
-        SmartDashboard.putBoolean("Is Overloaded?", this.IsOverloaded());
-        SmartDashboard.putString("intake/motor voltage", this.inputs.appliedVolts.toString());
-        SmartDashboard.putString("intake/motor supply current", this.inputs.supplyCurrent.toString());
-        SmartDashboard.putString("intake/motor torque current", this.inputs.torqueCurrent.toString());
-        SmartDashboard.putString("intake/motor temp", this.inputs.temperature.toString());        
+        SmartDashboard.putBoolean("Is intake Overloaded?", this.IsOverloaded());
+        SmartDashboard.putString("intake/intake motor voltage", this.inputs.appliedVolts.toString());
+        SmartDashboard.putString("intake/intake supply current", this.inputs.supplyCurrent.toString());
+        SmartDashboard.putString("intake/intake torque current", this.inputs.torqueCurrent.toString());
+        SmartDashboard.putString("intake/intake motor temp", this.inputs.temperature.toString());   
+        SmartDashboard.putString("intake/intake velocity", this.inputs.velocity.toString());     
     }
 }

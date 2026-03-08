@@ -16,6 +16,8 @@ public interface ShooterIO {
         
         public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
 
+        public MutAngularVelocity kickerVelocity = DegreesPerSecond.mutable(0);
+
         public MutVoltage appliedVolts = Volts.mutable(0);
 
         public MutCurrent supplyCurrent = Amps.mutable(0);

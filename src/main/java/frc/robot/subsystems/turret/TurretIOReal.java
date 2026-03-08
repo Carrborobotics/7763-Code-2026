@@ -33,10 +33,10 @@ public class TurretIOReal implements TurretIO {
         config.Slot0.kD = 0.0; //TurretConstants.TalonFXGains.kD();
         config.Slot0.kS = 0.1; //TurretConstants.TalonFXGains.kS();
         config.Slot0.kV = 0.1; //TurretConstants.TalonFXGains.kV();
-    // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
-    // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
-    // the configurator applies it to the controller.
-    config.Feedback.SensorToMechanismRatio = 39.0;
+        // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
+        // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
+        // the configurator applies it to the controller.
+        config.Feedback.SensorToMechanismRatio = 39.0;
 
         // Set invert and apply configuration
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;

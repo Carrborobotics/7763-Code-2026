@@ -34,7 +34,7 @@ public class IntakeIOReal implements IntakeIO {
         intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Limit the current to the intake to max 70A
-        intakeConfig.CurrentLimits.SupplyCurrentLimit = 10;
+        intakeConfig.CurrentLimits.SupplyCurrentLimit = 80;
 
         // Wait for time at limit then lower the limit - useful to not brownout 
         intakeConfig.CurrentLimits.SupplyCurrentLowerLimit = 8;

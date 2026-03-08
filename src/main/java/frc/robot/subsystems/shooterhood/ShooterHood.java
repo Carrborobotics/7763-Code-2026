@@ -78,10 +78,10 @@ public class ShooterHood extends SubsystemBase {
         position = this.actual.getShooterHoodPosition();
         this.io.updateInputs(inputs);
         Logger.processInputs("ShooterHood", inputs);
-        SmartDashboard.putNumber("ShooterHood/position(actual)", this.inputs.position.in(Degrees));
-        SmartDashboard.putNumber("ShooterHood/Position2", position.in(Degrees));
-        SmartDashboard.putNumber("ShooterHood/setpointPosition(tgt)", this.inputs.setpointPosition.in(Degrees));
-        SmartDashboard.putNumber("ShooterHood/setpoint(goal)", this.setpoint.in(Degrees));
+        SmartDashboard.putNumber("ShooterHood/hood position(actual)", this.inputs.position.in(Degrees));
+        SmartDashboard.putNumber("ShooterHood/hood Position2", position.in(Degrees));
+        SmartDashboard.putNumber("ShooterHood/hood setpointPosition(tgt)", this.inputs.setpointPosition.in(Degrees));
+        SmartDashboard.putNumber("ShooterHood/hood setpoint(goal)", this.setpoint.in(Degrees));
         if(edu.wpi.first.wpilibj.RobotState.isDisabled()) {
             this.io.stop();
         } else {

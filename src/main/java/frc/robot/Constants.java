@@ -47,9 +47,12 @@ public final class Constants {
 
         public static final int turretId = 21; // on drivetrain
 
-        public static final int shooterId = 22;
+        public static final int shooterLeft = 22;
+        public static final int shooterRight = 23;
+        public static final int kickerId = 24;
+        public static final int shooterHoodId = 25;
         public static final int floorId = 30;
-        public static final int shooterHoodId = 33;
+        //public static final int shooterHoodId = 33;
 
         /* CANBusses */
         public static final CANBus canBus = new CANBus("rio");
@@ -67,11 +70,7 @@ public final class Constants {
         // Robot Dimensions
         public static final double robotFrameLength = Units.inchesToMeters(27.5);
         public static final double bumperWidth = Units.inchesToMeters(3);
-
-        //Positions
-
-        //RED HUB ->
-        public static final Translation2d hubPosition = new Translation2d(4.625594, 4.034536);
+        public static final Translation2d hubPosition = new Translation2d(4.625594,4.034536);
 
         // public static final double reefStandoff = Units.inchesToMeters(1.5);
         // public static final double reefOffset = robotFrameLength / 2.0 + bumperWidth + reefStandoff;
