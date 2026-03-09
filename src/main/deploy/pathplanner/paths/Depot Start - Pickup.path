@@ -1,0 +1,119 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5,
+        "y": 7.4
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.470171507830663,
+        "y": 7.4
+      },
+      "isLocked": false,
+      "linkedName": "Depot Start"
+    },
+    {
+      "anchor": {
+        "x": 8.182404551377596,
+        "y": 6.94105008246115
+      },
+      "prevControl": {
+        "x": 8.182404551377596,
+        "y": 7.366245383588009
+      },
+      "nextControl": {
+        "x": 8.182404551377596,
+        "y": 6.2273241568277165
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.182404551377596,
+        "y": 4.879133627025299
+      },
+      "prevControl": {
+        "x": 8.182404551377596,
+        "y": 5.488171784514552
+      },
+      "nextControl": {
+        "x": 8.182404551377596,
+        "y": 4.459753244069926
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.336767950650835,
+        "y": 4.879133627025299
+      },
+      "prevControl": {
+        "x": 7.336767950650835,
+        "y": 4.378788146064273
+      },
+      "nextControl": {
+        "x": 7.336767950650835,
+        "y": 5.504533037587089
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.336767950650835,
+        "y": 6.301052630527318
+      },
+      "prevControl": {
+        "x": 7.331235191882345,
+        "y": 5.908226757964503
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depot Side Pickup END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.14054514480408847,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.6814310051107326,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 1.928449744463373,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 2.896081771720615,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.5,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 5.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Starts",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": false
+}

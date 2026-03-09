@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.EnumMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -132,17 +134,17 @@ public class RobotContainer {
         driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
 
         // Turret rotation with Triggers
-        turret.setDefaultCommand(
+        /*turret.setDefaultCommand(
             Commands.run(() -> {
                 double raw = turretAxis.get();
                 if (Math.abs(raw) < 0.05) return;
                 turret.setTurretAngle(raw * 135.0);
             }, turret)
-        );
+        );*/
 
         // Hold left bumper to auto-aim at hub, release to go back to trigger control
         driverController.leftBumper().whileTrue(
-            Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret)
+            Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret)
         );
 
         // run the intake
@@ -155,31 +157,64 @@ public class RobotContainer {
         driverController.rightTrigger().onTrue(rack.rackToCmd(0.0));
 
         // turret testing
-        driverController.a().onTrue(shooterHood.shooterHoodToCmd(-400.0));
-        driverController.b().onTrue(shooterHood.shooterHoodToCmd(-100.));
+        driverController.b().onTrue(shooterHood.shooterHoodToCmd(-getHoodAngle())); //Negative for inverse rotation
 
         //driverController.x().onTrue(turret.turretToCmd(180.0));
-        driverController.x().whileTrue(shooterHood.setSpeedCmd(0.3)).onFalse(shooterHood.setSpeedCmd(0));
-        driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
+        //driverController.x().whileTrue(shooterHood.setSpeedCmd(0.3)).onFalse(shooterHood.setSpeedCmd(0));
+        //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
         //driverController.y().onTrue(turret.turretTo(-5.0));s
         
-        driverController.rightBumper().whileTrue(shooter.setShooterSpeed(0.5)
-            .alongWith(floor.setFloorSpeed(-0.25)))
+        driverController.rightBumper().whileTrue(shooter.setShooterSpeed(0.25 * getHoodAngle()))
+            //.alongWith(floor.setFloorSpeed(-0.25)))
             .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
-
-        driverController.back().whileTrue(shooter.setShooterSpeed(0)
-            .alongWith(floor.setFloorSpeed(0)));   
     }
 
     // ── Targeting ──────────────────────────────────────────────────────────────
-    private double getAngleToHub() {
+    private double getTurretAngle() {
         Pose2d robotPose = s_Swerve.getPose();
-        Translation2d hub = Swerve.flipIfRed(Constants.Localization.hubPosition);
-        Translation2d toHub = robotPose.getTranslation().minus(hub);
-        double fieldAngle = Math.toDegrees(Math.atan2(toHub.getY(), toHub.getX()));
-        double turretAngle = fieldAngle - robotPose.getRotation().getDegrees();
-        turretAngle = MathUtil.inputModulus(turretAngle + 180, -180, 180);
-        return MathUtil.clamp(turretAngle, -135.0, 135.0);
+        Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
+        String location = "";
+
+        if (robotPose.getX() > Constants.Localization.trenchline) {
+            if (robotPose.getY() < Constants.Localization.yMidline) {
+                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
+            }
+            else {
+                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
+            }
+        }
+
+        Translation2d toTarget = robotPose.getTranslation().minus(target);
+        double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
+        double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
+        turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);
+        SmartDashboard.putNumber("Turret Angle", turretAngle);
+        SmartDashboard.putString("Target", target.toString());
+        SmartDashboard.putString("rpose", robotPose.toString());
+        return -(MathUtil.clamp(turretAngle, -185.0, 185.0));
+    }
+
+
+
+    private double getHoodAngle() {
+        Pose2d robotPose = s_Swerve.getPose();
+        Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
+
+        if (robotPose.getX() > Constants.Localization.trenchline) {
+            if (robotPose.getY() < Constants.Localization.yMidline) {
+                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
+            }
+            else {
+                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
+            }
+        }
+
+        Translation2d toTarget = robotPose.getTranslation().minus(target);
+        double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
+        SmartDashboard.putNumber("Target distance", targetDistance);
+        double hoodAngle = targetDistance * 40; //TODO: Tune this!! Target distance * some formula
+        SmartDashboard.putNumber("Hood Angle", hoodAngle);
+        return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
     }
 
     /**
@@ -189,7 +224,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.getSelected()
-            .deadlineFor(Commands.run(() -> turret.setTurretAngle(getAngleToHub()), turret));
+            .deadlineFor(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret))
+            .alongWith((Commands.run(() -> shooterHood.setShooterHoodAngle(getHoodAngle()), shooterHood)));
     }
 
     public Turret getTurret() {

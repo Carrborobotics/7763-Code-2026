@@ -26,6 +26,7 @@ public class ShooterIOReal implements ShooterIO {
     // private final VoltageOut shooterVoltage = new VoltageOut(2).withEnableFOC(true);
     // private final VoltageOut shootVoltage = new VoltageOut(2).withEnableFOC(true);
     // private final VoltageOut boostVoltage = new VoltageOut(2).withEnableFOC(true);
+    final VelocityVoltage m_velocity  = new VelocityVoltage(0);
 
     public ShooterIOReal() {
         // Create the shooter kraken
@@ -67,14 +68,16 @@ public class ShooterIOReal implements ShooterIO {
         shooterConfig.Slot0.kP = 0.1;
         shooterConfig.Slot0.kI = 0.0;
         shooterConfig.Slot0.kD = 0.0;
-        shooterConfig.Slot0.kS = 0.1;
-        shooterConfig.Slot0.kV = 0.1;
+        shooterConfig.Slot0.kS = 0.0;
+        shooterConfig.Slot0.kV = 0.0;
 
         shooterMotor.getConfigurator().apply(shooterConfig);
         kickerMotor.getConfigurator().apply(shooterConfig);
         //hoodMotor.getConfigurator().apply(hoodConfig);
         shooterConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         shooterMotor2.getConfigurator().apply(shooterConfig);
+
+        m_velocity.Slot = 0;
 
         // Not really used except for tracking velocity but keep jic
         shooterEncoder = new CANcoder(Constants.CANConstants.shooterLeft, Constants.CANConstants.canBus);
@@ -99,9 +102,10 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setSpeed(double speed) {
-        shooterMotor.setControl(new VelocityVoltage(speed));
-        shooterMotor2.setControl(new VelocityVoltage(speed));
-        kickerMotor.setControl(new VelocityVoltage(speed));
+        speed = speed * Constants.shooterRPS;
+        shooterMotor.setControl(m_velocity.withVelocity(speed));
+        shooterMotor2.setControl(m_velocity.withVelocity(speed));
+        kickerMotor.setControl(m_velocity.withVelocity(speed));
     }
 
     @Override

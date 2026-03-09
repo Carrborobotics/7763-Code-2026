@@ -38,8 +38,8 @@ public final class Constants {
     
     public static final double SHOOTER_GEARING = 1.0; // TODO: Need real shooter motor gear ratio
     public static final double FLOOR_GEARING = 1.0; // TODO: Need real floor motor gear ratio
+    public static final double shooterRPS = 100;
     
-
     public static final class CANConstants {
         public static final int intakeId = 42;
         public static final int rackId = 41;
@@ -71,6 +71,12 @@ public final class Constants {
         public static final double robotFrameLength = Units.inchesToMeters(27.5);
         public static final double bumperWidth = Units.inchesToMeters(3);
         public static final Translation2d hubPosition = new Translation2d(4.625594,4.034536);
+        public static final double trenchline = Units.inchesToMeters(181.56);
+        public static final double yMidline = Units.inchesToMeters(158.32);
+        public static final Translation2d lowerPassTarget = new Translation2d(Units.inchesToMeters(90), Units.inchesToMeters(50));
+        public static final Translation2d upperPassTarget = new Translation2d(Units.inchesToMeters(90), Units.inchesToMeters(316.64 - 50));
+
+
 
         // public static final double reefStandoff = Units.inchesToMeters(1.5);
         // public static final double reefOffset = robotFrameLength / 2.0 + bumperWidth + reefStandoff;
