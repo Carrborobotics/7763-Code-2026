@@ -71,6 +71,7 @@ public final class Constants {
         public static final double robotFrameLength = Units.inchesToMeters(27.5);
         public static final double bumperWidth = Units.inchesToMeters(3);
         public static final Translation2d hubPosition = new Translation2d(4.625594,4.034536);
+        public static final double hubHeight = Units.inchesToMeters(72); // Top of funnel
         public static final double trenchline = Units.inchesToMeters(181.56);
         public static final double yMidline = Units.inchesToMeters(158.32);
         public static final Translation2d lowerPassTarget = new Translation2d(Units.inchesToMeters(90), Units.inchesToMeters(50));

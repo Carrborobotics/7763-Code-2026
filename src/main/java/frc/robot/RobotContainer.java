@@ -6,13 +6,19 @@ import java.util.EnumMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -147,6 +153,10 @@ public class RobotContainer {
             Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret)
         );
 
+        driverController.rightBumper().whileTrue(
+            Commands.run(() -> turret.setTurretAngle(getTurretAngleSOTM()), turret)
+        );
+
         // run the intake
         driverController.start().whileTrue(intake.setIntakeSpeed(0.5))
             .onFalse(intake.stopCmd());
@@ -157,19 +167,62 @@ public class RobotContainer {
         driverController.rightTrigger().onTrue(rack.rackToCmd(0.0));
 
         // turret testing
-        driverController.b().onTrue(shooterHood.shooterHoodToCmd(-getHoodAngle())); //Negative for inverse rotation
+        driverController.b().onTrue(shooterHood.shooterHoodToCmd(-getHoodAngle())); //Negative for inverse rotation     
 
-        //driverController.x().onTrue(turret.turretToCmd(180.0));
-        //driverController.x().whileTrue(shooterHood.setSpeedCmd(0.3)).onFalse(shooterHood.setSpeedCmd(0));
-        //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
-        //driverController.y().onTrue(turret.turretTo(-5.0));s
-        
-        driverController.rightBumper().whileTrue(shooter.setShooterSpeed(0.25 * getHoodAngle()))
+        //COMMENTED OUT FOR SOTM TESTING ->
+        //driverController.rightBumper().whileTrue(shooter.setShooterSpeed(0.25 * getHoodAngle()))
             //.alongWith(floor.setFloorSpeed(-0.25)))
-            .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
+            //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
     }
 
-    // ── Targeting ──────────────────────────────────────────────────────────────
+    // ── Targeting ──────────────────────────────────────────────────────────────   
+    public Translation2d getTargetWithOffset() {
+    double timeOfFlight = 1; // Tune this, we'll give it a formula to make it more accurate
+    Pose2d robotPose = s_Swerve.getPose();
+    Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
+        if (robotPose.getX() > Constants.Localization.trenchline) {
+            if (robotPose.getY() < Constants.Localization.yMidline) {
+                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
+            } else {
+                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
+            }
+        }
+        ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(s_Swerve.getSpeeds(), s_Swerve.getHeading());
+        return new Translation2d(target.getX() - fieldSpeeds.vxMetersPerSecond * timeOfFlight, target.getY() - fieldSpeeds.vyMetersPerSecond * timeOfFlight);
+    }
+
+
+
+    private double getTurretAngleSOTM() {
+        Translation2d target = getTargetWithOffset();
+        Pose2d robotPose = s_Swerve.getPose();
+        Translation2d toTarget = robotPose.getTranslation().minus(target);
+
+        double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
+        double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
+        turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);
+        SmartDashboard.putNumber("Turret Angle", turretAngle);
+        SmartDashboard.putString("Target", target.toString());
+        SmartDashboard.putString("rpose", robotPose.toString());
+        Logger.recordOutput("SOTMTargetPose", new Translation3d(getTargetWithOffset()));
+        return - (MathUtil.clamp(turretAngle, -185.0, 185.0));
+    }
+
+    private double getHoodAngleSOTM() {
+        Translation2d target = getTargetWithOffset();
+        Pose2d robotPose = s_Swerve.getPose();
+        Translation2d toTarget = robotPose.getTranslation().minus(target);
+
+        double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
+        SmartDashboard.putNumber("Target distance", targetDistance);
+        double hoodAngle = targetDistance * 40;
+        SmartDashboard.putNumber("Hood Angle", hoodAngle);
+        return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
+    }
+
+
+
+    //Non-SOTM
     private double getTurretAngle() {
         Pose2d robotPose = s_Swerve.getPose();
         Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
@@ -191,6 +244,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Turret Angle", turretAngle);
         SmartDashboard.putString("Target", target.toString());
         SmartDashboard.putString("rpose", robotPose.toString());
+        Logger.recordOutput("TargetPose", target);
         return -(MathUtil.clamp(turretAngle, -185.0, 185.0));
     }
 
@@ -217,6 +271,8 @@ public class RobotContainer {
         return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
     }
 
+
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
@@ -224,8 +280,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.getSelected()
-            .deadlineFor(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret))
-            .alongWith((Commands.run(() -> shooterHood.setShooterHoodAngle(getHoodAngle()), shooterHood)));
+            .deadlineFor(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret));
+            //.alongWith((Commands.run(() -> shooterHood.setShooterHoodAngle(getHoodAngleSOTM()), shooterHood)));
     }
 
     public Turret getTurret() {
