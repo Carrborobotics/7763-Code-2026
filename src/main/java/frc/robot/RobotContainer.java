@@ -116,6 +116,9 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
+        // Default commands for subsystems
+
+        // Swerve: default to driving
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                     s_Swerve,
@@ -127,21 +130,27 @@ public class RobotContainer {
             )
         );
 
+        // Turret: default to tracking
+        turret.setDefaultCommand(
+            Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret)
+        );
+
+        // Hood: default to adjusting to correct angle
+        shooterHood.setDefaultCommand(
+            Commands.run(() -> shooterHood.setShooterHoodAngle(getHoodAngle()), shooterHood)
+        );
+
+        // Shooter: default to calculating shot speed
+        shooter.setDefaultCommand(
+            Commands.run(() -> shooter.setShotSpeed(getShotSpeed()), shooter)
+        );
+
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
         driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
-
-        // Turret rotation with Triggers
-        /*turret.setDefaultCommand(
-            Commands.run(() -> {
-                double raw = turretAxis.get();
-                if (Math.abs(raw) < 0.05) return;
-                turret.setTurretAngle(raw * 135.0);
-            }, turret)
-        );*/
 
         // Hold left bumper to auto-aim at hub, release to go back to trigger control
         driverController.leftBumper().whileTrue(
@@ -165,23 +174,19 @@ public class RobotContainer {
         //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
         //driverController.y().onTrue(turret.turretTo(-5.0));s
         
-        driverController.rightBumper().onTrue(shootCmd());
+        driverController.rightBumper().whileTrue(shooter.shoot())
+            .onFalse(shooter.stopCmd());
             //.alongWith(floor.setFloorSpeed(-0.25)))
             //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
-        driverController.x().onTrue(shooter.setShooterSpeed(0));
+        //driverController.x().onTrue(shooter.setShooterSpeed(0));
         driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
 
         
     }
 
-
-    public Command shootCmd() {
-        double baseAngle = getHoodAngle();
-        SmartDashboard.putNumber("base angle", baseAngle);
-        return shooter.setShooterSpeed(baseAngle * 0.2)
-               .alongWith(shooterHood.shooterHoodToCmd(-baseAngle));
-        //return runOnce(() -> shooter..setSpeed(speed));
+    private double getShotSpeed(){
+        return getHoodAngle() * 0.2;
     }
 
 
@@ -204,10 +209,6 @@ public class RobotContainer {
         double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
         double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
         turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);
-        double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
-        SmartDashboard.putNumber("Target distance", targetDistance);
-        double hoodAngle = targetDistance * 40; //TODO: Tune this!! Target distance * some formula
-        SmartDashboard.putNumber("Hood Angle", hoodAngle);
         SmartDashboard.putNumber("Turret Angle", turretAngle);
         SmartDashboard.putString("Target", target.toString());
         return -(MathUtil.clamp(turretAngle, -185.0, 185.0));

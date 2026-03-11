@@ -103,29 +103,27 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
-    public void setSpeed(double speed) {
-        reqSpeed = speed;
+    public void shoot() {
         SmartDashboard.putNumber("shooter req speed", reqSpeed);
+        shooterMotor.setControl(m_velocity.withVelocity(reqSpeed).withSlot(0));
+        shooterMotor2.setControl(m_velocity.withVelocity(reqSpeed).withSlot(0));
+        kickerMotor.setControl(m_velocity.withVelocity(reqSpeed).withSlot(0));
+    
+    }
 
-        if (speed < 0.0001) {
-            shooterMotor.stopMotor();
-            shooterMotor2.stopMotor();
-            kickerMotor.stopMotor();
-        }
-        else {
-            shooterMotor.setControl(m_velocity.withVelocity(speed).withSlot(0));
-            shooterMotor2.setControl(m_velocity.withVelocity(speed).withSlot(0));
-            kickerMotor.setControl(m_velocity.withVelocity(speed).withSlot(0));
-        }
+    @Override
+    public void stopShooter() {
+        shooterMotor.stopMotor();
+        shooterMotor2.stopMotor();
+        kickerMotor.stopMotor();
+    }
+
+    @Override 
+    public void setShotSpeed(double speed) {
+        reqSpeed = speed;
     }
 
 
-    //@Override
-    //public void setVoltage(double volts) {
-    //    shooterMotor.setVoltage(volts);
-    //    shooterMotor2.setVoltage(volts);
-    //    kickerMotor.setVoltage(volts);
-    //}
     public void periodic() {
     }
 

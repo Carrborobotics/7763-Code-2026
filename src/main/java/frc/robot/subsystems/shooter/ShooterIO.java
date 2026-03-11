@@ -33,8 +33,9 @@ public interface ShooterIO {
 
     default void setFF(double kS, double kG, double kV, double kA) {}
 
-    default void setSpeed(double speed) {}
+    default void setShotSpeed(double speed) {}
     default void setVoltage(double volts) {}
-
+    default void shoot() {}
+    default void stopShooter() {}
 
 }

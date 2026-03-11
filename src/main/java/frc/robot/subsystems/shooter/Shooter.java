@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase{
     private final RobotState actual;
     private final RobotState target;
     private final RobotState goal;
-    double reqSpeed;
+    private double reqSpeed;
 
     public Shooter(ShooterIO io) {
         this.io = io;
@@ -42,16 +42,19 @@ public class Shooter extends SubsystemBase{
         this.goal = RobotState.getGoalInstance();    
     }
 
-    public Command setShooterSpeed(double speed) {
+    public Command setShotSpeed(double speed) {
         reqSpeed = speed;
-        return runOnce(() -> this.io.setSpeed(speed));
+        return runOnce(() -> this.io.setShotSpeed(speed));
     }
 
+    public Command shoot(){
+        return runOnce(() -> this.io.shoot());
+    }
     /**
      *  Command to stop the shooter
      */ 
     public Command stopCmd() {
-        return runOnce(() -> this.io.setVoltage(0));
+        return runOnce(() -> this.io.stopShooter());
     }
 
     public boolean IsOverloaded() {

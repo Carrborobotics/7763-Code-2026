@@ -23,7 +23,7 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setSpeed(double speed) {
+  public void setShotSpeed(double speed) {
     // In the real IO, setSpeed uses a percent output ([-1,1]) on the TalonFX.
     // Simulate that by driving the motor with an equivalent voltage (percent * 12V).
     // Previously this code forced the simulated angular velocity directly which
