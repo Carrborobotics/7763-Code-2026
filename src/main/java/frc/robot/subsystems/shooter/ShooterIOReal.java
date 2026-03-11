@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 //import frc.robot.Robot;
@@ -27,6 +28,7 @@ public class ShooterIOReal implements ShooterIO {
     // private final VoltageOut shootVoltage = new VoltageOut(2).withEnableFOC(true);
     // private final VoltageOut boostVoltage = new VoltageOut(2).withEnableFOC(true);
     final VelocityVoltage m_velocity  = new VelocityVoltage(0);
+    double reqSpeed = 0;
 
     public ShooterIOReal() {
         // Create the shooter kraken
@@ -87,7 +89,7 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
         
-        inputs.velocity.mut_replace(shooterEncoder.getVelocity().getValueAsDouble(), DegreesPerSecond);
+        inputs.velocity.mut_replace(shooterMotor.getVelocity().getValueAsDouble(), DegreesPerSecond);
 
         inputs.kickerVelocity.mut_replace(kickerMotor.getVelocity().getValueAsDouble(), DegreesPerSecond);
 
@@ -102,17 +104,27 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setSpeed(double speed) {
-        speed = speed * Constants.shooterRPS;
-        shooterMotor.setControl(m_velocity.withVelocity(speed));
-        shooterMotor2.setControl(m_velocity.withVelocity(speed));
-        kickerMotor.setControl(m_velocity.withVelocity(speed));
+        if (speed < 1) {
+            shooterMotor.stopMotor();
+            shooterMotor2.stopMotor();
+            kickerMotor.stopMotor();
+        }
+        else {
+            shooterMotor.setControl(m_velocity.withVelocity(speed));
+            shooterMotor2.setControl(m_velocity.withVelocity(speed));
+            kickerMotor.setControl(m_velocity.withVelocity(speed));
+        }
     }
+
 
     @Override
     public void setVoltage(double volts) {
         shooterMotor.setVoltage(volts);
+        shooterMotor2.setVoltage(volts);
+        kickerMotor.setVoltage(volts);
     }
     public void periodic() {
+
     }
 
 }

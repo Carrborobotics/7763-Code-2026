@@ -91,6 +91,7 @@ public class RobotContainer {
     private final Color redBumper = Color.kDarkRed;
     private final Color blueBumper = Color.kDarkBlue;
     private Color original_color;
+    private Pose2d rpose;
 
     public RobotContainer() {
         if (Robot.isReal()) {
@@ -164,16 +165,30 @@ public class RobotContainer {
         //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
         //driverController.y().onTrue(turret.turretTo(-5.0));s
         
-        driverController.rightBumper().whileTrue(shooter.setShooterSpeed(0.25 * getHoodAngle()))
+        driverController.rightBumper().onTrue(
+                shooter.setShooterSpeed(0.25 * getHoodAngle())
+                .alongWith(shooterHood.shooterHoodToCmd(-getHoodAngle()))
+                );
             //.alongWith(floor.setFloorSpeed(-0.25)))
-            .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
+            //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
+
+        driverController.x().onTrue(shooter.setShooterSpeed(0));
+        driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+
+        
+    }
+
+
+    private Pose2d getPose() {
+        rpose = s_Swerve.getPose();
+        return rpose;
     }
 
     // ── Targeting ──────────────────────────────────────────────────────────────
     private double getTurretAngle() {
-        Pose2d robotPose = s_Swerve.getPose();
         Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
-        String location = "";
+        Pose2d robotPose = getPose();
+        SmartDashboard.putString("rpose", robotPose.toString());
 
         if (robotPose.getX() > Constants.Localization.trenchline) {
             if (robotPose.getY() < Constants.Localization.yMidline) {
@@ -188,16 +203,20 @@ public class RobotContainer {
         double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
         double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
         turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);
+        double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
+        SmartDashboard.putNumber("Target distance", targetDistance);
+        double hoodAngle = targetDistance * 40; //TODO: Tune this!! Target distance * some formula
+        SmartDashboard.putNumber("Hood Angle", hoodAngle);
         SmartDashboard.putNumber("Turret Angle", turretAngle);
         SmartDashboard.putString("Target", target.toString());
-        SmartDashboard.putString("rpose", robotPose.toString());
         return -(MathUtil.clamp(turretAngle, -185.0, 185.0));
     }
 
 
 
     private double getHoodAngle() {
-        Pose2d robotPose = s_Swerve.getPose();
+        Pose2d robotPose = getPose();        
+        SmartDashboard.putString("rpose for distance", robotPose.toString());
         Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
 
         if (robotPose.getX() > Constants.Localization.trenchline) {
