@@ -91,7 +91,7 @@ public class RobotContainer {
     private final Color redBumper = Color.kDarkRed;
     private final Color blueBumper = Color.kDarkBlue;
     private Color original_color;
-    private Pose2d rpose;
+    public Pose2d globalRobotPose;
 
     public RobotContainer() {
         if (Robot.isReal()) {
@@ -165,10 +165,7 @@ public class RobotContainer {
         //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
         //driverController.y().onTrue(turret.turretTo(-5.0));s
         
-        driverController.rightBumper().onTrue(
-                shooter.setShooterSpeed(0.25 * getHoodAngle())
-                .alongWith(shooterHood.shooterHoodToCmd(-getHoodAngle()))
-                );
+        driverController.rightBumper().onTrue(shootCmd());
             //.alongWith(floor.setFloorSpeed(-0.25)))
             //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
@@ -179,15 +176,19 @@ public class RobotContainer {
     }
 
 
-    private Pose2d getPose() {
-        rpose = s_Swerve.getPose();
-        return rpose;
+    public Command shootCmd() {
+        double baseAngle = getHoodAngle();
+        SmartDashboard.putNumber("base angle", baseAngle);
+        return shooter.setShooterSpeed(baseAngle * 0.2)
+               .alongWith(shooterHood.shooterHoodToCmd(-baseAngle));
+        //return runOnce(() -> shooter..setSpeed(speed));
     }
+
 
     // ── Targeting ──────────────────────────────────────────────────────────────
     private double getTurretAngle() {
         Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
-        Pose2d robotPose = getPose();
+        Pose2d robotPose = s_Swerve.getRobotPose();
         SmartDashboard.putString("rpose", robotPose.toString());
 
         if (robotPose.getX() > Constants.Localization.trenchline) {
@@ -215,7 +216,7 @@ public class RobotContainer {
 
 
     private double getHoodAngle() {
-        Pose2d robotPose = getPose();        
+        Pose2d robotPose = s_Swerve.getRobotPose();
         SmartDashboard.putString("rpose for distance", robotPose.toString());
         Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
 

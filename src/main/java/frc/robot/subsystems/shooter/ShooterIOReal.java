@@ -17,7 +17,7 @@ import static edu.wpi.first.units.Units.*;
 public class ShooterIOReal implements ShooterIO {
     private TalonFX shooterMotor;
     private TalonFX shooterMotor2;
-    private CANcoder shooterEncoder;
+    //private CANcoder shooterEncoder;
     //private CANcoder shooterEncoder2;
     private TalonFX kickerMotor;
     //private TalonFX hoodMotor;
@@ -43,7 +43,7 @@ public class ShooterIOReal implements ShooterIO {
         // var hoodConfig = new TalonFXConfiguration();
 
         // Brake mode
-        shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         //hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         
         // Make sure current limiting is enabled
@@ -64,14 +64,14 @@ public class ShooterIOReal implements ShooterIO {
 
         // Keep the voltages within range
         shooterConfig.Voltage.PeakForwardVoltage = 12;
-        shooterConfig.Voltage.PeakReverseVoltage = 12;
+        shooterConfig.Voltage.PeakReverseVoltage = -12;
         //hoodConfig.Voltage.PeakForwardVoltage = 12;
         //hoodConfig.Voltage.PeakReverseVoltage = 12;
         shooterConfig.Slot0.kP = 0.1;
         shooterConfig.Slot0.kI = 0.0;
         shooterConfig.Slot0.kD = 0.0;
-        shooterConfig.Slot0.kS = 0.0;
-        shooterConfig.Slot0.kV = 0.0;
+        shooterConfig.Slot0.kS = 0.25;
+        shooterConfig.Slot0.kV = 0.12;
 
         shooterMotor.getConfigurator().apply(shooterConfig);
         kickerMotor.getConfigurator().apply(shooterConfig);
@@ -82,7 +82,7 @@ public class ShooterIOReal implements ShooterIO {
         m_velocity.Slot = 0;
 
         // Not really used except for tracking velocity but keep jic
-        shooterEncoder = new CANcoder(Constants.CANConstants.shooterLeft, Constants.CANConstants.canBus);
+        //shooterEncoder = new CANcoder(Constants.CANConstants.shooterLeft, Constants.CANConstants.canBus);
         //shooterEncoder2 = new CANcoder(Constants.CANConstants.shooterRight, Constants.CANConstants.canBus);
     }
 
@@ -104,27 +104,29 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setSpeed(double speed) {
-        if (speed < 1) {
+        reqSpeed = speed;
+        SmartDashboard.putNumber("shooter req speed", reqSpeed);
+
+        if (speed < 0.0001) {
             shooterMotor.stopMotor();
             shooterMotor2.stopMotor();
             kickerMotor.stopMotor();
         }
         else {
-            shooterMotor.setControl(m_velocity.withVelocity(speed));
-            shooterMotor2.setControl(m_velocity.withVelocity(speed));
-            kickerMotor.setControl(m_velocity.withVelocity(speed));
+            shooterMotor.setControl(m_velocity.withVelocity(speed).withSlot(0));
+            shooterMotor2.setControl(m_velocity.withVelocity(speed).withSlot(0));
+            kickerMotor.setControl(m_velocity.withVelocity(speed).withSlot(0));
         }
     }
 
 
-    @Override
-    public void setVoltage(double volts) {
-        shooterMotor.setVoltage(volts);
-        shooterMotor2.setVoltage(volts);
-        kickerMotor.setVoltage(volts);
-    }
+    //@Override
+    //public void setVoltage(double volts) {
+    //    shooterMotor.setVoltage(volts);
+    //    shooterMotor2.setVoltage(volts);
+    //    kickerMotor.setVoltage(volts);
+    //}
     public void periodic() {
-
     }
 
 }

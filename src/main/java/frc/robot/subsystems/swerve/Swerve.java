@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
@@ -34,6 +35,7 @@ import frc.robot.util.LoggedTunableNumber;
 import edu.wpi.first.math.controller.PIDController;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 
 
 public class Swerve extends SubsystemBase {
@@ -66,7 +68,7 @@ public class Swerve extends SubsystemBase {
     private final Field2d field;
 
     private Pose2d simPose = new Pose2d();
-    
+    private Pose2d robotPose = new Pose2d();
     private final Pigeon2 gyro;
     private final Vision vision = new Vision();
 
@@ -298,7 +300,11 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Vision Difference", diff);
         return diff;
     }
-    
+
+    public Pose2d getRobotPose() {
+        return robotPose;
+    }
+     
     @Override
     public void periodic() {
         m_poseEstimator.update(getGyroYaw(), getModulePositions());
@@ -331,9 +337,10 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putData("Gyro Data", gyro);
         SmartDashboard.putNumber("Gyro Yaw", getGyroYaw().getDegrees());
         SmartDashboard.putBoolean("is red?", Robot.isRed());
-        Pose2d pose = getPose();
-        field.setRobotPose(pose);   
-        SmartDashboard.putString("actual pose", pose.toString());
+        //Pose2d pose = getPose();
+        robotPose = getPose();
+        field.setRobotPose(robotPose);   
+        SmartDashboard.putString("actual pose", robotPose.toString());
         SmartDashboard.putBoolean("Align/x at set", xPID.atSetpoint());
         SmartDashboard.putBoolean("Align/y at set", yPID.atSetpoint());
         SmartDashboard.putBoolean("Align/r at set", rPID.atSetpoint());
