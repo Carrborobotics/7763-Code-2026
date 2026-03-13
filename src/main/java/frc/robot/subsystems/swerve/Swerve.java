@@ -335,11 +335,12 @@ public class Swerve extends SubsystemBase {
     /*
      * Calculate the target speed based on distance.  This was done empirically
      * based on testing at SeQuEnCe/7890's full field.
+     * We also do clamping of the speed value.
      */
     public double getTargetSpeed() {
         var dist = this.getTargetDistance();
         var calcspeed = -1.0809 * dist * dist + 11.5334 * dist + 22.9887;
-        var clampspeed = Math.max(35, Math.min(60, calcspeed));
+        var clampspeed = Math.max(35, Math.min(120, calcspeed));
         return clampspeed;
     }
 
