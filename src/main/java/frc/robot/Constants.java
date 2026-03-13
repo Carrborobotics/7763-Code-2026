@@ -10,7 +10,6 @@ import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.Matrix;
 
 import edu.wpi.first.math.VecBuilder;
-//import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -30,7 +29,7 @@ import frc.robot.subsystems.swerve.SwerveModuleConstants;
 
 public final class Constants {
     public static final double stickDeadband = 0.12;
-
+    public static final double stickDeadbandDivider = 1.0; // 1 FOR COMP, 5 for test mode.
     public static final double RACK_GEARING = 9.0; // 9:1
     public static final double INTAKE_GEARING = 1.25; // 12t:15t = 1.25:1
     public static final double TURRET_ROTATION_GEARING = 12.0; // 12:1
@@ -214,7 +213,9 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.5; // 4.5 FOR COMP (0.5 for test code)
+        public static final double maxSpeed = 4.5; // 4.5 FOR COMP, 0.5 for test mode
+        /** Radians per Second */
+        public static final double maxAngularVelocity = 10.0; //10 FOR COMP, 2.0 for test mode
         /*
          * These are theorectial values to start with, tune after
          * Kraken FOC-DIS (L1.0): ft/s = 12.9 | m/s = 3.93192
@@ -233,8 +234,6 @@ public final class Constants {
          * Kraken FOC-ENB (L4.0): ft/s = 19.7 | m/s = 6.00456
          */
 
-        /** Radians per Second */
-        public static final double maxAngularVelocity = 10.0; //10 FOR COMP (2.0 for test)
 
         /* Neutral Modes */
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
