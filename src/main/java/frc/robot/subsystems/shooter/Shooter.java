@@ -43,7 +43,6 @@ public class Shooter extends SubsystemBase{
     }
 
     public Command setShooterSpeed(double speed) {
-        reqSpeed = speed;
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
@@ -63,7 +62,6 @@ public class Shooter extends SubsystemBase{
         super.periodic();
         this.io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
-        SmartDashboard.putNumber("requested shooter", reqSpeed);
         SmartDashboard.putBoolean("Is shooter Overloaded?", this.IsOverloaded());
         SmartDashboard.putString("shooter/shooter voltage", this.inputs.appliedVolts.toString());
         SmartDashboard.putString("shooter/shooter supply current", this.inputs.supplyCurrent.toString());
