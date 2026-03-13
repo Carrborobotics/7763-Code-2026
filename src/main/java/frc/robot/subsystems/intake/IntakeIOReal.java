@@ -44,7 +44,7 @@ public class IntakeIOReal implements IntakeIO {
 
         // Keep the voltages within range
         intakeConfig.Voltage.PeakForwardVoltage = 12;
-        intakeConfig.Voltage.PeakReverseVoltage = 12;
+        intakeConfig.Voltage.PeakReverseVoltage = -12;
 
         intakeMotor.getConfigurator().apply(intakeConfig);
 

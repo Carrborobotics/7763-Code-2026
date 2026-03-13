@@ -44,7 +44,7 @@ public class FloorIOReal implements FloorIO {
 
         // Keep the voltages within range
         floorConfig.Voltage.PeakForwardVoltage = 12;
-        floorConfig.Voltage.PeakReverseVoltage = 12;
+        floorConfig.Voltage.PeakReverseVoltage = -12;
 
         floorMotor.getConfigurator().apply(floorConfig);
 

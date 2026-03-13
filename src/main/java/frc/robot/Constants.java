@@ -306,8 +306,12 @@ public final class Constants {
         public static final String kCameraName = "Arducam_OV9281_USB_Camera";
 
         public static final Transform3d kRobotToCam = new Transform3d(
-            new Translation3d(Units.inchesToMeters(9.15), Units.inchesToMeters(0.0), Units.inchesToMeters(7.25)), // X and Y were swapped?
-                  new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(-10), Units.degreesToRadians(0)));
+            new Translation3d(0.317258, Units.inchesToMeters(0.0), 0.2794), // X and Y were swapped?
+                  new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(30), Units.degreesToRadians(0)));
+
+ //public static final Transform3d kRobotToCam = new Transform3d(
+   //         new Translation3d(Units.inchesToMeters(9.15), Units.inchesToMeters(0.0), Units.inchesToMeters(7.25)), // X and Y were swapped?
+     //             new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(-10), Units.degreesToRadians(0)));
 
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);

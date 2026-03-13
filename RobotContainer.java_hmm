@@ -45,8 +45,6 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.turret.TurretIOReal;
 import frc.robot.subsystems.turret.TurretIOSim;   
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIOReal;
-import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooterhood.ShooterHood;
 import frc.robot.subsystems.shooterhood.ShooterHoodIOReal;
 import frc.robot.subsystems.shooterhood.ShooterHoodIOSim;
@@ -98,18 +96,16 @@ public class RobotContainer {
             this.rack = new Rack(new RackIOReal());
             this.intake = new Intake(new IntakeIOReal());
             this.floor = new Floor(new FloorIOReal());
-            this.shooter = new Shooter(new ShooterIOReal());
             this.turret = new Turret(new TurretIOReal());
             this.shooterHood = new ShooterHood(new ShooterHoodIOReal());
         } else {
             this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
             this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
             this.floor = new Floor(new FloorIOSim());
-            this.shooter = new Shooter(new ShooterIOSim());
             this.turret = new Turret(new TurretIOSim());
             this.shooterHood = new ShooterHood(new ShooterHoodIOSim());
         }
-
+        shooter = new Shooter();
         targetField = new Field2d();
         SmartDashboard.putData("Target Field", targetField);
 
@@ -126,9 +122,9 @@ public class RobotContainer {
                     () -> false
             )
         );
-
-        turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret));
-        shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood)));
+        turret.setDefaultCommand((Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret)));
+        shooterHood.setDefaultCommand(Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood));
+        //shooter.setDefaultCommand(Commands.run(() -> shooter.setShootSpeed(getShotSpeed()), shooter));
 
         configureButtonBindings();
     }
@@ -153,7 +149,9 @@ public class RobotContainer {
 
         // run the intake
         driverController.start().whileTrue(intake.setIntakeSpeed(0.5))
+           // .alongWith(floor.setFloorSpeed(-0.5)))
             .onFalse(intake.stopCmd());
+           // .alongWith(floor.stopCmd()));
 
         // rack goes out (deployed)
         driverController.leftTrigger().onTrue(rack.rackToCmd(-34000.0));
@@ -168,22 +166,21 @@ public class RobotContainer {
         //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
         //driverController.y().onTrue(turret.turretTo(-5.0));s
         
-        driverController.rightBumper().onTrue(shootCmd());
+        driverController.rightBumper().onTrue(shootCmd())
             //.alongWith(floor.setFloorSpeed(-0.25)))
-            //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
+            .onFalse(Commands.run(() -> shooter.setSpeed(0))); // .alongWith(floor.stopCmd()));
 
-        driverController.x().onTrue(shooter.setShooterSpeed(0));
-        driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+        driverController.x().onTrue(Commands.run(() -> shooter.setSpeed(0)));
+        //driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
 
+        
     }
-
 
     public Command shootCmd() {
         double baseAngle = getHoodAngle();
         SmartDashboard.putNumber("base angle", baseAngle);
-        return shooter.setShooterSpeed(baseAngle * 0.2);
+        return (Commands.run(() -> shooter.setSpeed(baseAngle * 0.2)));
     }
-
 
     // ── Targeting ──────────────────────────────────────────────────────────────
     private double getTurretAngle() {
@@ -205,7 +202,6 @@ public class RobotContainer {
         double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
         turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);
         double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
-        SmartDashboard.putNumber("Target distance", targetDistance);
         SmartDashboard.putNumber("Turret Angle", turretAngle);
         SmartDashboard.putString("Target", target.toString());
         return -(MathUtil.clamp(turretAngle, -185.0, 185.0));
@@ -230,7 +226,7 @@ public class RobotContainer {
         Translation2d toTarget = robotPose.getTranslation().minus(target);
         double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
         SmartDashboard.putNumber("Target distance", targetDistance);
-        double hoodAngle = targetDistance * 40; //TODO: Tune this!! Target distance * some formula
+        double hoodAngle = targetDistance * 60; //TODO: Tune this!! Target distance * some formula
         SmartDashboard.putNumber("Hood Angle", hoodAngle);
         return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
     }
@@ -243,7 +239,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected()
             .deadlineFor(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret))
-            .alongWith((Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood)));
+            .alongWith((Commands.run(() -> shooterHood.setShooterHoodAngle(getHoodAngle()), shooterHood)));
     }
 
     public Turret getTurret() {
