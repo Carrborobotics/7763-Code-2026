@@ -307,35 +307,42 @@ public class Swerve extends SubsystemBase {
     }
     
 
+    /* 
+    * Chooses the hub target or the pass-zones.
+    * Assumes the robotPose is already flipped for red/blue sides
+    */
+    public Translation2d getTargetForRobotPose(Pose2d robotPose) {
+        Translation2d target = Constants.Localization.hubPosition;
+        if (robotPose.getX() > Constants.Localization.trenchline) {
+            if (robotPose.getY() < Constants.Localization.yMidline) {
+                target = Constants.Localization.lowerPassTarget;
+            } else {
+                target = Constants.Localization.upperPassTarget;
+            }
+        }
+        return target;
+    }
+
     public double getTargetDistance() {
         Pose2d robotPose = Swerve.flipIfRed(this.getRobotPose());
         SmartDashboard.putString("rpose for distance", robotPose.toString());
-        Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
-
-        if (robotPose.getX() > Constants.Localization.trenchline) {
-            if (robotPose.getY() < Constants.Localization.yMidline) {
-                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
-            }
-            else {
-                target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
-            }
-        }
-;
+        Translation2d target = getTargetForRobotPose(robotPose);
         Translation2d toTarget = robotPose.getTranslation().minus(target);
         double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
         SmartDashboard.putNumber("Target distance", targetDistance);
         return targetDistance;
-        //double hoodAngle = targetDistance * 60; //TODO: Tune this!! Target distance * some formula
-        //SmartDashboard.putNumber("Hood Angle", hoodAngle);
-        //return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
     }
+    /*
+     * Calculate the target speed based on distance.  This was done empirically
+     * based on testing at SeQuEnCe/7890's full field.
+     */
     public double getTargetSpeed() {
         var dist = this.getTargetDistance();
         var calcspeed = -1.0809 * dist * dist + 11.5334 * dist + 22.9887;
         var clampspeed = Math.max(35, Math.min(60, calcspeed));
         return clampspeed;
     }
-    
+
     @Override
     public void periodic() {
         m_poseEstimator.update(getGyroYaw(), getModulePositions());

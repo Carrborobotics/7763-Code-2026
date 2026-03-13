@@ -61,8 +61,6 @@ public class Shooter extends SubsystemBase{
      */
     public Command continuousSetShooterSpeed(Swerve swerve) {
         return run(() -> this.io.setSpeed(swerve.getTargetSpeed()));
-            //Math.sqrt(swerve.getTargetDistance()) * 4)
-        // Math.max(35, Math.min(60, calcspeed))
     }
 
     /**
