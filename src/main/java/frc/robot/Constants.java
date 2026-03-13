@@ -214,7 +214,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 0.5; // 4.5 FOR COMP
+        public static final double maxSpeed = 4.5; // 4.5 FOR COMP (0.5 for test code)
         /*
          * These are theorectial values to start with, tune after
          * Kraken FOC-DIS (L1.0): ft/s = 12.9 | m/s = 3.93192
@@ -234,7 +234,7 @@ public final class Constants {
          */
 
         /** Radians per Second */
-        public static final double maxAngularVelocity = 2.0; //10 FOR COMP
+        public static final double maxAngularVelocity = 10.0; //10 FOR COMP (2.0 for test)
 
         /* Neutral Modes */
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;

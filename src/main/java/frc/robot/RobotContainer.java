@@ -58,7 +58,7 @@ import frc.robot.subsystems.floor.FloorIOSim;
 //import frc.robot.Constants;
 
 public class RobotContainer {
-    double SHOOTER_ADJUST_AMOUNT = 5.0; // amount to adjust shooter speed by when pressing the POV up/down buttons
+    double SHOOTER_ADJUST_AMOUNT = 2.0; // amount to adjust shooter speed by when pressing the POV up/down buttons
     double TURRET_ADJUST_AMOUNT = 2.0; // amount to adjust turret angle by when pressing the POV left/right buttons
 
     /* Auto */
@@ -156,12 +156,12 @@ public class RobotContainer {
         driverController.povRight().onTrue(turret.modifyOffsetCmd(TURRET_ADJUST_AMOUNT));   // increase turret angle offset by 1 degrees
 
         // Hold left bumper to auto-aim at hub, release to go back to trigger control
-        driverController.leftBumper().whileTrue(
-            Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret)
-        );
+        // driverController.leftBumper().whileTrue(
+        //     Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret)
+        // );
 
         // run the intake
-        driverController.start().whileTrue(intake.setIntakeSpeed(0.5))
+        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.5))
             .onFalse(intake.stopCmd());
 
         // rack goes out (deployed)
@@ -169,6 +169,7 @@ public class RobotContainer {
         // rack goes in (retracted)
         driverController.rightTrigger().onTrue(rack.rackToCmd(0.0));
 
+        driverController.a().onTrue(shooterHood.setSpeedCmd(0.1).until(shooterHood::IsOverloaded));
         // turret testing
         //driverController.b().onTrue(shooterHood.shooterHoodToCmd(-getHoodAngle())); //Negative for inverse rotation
 
@@ -189,14 +190,14 @@ public class RobotContainer {
 
 
     public Command shootCmd() {
-        return shooter.continuousSetShooterSpeed(getHoodAngle() * 0.2);
+        return shooter.continuousSetShooterSpeed(s_Swerve);
     }
 
 
     // ── Targeting ──────────────────────────────────────────────────────────────
     private double getTurretAngle() {
         Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
-        Pose2d robotPose = s_Swerve.getRobotPose();
+        Pose2d robotPose = Swerve.flipIfRed(s_Swerve.getRobotPose());
         SmartDashboard.putString("rpose", robotPose.toString());
 
         if (robotPose.getX() > Constants.Localization.trenchline) {
@@ -220,7 +221,7 @@ public class RobotContainer {
     }
 
     private double getHoodAngle() {
-        Pose2d robotPose = s_Swerve.getRobotPose();
+        Pose2d robotPose = Swerve.flipIfRed(s_Swerve.getRobotPose());
         SmartDashboard.putString("rpose for distance", robotPose.toString());
         Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
 

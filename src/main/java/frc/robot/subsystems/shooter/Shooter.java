@@ -5,9 +5,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
+//import frc.robot.Constants.Swerve;
+import frc.robot.subsystems.shooterhood.ShooterHood;
 import frc.robot.util.LoggedTunableNumber;
 import static edu.wpi.first.units.Units.*;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.Constants;
+import frc.robot.subsystems.swerve.Swerve;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase{
@@ -45,16 +49,20 @@ public class Shooter extends SubsystemBase{
     public Command modifyOffsetCmd(double offset) {
         return runOnce(() -> this.io.modifyOffset(offset));
     }
-    
+
     public Command setShooterSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
     }
 
+
+
     /**
      * Continuously set shooter speed (use with Commands.run or whileTrue)
      */
-    public Command continuousSetShooterSpeed(double speed) {
-        return run(() -> this.io.setSpeed(speed));
+    public Command continuousSetShooterSpeed(Swerve swerve) {
+        return run(() -> this.io.setSpeed(swerve.getTargetSpeed()));
+            //Math.sqrt(swerve.getTargetDistance()) * 4)
+        // Math.max(35, Math.min(60, calcspeed))
     }
 
     /**
