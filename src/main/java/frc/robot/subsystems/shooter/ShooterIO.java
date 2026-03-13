@@ -13,19 +13,12 @@ public interface ShooterIO {
     @AutoLog
     class ShooterIOInputs {
         public boolean MotorConnected = true;       
-        
         public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
-
         public MutAngularVelocity kickerVelocity = DegreesPerSecond.mutable(0);
-
         public MutVoltage appliedVolts = Volts.mutable(0);
-
         public MutCurrent supplyCurrent = Amps.mutable(0);
-
         public MutCurrent torqueCurrent = Amps.mutable(0);
-
         public MutTemperature temperature = Celsius.mutable(0);
-
     }   
     default void updateInputs(ShooterIOInputs inputs) {}
 
@@ -33,8 +26,10 @@ public interface ShooterIO {
 
     default void setFF(double kS, double kG, double kV, double kA) {}
 
+    default void modifyOffset(double offsetval) {}
     default void setSpeed(double speed) {}
     default void setVoltage(double volts) {}
+    default void stop() {}
 
 
 }

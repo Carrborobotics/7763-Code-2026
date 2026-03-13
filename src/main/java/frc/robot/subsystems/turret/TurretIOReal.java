@@ -20,6 +20,7 @@ public class TurretIOReal implements TurretIO {
 
     private final TalonFX motor;
     private final PositionVoltage positionRequest = new PositionVoltage(0);//.withEnableFOC(true);
+    private Angle offset = Degrees.of(0); // offset to add to the turret angle, used for fine-tuning
 
     public TurretIOReal() {
         motor = new TalonFX(Constants.CANConstants.turretId, Constants.CANConstants.canBusDriveTrain);
@@ -67,9 +68,15 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
+    public void modifyOffset(double offsetval) {
+        this.offset = Degrees.of(this.offset.in(Degrees) + offsetval);
+    }
+
+    @Override
     public void runSetpoint(Angle position) {
+        Angle adjustedPosition = Degrees.of(position.in(Degrees) + this.offset.in(Degrees));
         // Convert Angle -> rotations (rotations = radians / 2pi)
-        double rotations = position.in(Radians) / (2.0 * Math.PI);
+        double rotations = adjustedPosition.in(Radians) / (2.0 * Math.PI);
         motor.setControl(positionRequest.withPosition(rotations));
     }
 

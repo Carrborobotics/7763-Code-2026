@@ -58,6 +58,9 @@ import frc.robot.subsystems.floor.FloorIOSim;
 //import frc.robot.Constants;
 
 public class RobotContainer {
+    double SHOOTER_ADJUST_AMOUNT = 5.0; // amount to adjust shooter speed by when pressing the POV up/down buttons
+    double TURRET_ADJUST_AMOUNT = 2.0; // amount to adjust turret angle by when pressing the POV left/right buttons
+
     /* Auto */
     private final SendableChooser<Command> autoChooser;
 
@@ -134,9 +137,8 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
-
+        //driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+        //driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
         // Turret rotation with Triggers
         /*turret.setDefaultCommand(
             Commands.run(() -> {
@@ -145,6 +147,13 @@ public class RobotContainer {
                 turret.setTurretAngle(raw * 135.0);
             }, turret)
         );*/
+
+        // up/down pov for incr/dec offset to shooter speed
+        // left/right pov for incr/decr turret angle offsets
+        driverController.povUp().onTrue(shooter.modifyOffsetCmd(SHOOTER_ADJUST_AMOUNT));   // increase shooter speed offset by 1
+        driverController.povDown().onTrue(shooter.modifyOffsetCmd(-SHOOTER_ADJUST_AMOUNT));   // decrease shooter speed offset by 1
+        driverController.povLeft().onTrue(turret.modifyOffsetCmd(-TURRET_ADJUST_AMOUNT));   // decrease turret angle offset by 1 degrees
+        driverController.povRight().onTrue(turret.modifyOffsetCmd(TURRET_ADJUST_AMOUNT));   // increase turret angle offset by 1 degrees
 
         // Hold left bumper to auto-aim at hub, release to go back to trigger control
         driverController.leftBumper().whileTrue(
@@ -168,7 +177,8 @@ public class RobotContainer {
         //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
         //driverController.y().onTrue(turret.turretTo(-5.0));s
         
-        driverController.rightBumper().whileTrue(shootCmd());
+        driverController.rightBumper().whileTrue(shootCmd())
+            .onFalse(shooter.stopCmd());
             //.alongWith(floor.setFloorSpeed(-0.25)))
             //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
@@ -178,11 +188,9 @@ public class RobotContainer {
     }
 
 
-public Command shootCmd() {
-    //return shooter.setShooterSpeed(() -> getHoodAngle() * 0.2);
-    // or if setShooterSpeed doesn't accept a Supplier:
-    return Commands.run(() -> shooter.setShooterSpeed(getHoodAngle() * 0.2), shooter);
-}
+    public Command shootCmd() {
+        return shooter.continuousSetShooterSpeed(getHoodAngle() * 0.2);
+    }
 
 
     // ── Targeting ──────────────────────────────────────────────────────────────

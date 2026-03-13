@@ -30,6 +30,8 @@ public class ShooterIOReal implements ShooterIO {
     final VelocityVoltage m_velocity  = new VelocityVoltage(0);
     double reqSpeed = 0;
 
+    private double offset = 0; // offset to add to the shooter speed, used for fine-tuning
+
     public ShooterIOReal() {
         // Create the shooter kraken
         shooterMotor = new TalonFX(Constants.CANConstants.shooterLeft, Constants.CANConstants.canBus);
@@ -81,6 +83,8 @@ public class ShooterIOReal implements ShooterIO {
 
         m_velocity.Slot = 0;
 
+        offset = 0; // reset on init, just in case
+
         // Not really used except for tracking velocity but keep jic
         //shooterEncoder = new CANcoder(Constants.CANConstants.shooterLeft, Constants.CANConstants.canBus);
         //shooterEncoder2 = new CANcoder(Constants.CANConstants.shooterRight, Constants.CANConstants.canBus);
@@ -88,44 +92,39 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
-        
         inputs.velocity.mut_replace(shooterMotor.getVelocity().getValueAsDouble(), DegreesPerSecond);
-
         inputs.kickerVelocity.mut_replace(kickerMotor.getVelocity().getValueAsDouble(), DegreesPerSecond);
-
         inputs.appliedVolts.mut_replace(shooterMotor.getSupplyVoltage().getValueAsDouble(), Volts);
-
         inputs.supplyCurrent.mut_replace(shooterMotor.getSupplyCurrent().getValueAsDouble(), Amps);
-
         inputs.torqueCurrent.mut_replace(shooterMotor.getTorqueCurrent().getValueAsDouble(), Amps);
-
         inputs.temperature.mut_replace(shooterMotor.getDeviceTemp().getValueAsDouble(), Celsius);
+    }
+
+    @Override
+    public void modifyOffset(double offsetval) {
+        this.offset += offsetval;
+        SmartDashboard.putNumber("shooter speed offset", this.offset);
     }
 
     @Override
     public void setSpeed(double speed) {
         reqSpeed = speed;
+        var adjustedSpeed = speed + offset;
         SmartDashboard.putNumber("shooter req speed", reqSpeed);
+        SmartDashboard.putNumber("shooter adj speed", adjustedSpeed);
+        shooterMotor.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
+        shooterMotor2.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
+        kickerMotor.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
 
-        if (speed < 0.0001) {
-            shooterMotor.stopMotor();
-            shooterMotor2.stopMotor();
-            kickerMotor.stopMotor();
-        }
-        else {
-            shooterMotor.setControl(m_velocity.withVelocity(speed).withSlot(0));
-            shooterMotor2.setControl(m_velocity.withVelocity(speed).withSlot(0));
-            kickerMotor.setControl(m_velocity.withVelocity(speed).withSlot(0));
-        }
     }
 
+    @Override
+    public void stop() {
+        shooterMotor.stopMotor();
+        shooterMotor2.stopMotor();
+        kickerMotor.stopMotor();
+    }
 
-    //@Override
-    //public void setVoltage(double volts) {
-    //    shooterMotor.setVoltage(volts);
-    //    shooterMotor2.setVoltage(volts);
-    //    kickerMotor.setVoltage(volts);
-    //}
     public void periodic() {
     }
 

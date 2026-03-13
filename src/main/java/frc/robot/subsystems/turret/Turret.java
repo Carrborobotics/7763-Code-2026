@@ -70,6 +70,10 @@ public class Turret extends SubsystemBase {
         return runOnce(() -> this.io.setSpeed(val));
     }   
 
+    public Command modifyOffsetCmd(double offset) {
+        return runOnce(() -> this.io.modifyOffset(offset));
+    }
+    
     // private void __configureTurret() {
     //     TalonFXConfiguration cfg = new TalonFXConfiguration();
 

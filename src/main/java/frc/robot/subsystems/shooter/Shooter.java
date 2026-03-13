@@ -42,15 +42,26 @@ public class Shooter extends SubsystemBase{
         this.goal = RobotState.getGoalInstance();    
     }
 
+    public Command modifyOffsetCmd(double offset) {
+        return runOnce(() -> this.io.modifyOffset(offset));
+    }
+    
     public Command setShooterSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
+    }
+
+    /**
+     * Continuously set shooter speed (use with Commands.run or whileTrue)
+     */
+    public Command continuousSetShooterSpeed(double speed) {
+        return run(() -> this.io.setSpeed(speed));
     }
 
     /**
      *  Command to stop the shooter
      */ 
     public Command stopCmd() {
-        return runOnce(() -> this.io.setVoltage(0));
+        return runOnce(() -> this.io.stop());
     }
 
     public boolean IsOverloaded() {
