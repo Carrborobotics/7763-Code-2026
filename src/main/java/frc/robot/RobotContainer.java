@@ -172,7 +172,6 @@ public class RobotContainer {
         driverController.a().onTrue(shooterHood.setSpeedCmd(0.1).until(shooterHood::IsOverloaded));
         // turret testing
         //driverController.b().onTrue(shooterHood.shooterHoodToCmd(-getHoodAngle())); //Negative for inverse rotation
-
         //driverController.x().onTrue(turret.turretToCmd(180.0));
         //driverController.x().whileTrue(shooterHood.setSpeedCmd(0.3)).onFalse(shooterHood.setSpeedCmd(0));
         //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
@@ -186,6 +185,11 @@ public class RobotContainer {
         driverController.x().onTrue(shooter.setShooterSpeed(0));
         driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
 
+        // testing indexer(floor) speeds
+        driverController.start().onTrue(new InstantCommand(() -> floor.setFloorSpeed(0.5)).withTimeout(0.5).andThen(new InstantCommand(() -> floor.stopCmd())));
+        driverController.back().onTrue(new InstantCommand(() -> floor.setFloorSpeed(0.2)).withTimeout(0.5).andThen(new InstantCommand(() -> floor.stopCmd())));
+        driverController.b().onTrue(new InstantCommand(() -> floor.setFloorSpeed(0.05)).withTimeout(1.0).andThen(new InstantCommand(() -> floor.stopCmd())));
+        
     }
 
 
