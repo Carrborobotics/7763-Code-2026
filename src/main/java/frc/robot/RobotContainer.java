@@ -178,7 +178,7 @@ public class RobotContainer {
         //driverController.y().onTrue(turret.turretTo(-5.0));s
         
         driverController.rightBumper().whileTrue(shootCmd())
-            .onFalse(shooter.stopCmd());
+            .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
             //.alongWith(floor.setFloorSpeed(-0.25)))
             //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
@@ -186,15 +186,15 @@ public class RobotContainer {
         driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
 
         // testing indexer(floor) speeds
-        driverController.start().onTrue(new InstantCommand(() -> floor.setFloorSpeed(0.5)).withTimeout(0.5).andThen(new InstantCommand(() -> floor.stopCmd())));
-        driverController.back().onTrue(new InstantCommand(() -> floor.setFloorSpeed(0.2)).withTimeout(0.5).andThen(new InstantCommand(() -> floor.stopCmd())));
-        driverController.b().onTrue(new InstantCommand(() -> floor.setFloorSpeed(0.05)).withTimeout(1.0).andThen(new InstantCommand(() -> floor.stopCmd())));
+        driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
+        driverController.back().whileTrue(floor.setFloorSpeed(-0.20)).onFalse(floor.stopCmd()); // normal floor speed
+        //driverController.b().whileTrue(floor.setFloorSpeed(-0.05)).onFalse(floor.stopCmd());
         
     }
 
 
     public Command shootCmd() {
-        return shooter.continuousSetShooterSpeed(s_Swerve);
+        return shooter.continuousSetShooterSpeed(s_Swerve).alongWith(floor.setFloorSpeed(-0.2));
     }
 
 

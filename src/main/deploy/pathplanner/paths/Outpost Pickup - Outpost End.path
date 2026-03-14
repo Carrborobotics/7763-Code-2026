@@ -64,7 +64,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Pickups",
+  "folder": null,
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": -100.0
