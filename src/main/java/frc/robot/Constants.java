@@ -128,10 +128,10 @@ public final class Constants {
         public static final double angleCurrentThresholdTime = 0.1;
         public static final boolean angleEnableCurrentLimit = false;
 
-        public static final int driveCurrentLimit = 40;
+        public static final int driveCurrentLimit = 60;
         public static final int driveCurrentThreshold = 60;
         public static final double driveCurrentThresholdTime = 0.1;
-        public static final boolean driveEnableCurrentLimit = false;
+        public static final boolean driveEnableCurrentLimit = true;
 
         /*
          * These values are used by the          * loop driving.
@@ -220,7 +220,7 @@ public final class Constants {
             public static final int driveMotorID = 5;
             public static final int angleMotorID = 6;
             public static final int canCoderID = 14;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(135.0);//180
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-90.0);//180
             public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
                     canCoderID, angleOffset);
         }
