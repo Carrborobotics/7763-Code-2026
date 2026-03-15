@@ -46,12 +46,12 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": -45.0
+      "waypointRelativePos": 0.66,
+      "rotationDegrees": 5.0
     },
     {
       "waypointRelativePos": 1.2,
-      "rotationDegrees": -45.0
+      "rotationDegrees": 14.999999999999998
     },
     {
       "waypointRelativePos": 1.5,
@@ -121,7 +121,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Traverse",
   "idealStartingState": {
     "velocity": 0.5,
     "rotation": -90.0

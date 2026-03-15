@@ -98,8 +98,20 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Rack_Extend",
+      "waypointRelativePos": 0.34905660377358516,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
       "name": "Intake_On",
       "waypointRelativePos": 0.3962264150943377,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Rack_Retract",
+      "waypointRelativePos": 3.910377358490566,
       "endWaypointRelativePos": null,
       "command": null
     }

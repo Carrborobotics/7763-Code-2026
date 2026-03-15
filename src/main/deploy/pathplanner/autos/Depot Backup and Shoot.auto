@@ -1,0 +1,25 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot Start - Backup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Autos",
+  "choreoAuto": false
+}

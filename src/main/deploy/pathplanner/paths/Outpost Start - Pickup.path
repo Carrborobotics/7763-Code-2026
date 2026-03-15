@@ -74,7 +74,20 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Rack_Extend",
+      "waypointRelativePos": 0.5542452830188679,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Intake_On",
+      "waypointRelativePos": 0.7429245283018887,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.75,
     "maxAcceleration": 2.5,
@@ -88,7 +101,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Starts",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
