@@ -15,6 +15,12 @@
           "data": {
             "pathName": "Depot Side End"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
         }
       ]
     }

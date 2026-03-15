@@ -329,9 +329,24 @@ public class Swerve extends SubsystemBase {
         Translation2d target = getTargetForRobotPose(robotPose);
         Translation2d toTarget = robotPose.getTranslation().minus(target);
         double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
-        SmartDashboard.putNumber("Target distance", targetDistance);
+        SmartDashboard.putNumber("Target distance", targetDistance);   
         return targetDistance;
     }
+
+    /* when we are under or near the trench we need to lower the hood so it fits.
+     * quick hack to set the target distance really close by dividing it.
+     */
+    public double getTargetDistanceForHood() {
+        double targetDistance = this.getTargetDistance();
+        Pose2d robotPose = Swerve.flipIfRed(this.getRobotPose());
+        // TODO: set real trench dimensions
+        // 170 - 194 inches =~~ 4.3 - 4.9 meters
+        if (robotPose.getX() > 4.3 && robotPose.getX() < 4.9) {
+            return targetDistance / 100.0;
+        }
+        return targetDistance;
+    }
+
     /*
      * Calculate the target speed based on distance.  This was done empirically
      * based on testing at SeQuEnCe/7890's full field.

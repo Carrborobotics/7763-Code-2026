@@ -1,35 +1,34 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
+//import static edu.wpi.first.units.Units.Degrees;
 
-import java.util.EnumMap;
-import java.util.function.BooleanSupplier;
+//import java.util.EnumMap;
+//import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
+//import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Distance;
+//import edu.wpi.first.units.Units;
+//import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
+//import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+//import edu.wpi.first.wpilibj2.command.InstantCommand;
+//import edu.wpi.first.wpilibj2.command.RunCommand;
+//import edu.wpi.first.wpilibj2.command.WaitCommand;
+//import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import frc.robot.Constants.Localization.ReefFace;
-import frc.robot.commands.LocalSwerve;
+//import frc.robot.commands.LocalSwerve;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.rack.Rack;
 import frc.robot.subsystems.rack.RackIOReal;
@@ -71,8 +70,8 @@ public class RobotContainer {
     private final Supplier<Double> translationAxis = driverController::getLeftY;
     private final Supplier<Double> strafeAxis = driverController::getLeftX;
     private final Supplier<Double> rotationAxis = driverController::getRightX;
-    private final Supplier<Double> turretAxis = () ->
-        driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis();
+    //private final Supplier<Double> turretAxis = () ->
+    //    driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis();
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -91,9 +90,9 @@ public class RobotContainer {
     }
 
     /* Alliance colors */
-    private final Color redBumper = Color.kDarkRed;
-    private final Color blueBumper = Color.kDarkBlue;
-    private Color original_color;
+    // private final Color redBumper = Color.kDarkRed;
+    // private final Color blueBumper = Color.kDarkBlue;
+    // private Color original_color;
     public Pose2d globalRobotPose;
 
     public RobotContainer() {
@@ -130,6 +129,12 @@ public class RobotContainer {
             )
         );
 
+        NamedCommands.registerCommand("Shoot_5s", shootCmd().withTimeout(5.0));
+        NamedCommands.registerCommand("Intake_On", intake.setIntakeSpeed(0.5));
+        NamedCommands.registerCommand("Rack_Extend", rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
+        NamedCommands.registerCommand("Rack_Retract", rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
+        
+
         turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret));
         shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood)));
 
@@ -155,27 +160,16 @@ public class RobotContainer {
         driverController.povLeft().onTrue(turret.modifyOffsetCmd(-TURRET_ADJUST_AMOUNT));   // decrease turret angle offset by 1 degrees
         driverController.povRight().onTrue(turret.modifyOffsetCmd(TURRET_ADJUST_AMOUNT));   // increase turret angle offset by 1 degrees
 
-        // Hold left bumper to auto-aim at hub, release to go back to trigger control
-        // driverController.leftBumper().whileTrue(
-        //     Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret)
-        // );
-
         // run the intake
         driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.5))
             .onFalse(intake.stopCmd());
 
         // rack goes out (deployed)
-        driverController.leftTrigger().onTrue(rack.rackToCmd(-34000.0));
+        driverController.leftTrigger().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
         // rack goes in (retracted)
-        driverController.rightTrigger().onTrue(rack.rackToCmd(0.0));
+        driverController.rightTrigger().onTrue(rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
 
         driverController.a().onTrue(shooterHood.setSpeedCmd(0.1).until(shooterHood::IsOverloaded));
-        // turret testing
-        //driverController.b().onTrue(shooterHood.shooterHoodToCmd(-getHoodAngle())); //Negative for inverse rotation
-        //driverController.x().onTrue(turret.turretToCmd(180.0));
-        //driverController.x().whileTrue(shooterHood.setSpeedCmd(0.3)).onFalse(shooterHood.setSpeedCmd(0));
-        //driverController.y().whileTrue(shooterHood.setSpeedCmd(-0.3)).onFalse(shooterHood.setSpeedCmd(0));
-        //driverController.y().onTrue(turret.turretTo(-5.0));s
         
         driverController.rightBumper().whileTrue(shootCmd())
             .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
@@ -186,9 +180,10 @@ public class RobotContainer {
         driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
 
         // testing indexer(floor) speeds
-        driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
-        driverController.back().whileTrue(floor.setFloorSpeed(-0.20)).onFalse(floor.stopCmd()); // normal floor speed
-        //driverController.b().whileTrue(floor.setFloorSpeed(-0.05)).onFalse(floor.stopCmd());
+        //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
+        driverController.start().whileTrue(intake.setIntakeSpeed(-0.2)).onFalse(intake.stopCmd()); // reverse intake
+        driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // normal floor speed
+        driverController.b().whileTrue(floor.setFloorSpeed(0.2)).onFalse(floor.stopCmd()); // reverse floor speed (ejecting balls)
         
     }
 
@@ -201,16 +196,6 @@ public class RobotContainer {
     // ── Targeting ──────────────────────────────────────────────────────────────
     private double getTurretAngle() {
         Pose2d robotPose = Swerve.flipIfRed(s_Swerve.getRobotPose());
-        // Translation2d target = Swerve.flipIfRed(Constants.Localization.hubPosition);
-        // SmartDashboard.putString("rpose", robotPose.toString());
-        // if (robotPose.getX() > Constants.Localization.trenchline) {
-        //     if (robotPose.getY() < Constants.Localization.yMidline) {
-        //         target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
-        //     }
-        //     else {
-        //         target = Swerve.flipIfRed(Constants.Localization.lowerPassTarget);
-        //     }
-        // }
         Translation2d target = s_Swerve.getTargetForRobotPose(robotPose);
         Translation2d toTarget = robotPose.getTranslation().minus(target);
         double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
@@ -222,8 +207,8 @@ public class RobotContainer {
     }
 
     private double getHoodAngle() {
-        double targetDistance = s_Swerve.getTargetDistance();
-        double hoodAngle = targetDistance * 60; //TODO: Tune this!! Target distance * some formula
+        double targetDistance = s_Swerve.getTargetDistanceForHood();
+        double hoodAngle = targetDistance * 60;
         SmartDashboard.putNumber("Hood Angle", hoodAngle);
         return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
     }

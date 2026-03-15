@@ -39,6 +39,9 @@ public final class Constants {
     public static final double FLOOR_GEARING = 1.0; // TODO: Need real floor motor gear ratio
     public static final double shooterRPS = 100;
     
+    public static final double RACK_EXTEND_POSITION = -34000.0;
+    public static final double RACK_RETRACT_POSITION = 0.0;
+    
     public static final class CANConstants {
         public static final int intakeId = 42;
         public static final int rackId = 41;
