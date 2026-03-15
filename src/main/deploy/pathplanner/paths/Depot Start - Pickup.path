@@ -99,13 +99,13 @@
   "eventMarkers": [
     {
       "name": "Rack_Extend",
-      "waypointRelativePos": 0.34905660377358516,
+      "waypointRelativePos": 0.4,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "Intake_On",
-      "waypointRelativePos": 0.3962264150943377,
+      "waypointRelativePos": 0.9905660377358472,
       "endWaypointRelativePos": null,
       "command": null
     },

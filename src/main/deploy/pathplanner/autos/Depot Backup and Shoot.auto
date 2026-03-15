@@ -15,6 +15,18 @@
           "data": {
             "name": "Shoot_5s"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot Pickup after Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
         }
       ]
     }
