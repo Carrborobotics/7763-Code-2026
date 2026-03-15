@@ -89,9 +89,10 @@ public class Vision {
 
         for (var result : results) {
             // FIX 2: Try coprocessor multi-tag first, fall back to single-tag.
-            visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
+            visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
             if (visionEst.isEmpty()) {
                 //visionEst = photonEstimator.estimateSingleTagPose(result);
+                //photonEstimator.estimateCopro
             }
 
             if (visionEst.isEmpty()) continue;
