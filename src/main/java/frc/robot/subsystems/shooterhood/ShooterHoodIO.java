@@ -1,4 +1,4 @@
-package frc.robot.subsystems.turret;
+package frc.robot.subsystems.shooterhood;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -12,9 +12,9 @@ import org.littletonrobotics.junction.AutoLog;
 
 import static edu.wpi.first.units.Units.*;
 
-public interface TurretIO {
+public interface ShooterHoodIO {
     @AutoLog
-    class TurretIOInputs {
+    class ShooterHoodIOInputs {
         public boolean motorConnected = true;
         public MutAngle position = Degrees.mutable(0);
         public MutAngularVelocity velocity = DegreesPerSecond.mutable(0);
@@ -26,7 +26,7 @@ public interface TurretIO {
         public MutAngularVelocity setpointVelocity = DegreesPerSecond.mutable(0);
     }
 
-    void updateInputs(TurretIOInputs inputs);
+    void updateInputs(ShooterHoodIOInputs inputs);
     default void setSpeed(double speed) {}
     default void runSetpoint(Angle position) {}
     default void runVolts(Voltage volts) {}
@@ -35,6 +35,5 @@ public interface TurretIO {
     default void setPID(double p, double i, double d) {}
     default void setFF(double kS, double kG, double kV, double kA) {}
     default void stop() {}
-    default void modifyOffset(double offsetval) {}
 
 }

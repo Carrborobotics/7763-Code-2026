@@ -1,28 +1,35 @@
 package frc.robot.subsystems.swerve;
 
 import frc.robot.Constants;
+//import frc.robot.Constants.Localization.ReefFace;
+//import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.subsystems.vision.Vision;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
+//import java.lang.module.ModuleDescriptor.Builder;
+//import java.lang.reflect.Field;
+//import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
+//import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.config.RobotConfig;
-import edu.wpi.first.math.MathUtil;
 
+//import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,12 +38,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+//import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+//import frc.robot.commands.LocalSwerve;
+//import frc.robot.subsystems.elevator.Elevator;
+//import frc.robot.subsystems.led.LedSubsystem;
+//import frc.robot.subsystems.led.LedSubsystem.LedMode;
 import frc.robot.util.LoggedTunableNumber;
 import edu.wpi.first.math.controller.PIDController;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 
 
 public class Swerve extends SubsystemBase {
@@ -62,6 +73,7 @@ public class Swerve extends SubsystemBase {
     public final double positionKS = 0.02;
     public final double rotationKS = 0.02;
 
+
     public SwerveModule[] mSwerveMods;
     public boolean doRejectUpdate = false;
 
@@ -69,9 +81,10 @@ public class Swerve extends SubsystemBase {
     private final Field2d field;
 
     private Pose2d simPose = new Pose2d();
-    private Pose2d robotPose = new Pose2d();
+    
     private final Pigeon2 gyro;
     private final Vision vision = new Vision();
+    // public ReefFace goalFace;
 
     public Swerve() {
 
@@ -82,7 +95,9 @@ public class Swerve extends SubsystemBase {
         yPID.setTolerance(positionTolerance.get());
         rPID.setTolerance(rotationTolerance.get());
     
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.CANConstants.canBusDriveTrain);
+        // Phoenix6 Pigeon2 constructor with canBus string is deprecated/for removal;
+        // use the single-argument constructor (device ID) provided by phoenix6 v26.
+        gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -93,6 +108,7 @@ public class Swerve extends SubsystemBase {
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
+        // Let the field be visible in elastic
         field = new Field2d();
         SmartDashboard.putData("Field", field);
 
@@ -109,14 +125,19 @@ public class Swerve extends SubsystemBase {
             RobotConfig config = RobotConfig.fromGUISettings();
 
             AutoBuilder.configure(
-                    this::getPose,
-                    this::setPose,
-                    this::getSpeeds,
-                    (speeds, feedforwards) -> driveRobotRelativeAuto(speeds),
-                    new PPHolonomicDriveController(
-                            new PIDConstants(5.0, 0.0, 0.0),
+                    this::getPose, // Robot pose supplier
+                    this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                    this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    (speeds, feedforwards) -> driveRobotRelativeAuto(speeds), // Method that will drive the robot given
+                                                                              // ROBOT RELATIVE ChassisSpeeds. Also
+                                                                              // optionally outputs individual module
+                                                                              // feedforwards
+                    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
+                                                    // for holonomic drive trains
+                            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                             new PIDConstants(5.0, 0.0, 0.0)),
                     config,
+                    //Constants.PathPlanner.robotConfig,
                     Robot::isRed,
                     this);
         } catch (Exception e) {
@@ -160,6 +181,15 @@ public class Swerve extends SubsystemBase {
         });
     }
 
+    /** 
+     *  @param xSpeed Speed of the robot in the x direction (forward)
+     * @param ySpeed Speed of the robot in the y direction (sideways)
+     * @param rotation Angular rate of the robot
+     * @param fielRelative Wether the provided x and y speeds are relative to the field
+     * @param rateLimit Whether to enable rate limiting for smoother control 
+    */
+   
+
     public void drive(double xSpeed, double ySpeed, Translation2d translation, double rotation, boolean fieldRelative, boolean rateLimit, boolean useCoralLimelight) {
         SwerveModuleState[] swerveModuleStates;
 
@@ -181,6 +211,7 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
@@ -205,7 +236,7 @@ public class Swerve extends SubsystemBase {
         return positions;
     }
 
-    public Pose2d getPose() {
+    public Pose2d  getPose() {
         if (Robot.isSimulation()){
             return simPose;
         }
@@ -271,11 +302,40 @@ public class Swerve extends SubsystemBase {
         return Robot.isRed() ? FlippingUtil.flipFieldRotation(rotation) : rotation;
     }
 
+    // public static Rotation2d reefBearing(Translation2d position) {
+    //     Translation2d reefCenter = flipIfRed(Constants.Localization.reefCenter);
+    //     Translation2d relativePosition = reefCenter.minus(position);
+    //     return relativePosition.getAngle();
+    // }
+
+    // public ReefFace nearestFace(Translation2d position) {
+    //     Rotation2d reefBearing = flipIfRed(reefBearing(position));
+    //     double bearingAngle = MathUtil.inputModulus(reefBearing.getDegrees(), -180, 180);
+    //     SmartDashboard.putNumber("bearing angle", bearingAngle);
+    //     if (bearingAngle > 150 || bearingAngle < -150) {
+    //         return ReefFace.GH;
+    //     } else if (bearingAngle > 90) {
+    //         return ReefFace.EF;
+    //     } else if (bearingAngle > 30) {
+    //         return ReefFace.CD;
+    //     } else if (bearingAngle > -30) {
+    //         return ReefFace.AB;
+    //     } else if (bearingAngle > -90) {
+    //         return ReefFace.KL;
+    //     } else { // bearingAngle > -150
+    //         return ReefFace.IJ;
+    //     }
+    // }
+
     public void zeroHeading() {
         if (Robot.isRed()) {
+            // setHeading(new Rotation2d(Math.PI));
             gyro.setYaw(180);
         }
+
+        // setHeading(new Rotation2d());
         gyro.reset();
+
     }
 
     public Rotation2d getGyroYaw() {
@@ -292,118 +352,61 @@ public class Swerve extends SubsystemBase {
                 this);
     }
 
-    public double visionDifference() {
+    public double visionDifference(){
         Pose2d vPose = vision.lastPose();
-        if (vPose == null) {
+        if (vPose == null){
             return Double.POSITIVE_INFINITY;
         }
-        double diff = getPose().getTranslation().getDistance(vPose.getTranslation());
-        SmartDashboard.putNumber("Vision Difference", diff);
-        return diff;
-    }
-
-    public Pose2d getRobotPose() {
-        return robotPose;
+        SmartDashboard.putNumber("Vision Difference",getPose().getTranslation().getDistance(vPose.getTranslation()));
+        return getPose().getTranslation().getDistance(vPose.getTranslation());
     }
     
-
-    /* 
-    * Chooses the hub target or the pass-zones.
-    * Assumes the robotPose is already flipped for red/blue sides
-    */
-    public Translation2d getTargetForRobotPose(Pose2d robotPose) {
-        Translation2d target = Constants.Localization.hubPosition;
-        if (robotPose.getX() > Constants.Localization.trenchline) {
-            if (robotPose.getY() < Constants.Localization.yMidline) {
-                target = Constants.Localization.lowerPassTarget;
-            } else {
-                target = Constants.Localization.upperPassTarget;
-            }
-        }
-        return target;
-    }
-
-    public double getTargetDistance() {
-        Pose2d robotPose = Swerve.flipIfRed(this.getRobotPose());
-        SmartDashboard.putString("rpose for distance", robotPose.toString());
-        Translation2d target = getTargetForRobotPose(robotPose);
-        Translation2d toTarget = robotPose.getTranslation().minus(target);
-        double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
-        SmartDashboard.putNumber("Target distance", targetDistance);   
-        return targetDistance;
-    }
-
-    /* when we are under or near the trench we need to lower the hood so it fits.
-     * quick hack to set the target distance really close by dividing it.
-     */
-    public double getTargetDistanceForHood() {
-        double targetDistance = this.getTargetDistance();
-        Pose2d robotPose = Swerve.flipIfRed(this.getRobotPose());
-        // TODO: set real trench dimensions
-        // 170 - 194 inches =~~ 4.3 - 4.9 meters
-        if (robotPose.getX() > 4.3 && robotPose.getX() < 4.9) {
-            return targetDistance / 100.0;
-        }
-        return targetDistance;
-    }
-
-    /*
-     * Calculate the target speed based on distance.  This was done empirically
-     * based on testing at SeQuEnCe/7890's full field.
-     * We also do clamping of the speed value.
-     */
-    public double getTargetSpeed() {
-        var dist = this.getTargetDistance();
-        var calcspeed = -1.0809 * dist * dist + 11.5334 * dist + 22.9887;
-        var clampspeed = Math.max(35, Math.min(120, calcspeed));
-        return clampspeed;
-    }
-
+    
     @Override
     public void periodic() {
+
         m_poseEstimator.update(getGyroYaw(), getModulePositions());
 
         if (Robot.isSimulation()) {
             ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(lastCommandedSpeeds, simPose.getRotation());
+    
             simPose = new Pose2d(
-                simPose.getX() + fieldSpeeds.vxMetersPerSecond * 0.02,
-                simPose.getY() + fieldSpeeds.vyMetersPerSecond * 0.02,
-                simPose.getRotation().plus(Rotation2d.fromRadians(fieldSpeeds.omegaRadiansPerSecond * 0.02)));
+            simPose.getX() + fieldSpeeds.vxMetersPerSecond * 0.02,
+            simPose.getY() + fieldSpeeds.vyMetersPerSecond * 0.02,
+            simPose.getRotation().plus(Rotation2d.fromRadians(fieldSpeeds.omegaRadiansPerSecond * 0.02)));
             SmartDashboard.putString("SimPoseRaw", simPose.toString());
-
-            // Drive sim vision with the simulated pose
-            vision.simulationPeriodic(simPose);
         }
 
-        // FIX 3: Call getEstimatedGlobalPose() exactly once per loop and reuse the result.
         var visionEst = vision.getEstimatedGlobalPose();
-        SmartDashboard.putString("Vision Est", visionEst.toString());
-
-        // FIX 4: Pass the tuned std devs so the pose estimator weights vision correctly.
-        visionEst.ifPresent(est -> {
-            var estStdDevs = vision.getEstimationStdDevs();
-            m_poseEstimator.addVisionMeasurement(
-                    est.estimatedPose.toPose2d(),
-                    est.timestampSeconds,
-                    estStdDevs);
-        });
-
+        SmartDashboard.putString("Vision Est", vision.getEstimatedGlobalPose().toString() );
+        visionEst.ifPresent(
+                est -> {
+                    // Change our trust in the measurement based on the tags we can see
+                    //var estStdDevs = vision.getEstimationStdDevs();
+                    m_poseEstimator.addVisionMeasurement(
+                            est.estimatedPose.toPose2d(), est.timestampSeconds);//, estStdDevs);
+                });
+        
         SmartDashboard.putData("Gyro Data", gyro);
         SmartDashboard.putNumber("Gyro Yaw", getGyroYaw().getDegrees());
         SmartDashboard.putBoolean("is red?", Robot.isRed());
-        //Pose2d pose = getPose();
-        robotPose = getPose();
-        field.setRobotPose(robotPose);   
-        SmartDashboard.putString("actual pose", robotPose.toString());
+        Pose2d pose = getPose();
+        field.setRobotPose(pose);   
+        // goalFace = nearestFace(pose.getTranslation());
+        SmartDashboard.putString("actual pose", pose.toString());
+        // SmartDashboard.putString("nearest face" , nearestFace(pose.getTranslation()).toString());
+        // SmartDashboard.putString("goal face", goalFace.toString());    
         SmartDashboard.putBoolean("Align/x at set", xPID.atSetpoint());
         SmartDashboard.putBoolean("Align/y at set", yPID.atSetpoint());
         SmartDashboard.putBoolean("Align/r at set", rPID.atSetpoint());
         SmartDashboard.putBoolean("Align/viz at set", visionDifference() < Units.inchesToMeters(1.5));
+
 
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         } 
+            
     }
 }

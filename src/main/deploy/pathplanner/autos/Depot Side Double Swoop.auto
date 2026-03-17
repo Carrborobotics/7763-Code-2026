@@ -7,31 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid w auto"
+            "pathName": "Depot Start - Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "auto G - Source"
+            "pathName": "Depot Side End"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Intake On"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source C w auto"
+            "name": "Shoot_5s"
           }
         }
       ]

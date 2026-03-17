@@ -1,4 +1,4 @@
-package frc.robot.subsystems.turret;
+package frc.robot.subsystems.shooterhood;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -14,33 +14,33 @@ import frc.robot.Constants;
 import static edu.wpi.first.units.Units.*;
 
 /**
- * Real-world Turret IO using a CTRE TalonFX (KrakenX60) motor controller.
+ * Real-world ShooterHood IO using a CTRE TalonFX (KrakenX60) motor controller.
  */
-public class TurretIOReal implements TurretIO {
+public class ShooterHoodIOReal implements ShooterHoodIO {
 
     private final TalonFX motor;
     private final PositionVoltage positionRequest = new PositionVoltage(0);//.withEnableFOC(true);
-    private Angle offset = Degrees.of(0); // offset to add to the turret angle, used for fine-tuning
 
-    public TurretIOReal() {
-        motor = new TalonFX(Constants.CANConstants.turretId, Constants.CANConstants.canBusDriveTrain);
+    public ShooterHoodIOReal() {
+        motor = new TalonFX(Constants.CANConstants.shooterHoodId, Constants.CANConstants.canBus);
 
         var config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        // Basic PID from TurretConstants (only kP/kI/kD applied to Slot0)
-        config.Slot0.kP = 100.0; //TurretConstants.TalonFXGains.kP();
-        config.Slot0.kI = 0.0; //TurretConstants.TalonFXGains.kI();
-        config.Slot0.kD = 0.0; //TurretConstants.TalonFXGains.kD();
-        config.Slot0.kS = 5.0; //TurretConstants.TalonFXGains.kS();
-        config.Slot0.kV = 10.0; //TurretConstants.TalonFXGains.kV();
+        // Basic PID from ShooterHoodConstants (only kP/kI/kD applied to Slot0)
+        config.Slot0.kP = 300.0; //ShooterHoodConstants.TalonFXGains.kP();
+        config.Slot0.kI = 0.0; //ShooterHoodConstants.TalonFXGains.kI();
+        config.Slot0.kD = 0.0; //ShooterHoodConstants.TalonFXGains.kD();
+        config.Slot0.kS = 0.1; //ShooterHoodConstants.TalonFXGains.kS();
+        config.Slot0.kV = 0.1; //ShooterHoodConstants.TalonFXGains.kV();
+    
         // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
         // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
         // the configurator applies it to the controller.
-        config.Feedback.SensorToMechanismRatio = 39.0;
+        config.Feedback.SensorToMechanismRatio = 45.0;
 
         // Set invert and apply configuration
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        //config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motor.getConfigurator().apply(config);
 
         // Zero the encoder
@@ -53,7 +53,7 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public void updateInputs(TurretIOInputs inputs) {
+    public void updateInputs(ShooterHoodIOInputs inputs) {
         // Position/velocity from TalonFX are reported in rotations; convert to radians
         double positionRotations = motor.getPosition().getValueAsDouble();
         double velocityRps = motor.getVelocity().getValueAsDouble();
@@ -68,15 +68,9 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public void modifyOffset(double offsetval) {
-        this.offset = Degrees.of(this.offset.in(Degrees) + offsetval);
-    }
-
-    @Override
     public void runSetpoint(Angle position) {
-        Angle adjustedPosition = Degrees.of(position.in(Degrees) + this.offset.in(Degrees));
         // Convert Angle -> rotations (rotations = radians / 2pi)
-        double rotations = adjustedPosition.in(Radians) / (2.0 * Math.PI);
+        double rotations = position.in(Radians) / (2.0 * Math.PI);
         motor.setControl(positionRequest.withPosition(rotations));
     }
 

@@ -1,0 +1,46 @@
+{
+  "NetworkTables": {
+    "transitory": {
+      "photonvision": {
+        ".timesync": {
+          "open": true,
+          "photonvision": {
+            "open": true
+          }
+        },
+        "Arducam_OV9281_USB_Camera": {
+          "open": true
+        },
+        "coprocessors": {
+          "E2-87-88-37-B1-F0": {
+            "open": true
+          },
+          "open": true
+        },
+        "metrics": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/AdvantageKit/RealOutputs/PathPlanner": "Alerts",
+      "/AdvantageKit/RealOutputs/PhotonAlerts": "Alerts",
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Gyro Data": "Gyro",
+      "/SmartDashboard/Gyro Heading": "Gyro",
+      "/SmartDashboard/PathPlanner": "Alerts",
+      "/SmartDashboard/PhotonAlerts": "Alerts",
+      "/SmartDashboard/Target Field": "Field2d"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "7763"
+  }
+}

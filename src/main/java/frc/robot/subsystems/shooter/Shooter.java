@@ -5,9 +5,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
+//import frc.robot.Constants.Swerve;
+import frc.robot.subsystems.shooterhood.ShooterHood;
 import frc.robot.util.LoggedTunableNumber;
 import static edu.wpi.first.units.Units.*;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.Constants;
+import frc.robot.subsystems.swerve.Swerve;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase{
@@ -30,6 +34,7 @@ public class Shooter extends SubsystemBase{
     private final RobotState actual;
     private final RobotState target;
     private final RobotState goal;
+    double reqSpeed;
 
     public Shooter(ShooterIO io) {
         this.io = io;
@@ -41,15 +46,28 @@ public class Shooter extends SubsystemBase{
         this.goal = RobotState.getGoalInstance();    
     }
 
+    public Command modifyOffsetCmd(double offset) {
+        return runOnce(() -> this.io.modifyOffset(offset));
+    }
+
     public Command setShooterSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
+    }
+
+
+
+    /**
+     * Continuously set shooter speed (use with Commands.run or whileTrue)
+     */
+    public Command continuousSetShooterSpeed(Swerve swerve) {
+        return run(() -> this.io.setSpeed(swerve.getTargetSpeed()));
     }
 
     /**
      *  Command to stop the shooter
      */ 
     public Command stopCmd() {
-        return this.setShooterSpeed(0);
+        return runOnce(() -> this.io.stop());
     }
 
     public boolean IsOverloaded() {
@@ -61,10 +79,12 @@ public class Shooter extends SubsystemBase{
         super.periodic();
         this.io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
-        SmartDashboard.putBoolean("Is Overloaded?", this.IsOverloaded());
-        SmartDashboard.putString("shooter/motor voltage", this.inputs.appliedVolts.toString());
-        SmartDashboard.putString("shooter/motor supply current", this.inputs.supplyCurrent.toString());
-        SmartDashboard.putString("shooter/motor torque current", this.inputs.torqueCurrent.toString());
-        SmartDashboard.putString("shooter/motor temp", this.inputs.temperature.toString());        
+        SmartDashboard.putBoolean("Is shooter Overloaded?", this.IsOverloaded());
+        SmartDashboard.putString("shooter/shooter voltage", this.inputs.appliedVolts.toString());
+        SmartDashboard.putString("shooter/shooter supply current", this.inputs.supplyCurrent.toString());
+        SmartDashboard.putString("shooter/shooter torque current", this.inputs.torqueCurrent.toString());
+        SmartDashboard.putString("shooter/shooter motor temp", this.inputs.temperature.toString());   
+        SmartDashboard.putString("shooter/shooter velocity", this.inputs.velocity.toString());  
+        SmartDashboard.putString("shooter/kicker velocity", this.inputs.kickerVelocity.toString());   
     }
 }

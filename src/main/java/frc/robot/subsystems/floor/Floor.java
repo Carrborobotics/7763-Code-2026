@@ -49,7 +49,7 @@ public class Floor extends SubsystemBase{
      *  Command to stop the floor
      */ 
     public Command stopCmd() {
-        return this.setFloorSpeed(0);
+        return runOnce(() -> this.io.setSpeed(0));
     }
 
     public boolean IsOverloaded() {
@@ -61,10 +61,10 @@ public class Floor extends SubsystemBase{
         super.periodic();
         this.io.updateInputs(inputs);
         Logger.processInputs("Floor", inputs);
-        SmartDashboard.putBoolean("Is Overloaded?", this.IsOverloaded());
-        SmartDashboard.putNumber("floor/motor voltage", this.inputs.appliedVolts.in(Volts));
-        SmartDashboard.putNumber("floor/motor supply current", this.inputs.supplyCurrent.in(Amps));
-        SmartDashboard.putNumber("floor/motor torque current", this.inputs.torqueCurrent.in(Amps));
-        SmartDashboard.putNumber("floor/motor temp", this.inputs.temperature.in(Celsius));        
+        SmartDashboard.putBoolean("Is floor Overloaded?", this.IsOverloaded());
+        SmartDashboard.putNumber("floor/floor motor voltage", this.inputs.appliedVolts.in(Volts));
+        SmartDashboard.putNumber("floor/floor motor supply current", this.inputs.supplyCurrent.in(Amps));
+        SmartDashboard.putNumber("floor/floor torque current", this.inputs.torqueCurrent.in(Amps));
+        SmartDashboard.putNumber("floor/floor motor temp", this.inputs.temperature.in(Celsius));        
     }
 }

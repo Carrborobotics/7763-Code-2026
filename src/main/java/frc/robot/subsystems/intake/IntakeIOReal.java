@@ -34,7 +34,7 @@ public class IntakeIOReal implements IntakeIO {
         intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Limit the current to the intake to max 70A
-        intakeConfig.CurrentLimits.SupplyCurrentLimit = 10;
+        intakeConfig.CurrentLimits.SupplyCurrentLimit = 80;
 
         // Wait for time at limit then lower the limit - useful to not brownout 
         intakeConfig.CurrentLimits.SupplyCurrentLowerLimit = 8;
@@ -44,7 +44,7 @@ public class IntakeIOReal implements IntakeIO {
 
         // Keep the voltages within range
         intakeConfig.Voltage.PeakForwardVoltage = 12;
-        intakeConfig.Voltage.PeakReverseVoltage = 12;
+        intakeConfig.Voltage.PeakReverseVoltage = -12;
 
         intakeMotor.getConfigurator().apply(intakeConfig);
 
