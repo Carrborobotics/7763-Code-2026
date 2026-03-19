@@ -142,17 +142,7 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        //driverController.povUp().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        //driverController.povDown().onTrue(s_Swerve.resetModulesToAbsolute());
-        // Turret rotation with Triggers
-        /*turret.setDefaultCommand(
-            Commands.run(() -> {
-                double raw = turretAxis.get();
-                if (Math.abs(raw) < 0.05) return;
-                turret.setTurretAngle(raw * 135.0);
-            }, turret)
-        );*/
-
+    
         // up/down pov for incr/dec offset to shooter speed
         // left/right pov for incr/decr turret angle offsets
         driverController.povUp().onTrue(shooter.modifyOffsetCmd(SHOOTER_ADJUST_AMOUNT));   // increase shooter speed offset by 1
@@ -187,11 +177,9 @@ public class RobotContainer {
         
     }
 
-
     public Command shootCmd() {
         return shooter.continuousSetShooterSpeed(s_Swerve).alongWith(floor.setFloorSpeed(-0.2));
     }
-
 
     // ── Targeting ──────────────────────────────────────────────────────────────
     private double getTurretAngle() {

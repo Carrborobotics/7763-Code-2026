@@ -21,7 +21,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.config.RobotConfig;
-import edu.wpi.first.math.MathUtil;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -341,7 +340,10 @@ public class Swerve extends SubsystemBase {
         Pose2d robotPose = Swerve.flipIfRed(this.getRobotPose());
         // TODO: set real trench dimensions
         // 170 - 194 inches =~~ 4.3 - 4.9 meters
-        if (robotPose.getX() > 4.3 && robotPose.getX() < 4.9) {
+        if ((robotPose.getY() < Units.inchesToMeters(50) || robotPose.getY() > Units.inchesToMeters(267.85)) && 
+            (robotPose.getX() > 4.3 && robotPose.getX() < 4.9)
+        ) 
+        {
             return targetDistance / 100.0;
         }
         return targetDistance;
