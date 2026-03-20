@@ -97,7 +97,7 @@ public class Vision {
 
             if (visionEst.isEmpty()) continue;
 
-            updateEstimationStdDevs(visionEst, result.getTargets());
+            //updateEstimationStdDevs(visionEst, result.getTargets());
             lastPose = visionEst.get().estimatedPose.toPose2d();
             SmartDashboard.putBoolean("vision/has tag?", true);
         }

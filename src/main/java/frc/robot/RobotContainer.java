@@ -21,37 +21,43 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 //import edu.wpi.first.wpilibj2.command.InstantCommand;
 //import edu.wpi.first.wpilibj2.command.RunCommand;
 //import edu.wpi.first.wpilibj2.command.WaitCommand;
 //import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import frc.robot.Constants.Localization.ReefFace;
 //import frc.robot.commands.LocalSwerve;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.subsystems.rack.Rack;
-import frc.robot.subsystems.rack.RackIOReal;
-import frc.robot.subsystems.rack.RackIOSim;
-import frc.robot.subsystems.swerve.Swerve;
-import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.floor.Floor;
+import frc.robot.subsystems.floor.FloorIOReal;
+import frc.robot.subsystems.floor.FloorIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
-// import frc.robot.subsystems.led.LedSubsystem;
-// import frc.robot.subsystems.led.LedSubsystem.LedMode;
-//import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretIOReal;
-import frc.robot.subsystems.turret.TurretIOSim;   
+import frc.robot.subsystems.rack.Rack;
+import frc.robot.subsystems.rack.RackIOReal;
+import frc.robot.subsystems.rack.RackIOSim;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOReal;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooterhood.ShooterHood;
 import frc.robot.subsystems.shooterhood.ShooterHoodIOReal;
 import frc.robot.subsystems.shooterhood.ShooterHoodIOSim;
-import frc.robot.subsystems.floor.Floor;
-import frc.robot.subsystems.floor.FloorIOReal;
-import frc.robot.subsystems.floor.FloorIOSim;   
+import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.turret.Turret;
+// import frc.robot.subsystems.led.LedSubsystem;
+// import frc.robot.subsystems.led.LedSubsystem.LedMode;
+//import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIOSim;   
+
+// hood reset debounce
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 //import static edu.wpi.first.units.Units.Degrees;
 //import frc.robot.Constants;
@@ -159,7 +165,8 @@ public class RobotContainer {
         // rack goes in (retracted)
         driverController.rightTrigger().onTrue(rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
 
-        driverController.a().onTrue(shooterHood.setSpeedCmd(0.1).until(shooterHood::IsOverloaded));
+        Trigger hoodLimitSensed = new Trigger(() -> shooterHood.IsOverloaded()).debounce(0.75, DebounceType.kBoth);
+        driverController.a().onTrue(shooterHood.setSpeedCmd(0.3).until(hoodLimitSensed));
         
         driverController.rightBumper().whileTrue(shootCmd())
             .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
@@ -173,12 +180,32 @@ public class RobotContainer {
         //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
         driverController.start().whileTrue(intake.setIntakeSpeed(-0.2)).onFalse(intake.stopCmd()); // reverse intake
         driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // normal floor speed
-        driverController.b().whileTrue(floor.setFloorSpeed(0.2)).onFalse(floor.stopCmd()); // reverse floor speed (ejecting balls)
+        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(-0.2)))
+            .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed (ejecting balls)
         
     }
 
     public Command shootCmd() {
-        return shooter.continuousSetShooterSpeed(s_Swerve).alongWith(floor.setFloorSpeed(-0.2));
+        return shooter.continuousSetShooterSpeed(s_Swerve).alongWith(floor.setFloorSpeed(0.2));
+    }
+    public Command agitateCommand() {
+        return new SequentialCommandGroup(
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.80),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.90),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.80),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00)
+        );
+    }
+
+    public Command shootAndSqueezeCommand() {
+        return shooter.setShooterSpeed(-0.5).withTimeout(1).andThen(
+            shooter.continuousSetShooterSpeed(s_Swerve)
+                .alongWith(floor.setFloorSpeed(-0.2))
+                .alongWith(
+                    rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.9)
+                )
+        );
     }
 
     // ── Targeting ──────────────────────────────────────────────────────────────
