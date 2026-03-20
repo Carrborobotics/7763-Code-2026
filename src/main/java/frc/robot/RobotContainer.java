@@ -121,9 +121,6 @@ public class RobotContainer {
         targetField = new Field2d();
         SmartDashboard.putData("Target Field", targetField);
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                     s_Swerve,
@@ -137,9 +134,12 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("Shoot_5s", shootCmd().withTimeout(5.0));
         NamedCommands.registerCommand("Intake_On", intake.setIntakeSpeed(0.5));
+        NamedCommands.registerCommand("Intake_Off", intake.setIntakeSpeed(0));
         NamedCommands.registerCommand("Rack_Extend", rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
         NamedCommands.registerCommand("Rack_Retract", rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
         
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret));
         shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood)));
@@ -157,7 +157,7 @@ public class RobotContainer {
         driverController.povRight().onTrue(turret.modifyOffsetCmd(TURRET_ADJUST_AMOUNT));   // increase turret angle offset by 1 degrees
 
         // run the intake
-        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.5))
+        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(Constants.Intake.FORWARD_SPEED))
             .onFalse(intake.stopCmd());
 
         // rack goes out (deployed)
@@ -165,16 +165,21 @@ public class RobotContainer {
         // rack goes in (retracted)
         driverController.rightTrigger().onTrue(rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
 
+        // attempt to reset hood
         Trigger hoodLimitSensed = new Trigger(() -> shooterHood.IsOverloaded()).debounce(0.75, DebounceType.kBoth);
-        driverController.a().onTrue(shooterHood.setSpeedCmd(0.3).until(hoodLimitSensed));
+        driverController.a().onTrue(shooterHood.setSpeedCmd(0.5).until(hoodLimitSensed));
         
         driverController.rightBumper().whileTrue(shootCmd())
             .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
             //.alongWith(floor.setFloorSpeed(-0.25)))
             //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
-        driverController.x().onTrue(shooter.setShooterSpeed(0));
-        driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+        //driverController.x().onTrue(shooter.setShooterSpeed(0));
+        //driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+
+        // sixty pct positin
+        driverController.x().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50));
+        driverController.y().onTrue(agitateCommand());
 
         // testing indexer(floor) speeds
         //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
@@ -191,9 +196,9 @@ public class RobotContainer {
     public Command agitateCommand() {
         return new SequentialCommandGroup(
             rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00),
-            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.80),
-            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.90),
-            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.80),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.70),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.85),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.70),
             rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00)
         );
     }
