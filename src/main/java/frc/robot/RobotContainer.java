@@ -21,37 +21,43 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 //import edu.wpi.first.wpilibj2.command.InstantCommand;
 //import edu.wpi.first.wpilibj2.command.RunCommand;
 //import edu.wpi.first.wpilibj2.command.WaitCommand;
 //import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import frc.robot.Constants.Localization.ReefFace;
 //import frc.robot.commands.LocalSwerve;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.subsystems.rack.Rack;
-import frc.robot.subsystems.rack.RackIOReal;
-import frc.robot.subsystems.rack.RackIOSim;
-import frc.robot.subsystems.swerve.Swerve;
-import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.floor.Floor;
+import frc.robot.subsystems.floor.FloorIOReal;
+import frc.robot.subsystems.floor.FloorIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
-// import frc.robot.subsystems.led.LedSubsystem;
-// import frc.robot.subsystems.led.LedSubsystem.LedMode;
-//import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretIOReal;
-import frc.robot.subsystems.turret.TurretIOSim;   
+import frc.robot.subsystems.rack.Rack;
+import frc.robot.subsystems.rack.RackIOReal;
+import frc.robot.subsystems.rack.RackIOSim;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOReal;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooterhood.ShooterHood;
 import frc.robot.subsystems.shooterhood.ShooterHoodIOReal;
 import frc.robot.subsystems.shooterhood.ShooterHoodIOSim;
-import frc.robot.subsystems.floor.Floor;
-import frc.robot.subsystems.floor.FloorIOReal;
-import frc.robot.subsystems.floor.FloorIOSim;   
+import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.turret.Turret;
+// import frc.robot.subsystems.led.LedSubsystem;
+// import frc.robot.subsystems.led.LedSubsystem.LedMode;
+//import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIOSim;   
+
+// hood reset debounce
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 //import static edu.wpi.first.units.Units.Degrees;
 //import frc.robot.Constants;
@@ -115,9 +121,6 @@ public class RobotContainer {
         targetField = new Field2d();
         SmartDashboard.putData("Target Field", targetField);
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                     s_Swerve,
@@ -131,9 +134,12 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("Shoot_5s", shootCmd().withTimeout(5.0));
         NamedCommands.registerCommand("Intake_On", intake.setIntakeSpeed(0.5));
+        NamedCommands.registerCommand("Intake_Off", intake.setIntakeSpeed(0));
         NamedCommands.registerCommand("Rack_Extend", rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
         NamedCommands.registerCommand("Rack_Retract", rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
         
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret));
         shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood)));
@@ -151,7 +157,7 @@ public class RobotContainer {
         driverController.povRight().onTrue(turret.modifyOffsetCmd(TURRET_ADJUST_AMOUNT));   // increase turret angle offset by 1 degrees
 
         // run the intake
-        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(0.5))
+        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(Constants.Intake.FORWARD_SPEED))
             .onFalse(intake.stopCmd());
 
         // rack goes out (deployed)
@@ -159,26 +165,52 @@ public class RobotContainer {
         // rack goes in (retracted)
         driverController.rightTrigger().onTrue(rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
 
-        driverController.a().onTrue(shooterHood.setSpeedCmd(0.1).until(shooterHood::IsOverloaded));
+        // attempt to reset hood
+        Trigger hoodLimitSensed = new Trigger(() -> shooterHood.IsOverloaded()).debounce(0.75, DebounceType.kBoth);
+        driverController.a().onTrue(shooterHood.setSpeedCmd(0.5).until(hoodLimitSensed));
         
         driverController.rightBumper().whileTrue(shootCmd())
             .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
             //.alongWith(floor.setFloorSpeed(-0.25)))
             //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
-        driverController.x().onTrue(shooter.setShooterSpeed(0));
-        driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+        //driverController.x().onTrue(shooter.setShooterSpeed(0));
+        //driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+
+        // sixty pct positin
+        driverController.x().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50));
+        driverController.y().onTrue(agitateCommand());
 
         // testing indexer(floor) speeds
         //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
         driverController.start().whileTrue(intake.setIntakeSpeed(-0.2)).onFalse(intake.stopCmd()); // reverse intake
         driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // normal floor speed
-        driverController.b().whileTrue(floor.setFloorSpeed(0.2)).onFalse(floor.stopCmd()); // reverse floor speed (ejecting balls)
+        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(-0.2)))
+            .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed (ejecting balls)
         
     }
 
     public Command shootCmd() {
-        return shooter.continuousSetShooterSpeed(s_Swerve).alongWith(floor.setFloorSpeed(-0.2));
+        return shooter.continuousSetShooterSpeed(s_Swerve).alongWith(floor.setFloorSpeed(0.2));
+    }
+    public Command agitateCommand() {
+        return new SequentialCommandGroup(
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.70),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.85),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.70),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00)
+        );
+    }
+
+    public Command shootAndSqueezeCommand() {
+        return shooter.setShooterSpeed(-0.5).withTimeout(1).andThen(
+            shooter.continuousSetShooterSpeed(s_Swerve)
+                .alongWith(floor.setFloorSpeed(-0.2))
+                .alongWith(
+                    rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.9)
+                )
+        );
     }
 
     // ── Targeting ──────────────────────────────────────────────────────────────

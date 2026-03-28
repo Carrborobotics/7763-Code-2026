@@ -43,6 +43,10 @@ public final class Constants {
     public static final double RACK_EXTEND_POSITION = -34000.0;
     public static final double RACK_RETRACT_POSITION = 0.0;
     
+    public static final class Intake {
+        public static final double FORWARD_SPEED = 1.0; // was 0.5
+        public static final double REVERSE_SPEED = 0.2;
+    }
     public static final class CANConstants {
         public static final int intakeId = 42;
         public static final int rackId = 41;
