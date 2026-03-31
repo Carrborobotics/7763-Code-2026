@@ -101,8 +101,8 @@ class ShooterCalcTest {
         assertNotEquals(turretBasic, turretSOTM, 0.1, "SOTM turret angle should differ from BASIC when robot is moving (vx=0, vy=1)");
         assertNotEquals(hoodBasic, hoodSOTM, 0.1, "SOTM hood angle should differ from BASIC when robot is moving (vx=0, vy=1)");
         
-        assertEquals(turretBasic, -29.3, 1, "BASIC turret angle should be approximately -41.1 deg at (1, 2) with vx=0, vy=1");
-        assertEquals(turretSOTM, -43.6, 1, "SOTM turret angle should be approximately -50.6 deg at (1, 2) with vx=0, vy=1");
+        assertEquals(turretBasic, -29.3, 1, "BASIC turret angle should be approximately -29.3 deg at (1, 2) with vx=0, vy=1");
+        assertEquals(turretSOTM, -43.6, 1, "SOTM turret angle should be approximately -43.6 deg at (1, 2) with vx=0, vy=1");
         assertEquals(hoodBasic, 249.0, 1, "BASIC hood should be approximately 249.0 at (1, 2) with vx=0, vy=1");
         assertEquals(hoodSOTM, 300.0, 1, "SOTM hood should be approximately 300 at (1, 2) with vx=0, vy=1");
     }
