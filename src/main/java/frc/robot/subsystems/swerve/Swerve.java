@@ -35,7 +35,6 @@ import frc.robot.util.LoggedTunableNumber;
 import edu.wpi.first.math.controller.PIDController;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.List;
 
 
 public class Swerve extends SubsystemBase {
@@ -306,102 +305,8 @@ public class Swerve extends SubsystemBase {
     }
     
 
-    /* 
-    * Chooses the hub target or the pass-zones.
-    * Assumes the robotPose is already flipped for red/blue sides
-    */
-    public Translation2d getTargetForRobotPose(Pose2d robotPose) {
-        Translation2d target = Constants.Localization.hubPosition;
-        if (robotPose.getX() > Constants.Localization.trenchline) {
-            if (robotPose.getY() < Constants.Localization.yMidline) {
-                target = Constants.Localization.lowerPassTarget;
-            } else {
-                target = Constants.Localization.upperPassTarget;
-            }
-        }
-        return target;
-    }
+    
 
-    public double getTargetDistance() {
-        Pose2d robotPose = Swerve.flipIfRed(this.getRobotPose());
-        SmartDashboard.putString("rpose for distance", robotPose.toString());
-        Translation2d target = getTargetForRobotPose(robotPose);
-        Translation2d toTarget = robotPose.getTranslation().minus(target);
-        double targetDistance = Math.abs(Math.hypot(toTarget.getX(), toTarget.getY()));
-        SmartDashboard.putNumber("Target distance", targetDistance);   
-        return targetDistance;
-    }
-
-    /* when we are under or near the trench we need to lower the hood so it fits.
-     * quick hack to set the target distance really close by dividing it.
-     */
-    public double getTargetDistanceForHood() {
-        double targetDistance = this.getTargetDistance();
-        Pose2d robotPose = Swerve.flipIfRed(this.getRobotPose());
-        // TODO: set real trench dimensions
-        // 170 - 194 inches =~~ 4.3 - 4.9 meters
-        if //((robotPose.getY() < Units.inchesToMeters(50) || 
-           //  robotPose.getY() > Units.inchesToMeters(267.85)) && 
-            ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
-            (robotPose.getX() > 12.5 && robotPose.getX() < 13.2))
-        //) 
-        {
-            return targetDistance / 100.0;
-        }
-        return targetDistance;
-    }
-
-    /*
-     * Calculate the target speed based on distance.  This was done empirically
-     * based on testing at SeQuEnCe/7890's full field.
-     * We also do clamping of the speed value.
-     */
-    // public double getTargetSpeedOLD() {
-    //     var dist = this.getTargetDistance();
-    //     var calcspeed = -1.0809 * dist * dist + 11.5334 * dist + 22.9887;
-    //     //var calcspeed = dist * 10;
-    //     var clampspeed = Math.max(35, Math.min(120, calcspeed));
-    //     return clampspeed;
-    // }
-
-    // Define a simple record for our data points
-    private record InterpolationPoint(double distance, double speed) {}
-
-    // The Look Up Table (LUT) - keep this sorted by distance!
-    private final List<InterpolationPoint> SHOOTER_LUT = List.of(
-        new InterpolationPoint(1.0, 39.0),
-        new InterpolationPoint(1.5, 42.5), // done
-        new InterpolationPoint(2.0, 45.0), // done
-        new InterpolationPoint(3.0, 52.0), // done
-        new InterpolationPoint(4.0, 56.0), // done
-        new InterpolationPoint(5.0, 58.0),
-        new InterpolationPoint(6.0, 65.0),
-        new InterpolationPoint(8.0, 80.0)
-    );
-
-    public double getTargetSpeed() {
-        double dist = this.getTargetDistance();
-
-        // 1. Handle edge cases (clamping to the ends of the table)
-        if (dist <= SHOOTER_LUT.get(0).distance()) return SHOOTER_LUT.get(0).speed();
-        if (dist >= SHOOTER_LUT.get(SHOOTER_LUT.size() - 1).distance()) {
-            return SHOOTER_LUT.get(SHOOTER_LUT.size() - 1).speed();
-        }
-        // 2. Find the two points to interpolate between
-        for (int i = 0; i < SHOOTER_LUT.size() - 1; i++) {
-            InterpolationPoint lower = SHOOTER_LUT.get(i);
-            InterpolationPoint upper = SHOOTER_LUT.get(i + 1);
-
-            if (dist <= upper.distance()) {
-                // 3. Linear Interpolation formula: y = y1 + (x - x1) * ((y2 - y1) / (x2 - x1))
-                double t = (dist - lower.distance()) / (upper.distance() - lower.distance());
-                return lower.speed() + t * (upper.speed() - lower.speed());
-            }
-        }
-
-        return 35.0; // Fallback
-    }
-  
     
     @Override
     public void periodic() {

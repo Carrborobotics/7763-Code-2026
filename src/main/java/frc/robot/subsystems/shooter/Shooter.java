@@ -8,6 +8,8 @@ import frc.robot.RobotState;
 //import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.shooterhood.ShooterHood;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.ShooterCalc;
+
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants;
@@ -59,8 +61,8 @@ public class Shooter extends SubsystemBase{
     /**
      * Continuously set shooter speed (use with Commands.run or whileTrue)
      */
-    public Command continuousSetShooterSpeed(Swerve swerve) {
-        return run(() -> this.io.setSpeed(swerve.getTargetSpeed()));
+    public Command continuousSetShooterSpeed(ShooterCalc shootcalc) {
+        return run(() -> this.io.setSpeed(shootcalc.getTargetSpeed()));
     }
 
     /**
