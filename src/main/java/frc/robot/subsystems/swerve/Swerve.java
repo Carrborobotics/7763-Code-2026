@@ -216,15 +216,21 @@ public class Swerve extends SubsystemBase {
     }
 
     public ChassisSpeeds getSpeeds() {
+        // In simulation/testing, actual module velocities don't update from zero,
+        // so return the last commanded speeds instead
+        if (Robot.isSimulation()) {
+            return lastCommandedSpeeds;
+        }
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
-    public void driveRobotRelativeAuto(ChassisSpeeds desirChassisSpeeds) {
-        lastCommandedSpeeds = desirChassisSpeeds;
-        driveRobotRelative(desirChassisSpeeds, false);
+    public void driveRobotRelativeAuto(ChassisSpeeds desiredChassisSpeeds) {
+        lastCommandedSpeeds = desiredChassisSpeeds;
+        driveRobotRelative(desiredChassisSpeeds, false);
     }
 
     public void driveRobotRelative(ChassisSpeeds desiredChassisSpeeds, boolean isOpenLoop) {
+        lastCommandedSpeeds = desiredChassisSpeeds;
         ChassisSpeeds.discretize(desiredChassisSpeeds, 0.02);
 
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics
@@ -301,6 +307,9 @@ public class Swerve extends SubsystemBase {
     }
 
     public Pose2d getRobotPose() {
+        if (Robot.isSimulation()){
+            return simPose;
+        }
         return robotPose;
     }
     

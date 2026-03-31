@@ -58,48 +58,107 @@ class ShooterCalcTest {
         assertEquals(hoodBasic, hoodSOTMConverged, 0.5, "Hood angles should match at zero velocity");
     }
 
-    // /**
-    //  * Test that SOTM produces different results than BASIC when robot is moving.
-    //  * Robot is positioned at (1, 2) and moving at vx=0, vy=1 m/s.
-    //  */
-    // @Test
-    // void testSOTMDiffersFromBasicWhenMoving() {
-    //     // Setup: Position robot at (1, 2) with heading 0
-    //     Pose2d testPose = new Pose2d(1.0, 2.0, new Rotation2d(0));
-    //     swerve.setPose(testPose);
+    /**
+     * Test that SOTM produces different results than BASIC when robot is moving.
+     * Robot is positioned at (1, 2) and moving at vx=0, vy=1 m/s.
+     */
+    @Test
+    void testSOTMDiffersFromBasicWhenMoving1() {
+        // Setup: Position robot at (1, 2) with heading 0
+        Pose2d testPose = new Pose2d(1.0, 2.0, new Rotation2d(0));
+        swerve.setPose(testPose);
         
-    //     // Set velocity: moving forward in Y direction (vx=0, vy=1 m/s, omega=0)
-    //     ChassisSpeeds velocity = new ChassisSpeeds(0.0, 1.0, 0.0);
-    //     swerve.driveRobotRelative(velocity, true); // true for open-loop to set velocity directly without acceleration limits
+        // Validate swerve getPose() returns the commanded pose (works in simulation)
+        var currentPose = swerve.getPose();
+        assertEquals(1.0, currentPose.getX(), 0.1, "x should be approximately 1 m");
+        assertEquals(2.0, currentPose.getY(), 0.1, "y should be approximately 2 m");
+        assertEquals(0.0, currentPose.getRotation().getDegrees(), 0.1, "heading should be approximately 0°");
         
-    //     // validate swerve getSpeeds() > 0
-    //     var currentSpeeds = swerve.getSpeeds();
-    //     assertEquals(0.0, currentSpeeds.vxMetersPerSecond, 0.1, "vx should be approximately 0 m/s");
-    //     assertEquals(1.0, currentSpeeds.vyMetersPerSecond, 0.1, "vy should be approximately 1 m/s");
-    //     assertEquals(0.0, currentSpeeds.omegaRadiansPerSecond, 0.1, "omega should be approximately 0 rad/s");
+        // Set velocity: moving forward in Y direction (vx=0, vy=1 m/s, omega=0)
+        ChassisSpeeds velocity = new ChassisSpeeds(0.0, 1.0, 0.0);
+        swerve.driveRobotRelative(velocity, true); // true for open-loop to set velocity directly without acceleration limits
+        
+        // Validate swerve getSpeeds() returns the commanded speed (works in simulation)
+        var currentSpeeds = swerve.getSpeeds();
+        assertEquals(0.0, currentSpeeds.vxMetersPerSecond, 0.1, "vx should be approximately 0 m/s");
+        assertEquals(1.0, currentSpeeds.vyMetersPerSecond, 0.1, "vy should be approximately 1 m/s");
+        assertEquals(0.0, currentSpeeds.omegaRadiansPerSecond, 0.1, "omega should be approximately 0 rad/s");
 
-    //     // Create fresh instances with the new position/velocity state
-    //     ShooterCalc basicCalc = new ShooterCalc(swerve, ShooterCalc.TargetingMode.BASIC);
-    //     ShooterCalc sotmCalc = new ShooterCalc(swerve, ShooterCalc.TargetingMode.SOTM);
+        // Create fresh instances with the new position/velocity state
+        ShooterCalc basicCalc = new ShooterCalc(swerve, ShooterCalc.TargetingMode.BASIC);
+        ShooterCalc sotmCalc = new ShooterCalc(swerve, ShooterCalc.TargetingMode.SOTM);
         
-    //     // Get turret angles
-    //     double turretBasic = basicCalc.getTurretAngle();
-    //     double turretSOTM = sotmCalc.getTurretAngle();
+        // Get turret angles
+        double turretBasic = basicCalc.getTurretAngle();
+        double turretSOTM = sotmCalc.getTurretAngle();
         
-    //     // Get hood angles
-    //     double hoodBasic = basicCalc.getHoodAngle();
-    //     double hoodSOTM = sotmCalc.getHoodAngle();
+        // Get hood angles
+        double hoodBasic = basicCalc.getHoodAngle();
+        double hoodSOTM = sotmCalc.getHoodAngle();
         
-    //     // SOTM should produce different angles when robot is moving
-    //     // (SOTM compensates for robot motion, so angles differ from static BASIC)
-    //     assertNotEquals(turretBasic, turretSOTM, 0.1, "SOTM turret angle should differ from BASIC when robot is moving (vx=0, vy=1)");
-    //     assertNotEquals(hoodBasic, hoodSOTM, 0.1, "SOTM hood angle should differ from BASIC when robot is moving (vx=0, vy=1)");
+        // SOTM should produce different angles when robot is moving
+        // (SOTM compensates for robot motion, so angles differ from static BASIC)
+        assertNotEquals(turretBasic, turretSOTM, 0.1, "SOTM turret angle should differ from BASIC when robot is moving (vx=0, vy=1)");
+        assertNotEquals(hoodBasic, hoodSOTM, 0.1, "SOTM hood angle should differ from BASIC when robot is moving (vx=0, vy=1)");
         
-    //     // Log the values for inspection
-    //     System.out.println("Robot position: (1, 2), velocity: (0, 1) m/s");
-    //     System.out.println("BASIC turret: " + turretBasic + "°, SOTM turret: " + turretSOTM + "°");
-    //     System.out.println("BASIC hood: " + hoodBasic + "°, SOTM hood: " + hoodSOTM + "°");
-    // }
+        assertEquals(turretBasic, -29.3, 1, "BASIC turret angle should be approximately -41.1 deg at (1, 2) with vx=0, vy=1");
+        assertEquals(turretSOTM, -43.6, 1, "SOTM turret angle should be approximately -50.6 deg at (1, 2) with vx=0, vy=1");
+        assertEquals(hoodBasic, 249.0, 1, "BASIC hood should be approximately 249.0 at (1, 2) with vx=0, vy=1");
+        assertEquals(hoodSOTM, 300.0, 1, "SOTM hood should be approximately 300 at (1, 2) with vx=0, vy=1");
+    }
+    /**
+     * Test that SOTM produces different results than BASIC when robot is moving.
+     * Robot is positioned at (1, 2) and moving at vx=0, vy=1 m/s.
+     */
+    @Test
+    void testSOTMDiffersFromBasicWhenMoving2() {
+        // Setup: Position robot at (1, 2) with heading 0
+        Pose2d testPose = new Pose2d(3.62, 4.034, new Rotation2d(0.7854)); // 45 degrees in radians
+        swerve.setPose(testPose);
+        
+        // Validate swerve getPose() returns the commanded pose (works in simulation)
+        var currentPose = swerve.getPose();
+        assertEquals(3.62, currentPose.getX(), 0.1, "x should be approximately 3.62 m");
+        assertEquals(4.034, currentPose.getY(), 0.1, "y should be approximately 4.034 m");
+        assertEquals(45.0, currentPose.getRotation().getDegrees(), 0.1, "heading should be approximately 45 deg");
+        
+        // Set velocity: moving forward in Y direction (vx=0, vy=1 m/s, omega=0)
+        ChassisSpeeds velocity = new ChassisSpeeds(1.0, 1.0, 0.0);
+        swerve.driveRobotRelative(velocity, true); // true for open-loop to set velocity directly without acceleration limits
+        
+        // Validate swerve getSpeeds() returns the commanded speed (works in simulation)
+        var currentSpeeds = swerve.getSpeeds();
+        assertEquals(1.0, currentSpeeds.vxMetersPerSecond, 0.1, "vx should be approximately 1 m/s");
+        assertEquals(1.0, currentSpeeds.vyMetersPerSecond, 0.1, "vy should be approximately 1 m/s");
+        assertEquals(0.0, currentSpeeds.omegaRadiansPerSecond, 0.1, "omega should be approximately 0 rad/s");
+
+        // Create fresh instances with the new position/velocity state
+        ShooterCalc basicCalc = new ShooterCalc(swerve, ShooterCalc.TargetingMode.BASIC);
+        ShooterCalc sotmCalc = new ShooterCalc(swerve, ShooterCalc.TargetingMode.SOTM);
+        
+        // Get turret angles
+        double turretBasic = basicCalc.getTurretAngle();
+        double turretSOTM = sotmCalc.getTurretAngle();
+        
+        // Get hood angles
+        double hoodBasic = basicCalc.getHoodAngle();
+        double hoodSOTM = sotmCalc.getHoodAngle();
+        
+        // SOTM should produce different angles when robot is moving
+        // (SOTM compensates for robot motion, so angles differ from static BASIC)
+        assertNotEquals(turretBasic, turretSOTM, 0.1, "SOTM turret angle should differ from BASIC when robot is moving (vx=0, vy=1)");
+        assertNotEquals(hoodBasic, hoodSOTM, 0.1, "SOTM hood angle should differ from BASIC when robot is moving (vx=0, vy=1)");
+        
+        assertEquals(turretBasic, 45, 1, "BASIC turret angle should be approximately 45 deg at (3.62, 4.034) with vx=1, vy=1");
+        assertEquals(turretSOTM, 18.5, 1, "SOTM turret angle should be approximately 18.5 deg at (3.62, 4.034) with vx=1, vy=1");
+        assertEquals(hoodBasic, 100.0, 1, "BASIC hood should be approximately 100 at (3.62, 4.034) with vx=1, vy=1");
+        assertEquals(hoodSOTM, 134.0, 1, "SOTM hood should be approximately 134.0 at (3.62, 4.034) with vx=1, vy=1");
+
+        // // Log the values for inspection
+        // System.out.println("Robot position: (1, 2), velocity: (0, 1) m/s");
+        // System.out.println("BASIC turret: " + turretBasic + "°, SOTM turret: " + turretSOTM + "°");
+        // System.out.println("BASIC hood: " + hoodBasic + "°, SOTM hood: " + hoodSOTM + "°");
+    }
 
     /**
      * Test that getTurretAngle produces a valid angle.
