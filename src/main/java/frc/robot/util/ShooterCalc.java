@@ -115,20 +115,6 @@ public class ShooterCalc {
         return dist;
     }
 
-    /* when we are under or near the trench we need to lower the hood so it fits.
-     * quick hack to set the target distance really close by dividing it.
-     */
-    public double getTargetDistanceForHood() {
-        double targetDistance = this.getTargetDistance();
-        Pose2d robotPose = this.getRelativeRobotPose();
-        // TODO: set real trench dimensions
-        // 170 - 194 inches =~~ 4.3 - 4.9 meters
-        if  ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
-            (robotPose.getX() > 12.5 && robotPose.getX() < 13.2)) {
-            return targetDistance / 100.0;
-        }
-        return targetDistance;
-    }
 
     // Define a simple record for our data points
     private record InterpolationPoint(double distance, double speed, double timeOfFlight) {}
@@ -206,7 +192,7 @@ public class ShooterCalc {
         // Compute turret angle from the target vector
         double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
         double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
-        turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);
+        turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);  
         SmartDashboard.putNumber("Turret Angle", turretAngle);
         return -(MathUtil.clamp(turretAngle, -185.0, 185.0));
     }
@@ -214,14 +200,23 @@ public class ShooterCalc {
     public double getHoodAngle() {
         // Select the target distance based on targeting mode
         double targetDistance = switch (targetingMode) {
-            case BASIC -> this.getTargetDistanceForHood();
+            case BASIC -> this.getTargetDistance();
             case SOTM -> this.getTargetDistanceSOTM0();
             case SOTM_CONVERGED -> this.getTargetDistanceSOTMConverged();
         };
+
+        Pose2d robotPose = this.getRelativeRobotPose();
+        // TODO: set real trench dimensions
+        // 170 - 194 inches =~~ 4.3 - 4.9 meters
+        if  ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
+            (robotPose.getX() > 12.5 && robotPose.getX() < 13.2)) {
+            return Constants.MIN_HOOD_ANGLE;
+        }
+
         // Compute hood angle from the target distance
         double hoodAngle = targetDistance * 60;
         SmartDashboard.putNumber("Hood Angle", hoodAngle);
-        return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
+        return Math.abs(MathUtil.clamp(hoodAngle, Constants.MIN_HOOD_ANGLE, Constants.MAX_HOOD_ANGLE));
     }
 
     /**
