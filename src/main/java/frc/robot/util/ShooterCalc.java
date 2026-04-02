@@ -65,7 +65,7 @@ public class ShooterCalc {
     public Translation2d getVectorToTarget() {
         Pose2d robotPose = getRelativeRobotPose();
         Translation2d target = getTargetForRobotPose(robotPose);
-        return robotPose.getTranslation().minus(target);
+        return target.minus(robotPose.getTranslation());
     }
     
     //SmartDashboard.putNumber("Target/dist", targetDistance);   
@@ -85,7 +85,7 @@ public class ShooterCalc {
         // for shoot on the the move we take the realTargetGoal and add the opposite of the robot
         // movement vector to it so that we are effectively calculating the distance to where the
         // target will be when the robot reaches it, not where it is now.
-        Translation2d adjustedTargetGoal = realTargetGoal.plus(robotMovementVector.times(-1));
+        Translation2d adjustedTargetGoal = realTargetGoal.minus(robotMovementVector);
         return adjustedTargetGoal;
     }
 
@@ -108,7 +108,7 @@ public class ShooterCalc {
             double robotVx = speeds.vxMetersPerSecond;
             double robotVy = speeds.vyMetersPerSecond;
             Translation2d robotMovement = new Translation2d(robotVx * tof, robotVy * tof);
-            Translation2d adjustedTarget = this.getVectorToTarget().plus(robotMovement.times(-1));
+            Translation2d adjustedTarget = this.getVectorToTarget().minus(robotMovement);
             dist = Math.abs(Math.hypot(adjustedTarget.getX(), adjustedTarget.getY()));
         }
         SmartDashboard.putNumber("Target/dist-sotm-converged", dist);
@@ -189,29 +189,32 @@ public class ShooterCalc {
                 yield this.getVectorToTarget().plus(robotMovement.times(-1));
             }
         };
-        // Compute turret angle from the target vector
-        double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
-        double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
-        turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);  
-        SmartDashboard.putNumber("Turret Angle", turretAngle);
-        return -(MathUtil.clamp(turretAngle, -185.0, 185.0));
-    }
+        
+        // Compute turret angle from the target vector and robot heading
+        double targetAngle = Math.atan2(toTarget.getY(), toTarget.getX()); // radians
+        double turretAngle = targetAngle - robotPose.getRotation().getRadians();
+        turretAngle = MathUtil.angleModulus(turretAngle); // normalize to [-pi, pi]
+        SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretAngle));        
+        // important to return as degrees b/c other calculations were in radians!
+        return Math.toDegrees(turretAngle);
 
+    }
+    
     public double getHoodAngle() {
+        Pose2d robotPose = this.getRelativeRobotPose();
+        // If we are near the trench then drop the hood to lowest position
+        // TODO: set real trench dimensions ;; 170 - 194 inches =~~ 4.3 - 4.9 meters
+        if  ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
+            (robotPose.getX() > 12.5 && robotPose.getX() < 13.2)) {
+            return Constants.MIN_HOOD_ANGLE;
+        }
+
         // Select the target distance based on targeting mode
         double targetDistance = switch (targetingMode) {
             case BASIC -> this.getTargetDistance();
             case SOTM -> this.getTargetDistanceSOTM0();
             case SOTM_CONVERGED -> this.getTargetDistanceSOTMConverged();
         };
-
-        Pose2d robotPose = this.getRelativeRobotPose();
-        // TODO: set real trench dimensions
-        // 170 - 194 inches =~~ 4.3 - 4.9 meters
-        if  ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
-            (robotPose.getX() > 12.5 && robotPose.getX() < 13.2)) {
-            return Constants.MIN_HOOD_ANGLE;
-        }
 
         // Compute hood angle from the target distance
         double hoodAngle = targetDistance * 60;
