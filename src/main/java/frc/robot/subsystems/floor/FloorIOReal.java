@@ -47,7 +47,7 @@ public class FloorIOReal implements FloorIO {
         floorConfig.Voltage.PeakForwardVoltage = 12;
         floorConfig.Voltage.PeakReverseVoltage = -12;
 
-        floorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        //floorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         floorMotor.getConfigurator().apply(floorConfig);
 

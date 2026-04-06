@@ -76,9 +76,9 @@ public class ShooterIOReal implements ShooterIO {
         shooterConfig.Slot0.kV = 0.12;
 
         shooterMotor.getConfigurator().apply(shooterConfig);
-        kickerMotor.getConfigurator().apply(shooterConfig);
         //hoodMotor.getConfigurator().apply(hoodConfig);
         shooterConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        kickerMotor.getConfigurator().apply(shooterConfig);
         shooterMotor2.getConfigurator().apply(shooterConfig);
 
         m_velocity.Slot = 0;
@@ -114,8 +114,8 @@ public class ShooterIOReal implements ShooterIO {
         SmartDashboard.putNumber("shooter adj speed", adjustedSpeed);
         shooterMotor.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
         shooterMotor2.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
-        kickerMotor.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
-
+        //kickerMotor.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
+        kickerMotor.set(1);
     }
 
     @Override
