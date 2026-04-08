@@ -4,7 +4,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Swerve;
 
-import java.util.function.BooleanSupplier;
+//import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -16,19 +16,21 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
-    private BooleanSupplier robotCentricSup;
-    private BooleanSupplier useCoralLimelightSup;
+    // private BooleanSupplier robotCentricSup;
+    // private BooleanSupplier useCoralLimelightSup;
 
     public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup,
-            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier useCoralLimelightSup) {
+            DoubleSupplier rotationSup
+            //, BooleanSupplier robotCentricSup, BooleanSupplier useCoralLimelightSup
+            ) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
 
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
-        this.robotCentricSup = robotCentricSup;
-        this.useCoralLimelightSup = useCoralLimelightSup;
+        // this.robotCentricSup = robotCentricSup;
+        // this.useCoralLimelightSup = useCoralLimelightSup;
 
     }
 
@@ -50,6 +52,10 @@ public class TeleopSwerve extends Command {
                 0.0,
                 0.0,
                 new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
-                rotationVal * Constants.Swerve.maxAngularVelocity, true, false, useCoralLimelightSup.getAsBoolean());
+                rotationVal * Constants.Swerve.maxAngularVelocity,
+                true,
+                false,
+                false //useCoralLimelightSup.getAsBoolean()
+            );
     }
 }

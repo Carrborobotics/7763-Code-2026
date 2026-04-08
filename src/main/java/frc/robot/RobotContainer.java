@@ -115,9 +115,9 @@ public class RobotContainer {
                     s_Swerve,
                     () -> -translationAxis.get(),
                     () -> -strafeAxis.get(),
-                    () -> -rotationAxis.get(),
-                    () -> false,
-                    () -> false
+                    () -> -rotationAxis.get()
+                    // () -> false,
+                    // () -> false
             )
         );
 
