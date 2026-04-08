@@ -195,7 +195,7 @@ public class RobotContainer {
     public Command shootAndSqueezeCommand() {
         return shooter.setShooterSpeed(-0.5).withTimeout(1).andThen(
             shooter.continuousSetShooterSpeed(shootcalc)
-                .alongWith(floor.setFloorSpeed(-0.2))
+                .alongWith(floor.setFloorSpeed(-0.6))
                 .alongWith(
                     rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.9)
                 )

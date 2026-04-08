@@ -115,7 +115,9 @@ public class ShooterIOReal implements ShooterIO {
         shooterMotor.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
         shooterMotor2.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
         //kickerMotor.setControl(m_velocity.withVelocity(adjustedSpeed).withSlot(0));
-        kickerMotor.set(1);
+        kickerMotor.set(
+            0.5);
+            
     }
 
     @Override

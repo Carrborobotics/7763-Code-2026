@@ -87,6 +87,6 @@ public class Shooter extends SubsystemBase{
         SmartDashboard.putString("shooter/shooter torque current", this.inputs.torqueCurrent.toString());
         SmartDashboard.putString("shooter/shooter motor temp", this.inputs.temperature.toString());   
         SmartDashboard.putString("shooter/shooter velocity", this.inputs.velocity.toString());  
-        SmartDashboard.putString("shooter/kicker velocity", this.inputs.kickerVelocity.toString());   
-    }
+        SmartDashboard.putString("shooter/kicker velocity", this.inputs.kickerVelocity.toString());
+    }   
 }
