@@ -47,7 +47,7 @@ public final class Constants {
     public static final double MAX_HOOD_ANGLE = 300.0; // units, not really degrees (previously 400.0)
 
     public static final class Intake {
-        public static final double FORWARD_SPEED = 1.0; // was 0.5
+        public static final double FORWARD_SPEED = 0.5; // was 0.5
         public static final double REVERSE_SPEED = 0.2;
     }
     public static final class CANConstants {
@@ -262,8 +262,12 @@ public final class Constants {
         public static final String kCameraName = "Arducam_OV9281_USB_Camera";
 
         public static final Transform3d kRobotToCam = new Transform3d(
-            new Translation3d(0.317258, Units.inchesToMeters(0.0), 0.2794), // X and Y were swapped?
-                  new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(30), Units.degreesToRadians(0)));
+            new Translation3d(
+                0.317258, 
+                Units.inchesToMeters(1.5), 
+                0.2794
+            ), // X and Y were swapped?
+                  new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(0)));
 
  //public static final Transform3d kRobotToCam = new Transform3d(
    //         new Translation3d(Units.inchesToMeters(9.15), Units.inchesToMeters(0.0), Units.inchesToMeters(7.25)), // X and Y were swapped?

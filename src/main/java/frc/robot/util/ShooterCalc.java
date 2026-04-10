@@ -121,14 +121,14 @@ public class ShooterCalc {
 
     // The Look Up Table (LUT) - keep this sorted by distance!
     private final List<InterpolationPoint> SHOOTER_LUT = List.of(
-        new InterpolationPoint(1.0, 39.0, 1.0),
-        new InterpolationPoint(1.5, 42.5, 1.1),
-        new InterpolationPoint(2.0, 45.0, 1.2),
-        new InterpolationPoint(3.0, 52.0, 1.3),
-        new InterpolationPoint(4.0, 56.0, 1.4),
-        new InterpolationPoint(5.0, 58.0, 1.5),
-        new InterpolationPoint(6.0, 65.0, 1.6),
-        new InterpolationPoint(8.0, 80.0, 1.7)
+        new InterpolationPoint(1.0, 39.0, 0.6),
+        new InterpolationPoint(1.5, 42.5, 0.65),
+        new InterpolationPoint(2.0, 45.0, 0.7),
+        new InterpolationPoint(3.0, 52.0, 0.75), // jason timed by hand, yay
+        new InterpolationPoint(4.0, 56.0, 0.9),
+        new InterpolationPoint(5.0, 58.0, 1.0),
+        new InterpolationPoint(6.0, 65.0, 1.1),
+        new InterpolationPoint(8.0, 80.0, 1.2)
     );
 
     // lookup dist in the SHOOTER_LUT and return the [lower,upper] interpolation points.
@@ -193,7 +193,13 @@ public class ShooterCalc {
         // Compute turret angle from the target vector and robot heading
         double targetAngle = Math.atan2(toTarget.getY(), toTarget.getX()); // radians
         double turretAngle = targetAngle - robotPose.getRotation().getRadians();
+
+        // we need to pre-rotate the angle by 45-deg clockwise and then modulo the angle 
+        // and then post-rotate the angle by 45-deg counter-clockwise.
+        turretAngle = turretAngle - Math.PI / 4.0 ;
         turretAngle = MathUtil.angleModulus(turretAngle); // normalize to [-pi, pi]
+        turretAngle = turretAngle + Math.PI / 4.0 ;
+
         SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretAngle));        
         // important to return as degrees b/c other calculations were in radians!
         return Math.toDegrees(turretAngle);
