@@ -127,6 +127,11 @@ public class RobotContainer {
         NamedCommands.registerCommand("Intake_Off", intake.setIntakeSpeed(0));
         NamedCommands.registerCommand("Rack_Extend", rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
         NamedCommands.registerCommand("Rack_Retract", rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
+        NamedCommands.registerCommand("Rack_80pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.8));
+        NamedCommands.registerCommand("Rack_70pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.7));
+        NamedCommands.registerCommand("Rack_60pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.6));
+        NamedCommands.registerCommand("Rack_50pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.5));
+        NamedCommands.registerCommand("Agitate", agitateCommand());
         
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -167,7 +172,7 @@ public class RobotContainer {
         //driverController.x().onTrue(shooter.setShooterSpeed(0));
         //driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
 
-        // sixty pct positin
+        // partial rack position
         driverController.x().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50));
         driverController.y().onTrue(agitateCommand());
 
