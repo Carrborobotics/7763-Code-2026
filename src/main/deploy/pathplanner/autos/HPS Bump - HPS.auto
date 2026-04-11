@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Rack_Extend"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "HPS_Side_Bump_Start_RackExt"
+            "pathName": "HPS Side Bump Start"
           }
         },
         {

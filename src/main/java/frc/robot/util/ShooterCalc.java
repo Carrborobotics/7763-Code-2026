@@ -34,6 +34,9 @@ public class ShooterCalc {
         this.targetingMode = mode;
     }
 
+    // Shoot on the move scale factor
+    public double SOTM_SCALAR = -1.5 ; // multiple of robot velocity vector; should be -1.0 to subtract 
+
     /**
      * Get the current targeting algorithm mode.
      */
@@ -85,11 +88,15 @@ public class ShooterCalc {
         // for shoot on the the move we take the realTargetGoal and add the opposite of the robot
         // movement vector to it so that we are effectively calculating the distance to where the
         // target will be when the robot reaches it, not where it is now.
-        Translation2d adjustedTargetGoal = realTargetGoal.minus(robotMovementVector);
+        Translation2d adjustedTargetGoal = realTargetGoal.plus(robotMovementVector.times(SOTM_SCALAR));
         return adjustedTargetGoal;
     }
 
     public double getTargetDistanceSOTM0() {
+        Translation2d targetGoal = this.getVectorToTarget();
+        double targetDistance = Math.abs(Math.hypot(targetGoal.getX(), targetGoal.getY()));
+        SmartDashboard.putNumber("Target/dist-non-sotm", targetDistance);   
+        
         Translation2d adjustedTargetGoal = this.getVectorToTargetSOTM0();
         double targetDistanceSOTM = Math.abs(Math.hypot(adjustedTargetGoal.getX(), adjustedTargetGoal.getY()));
         SmartDashboard.putNumber("Target/dist-sotm-p0", targetDistanceSOTM);   

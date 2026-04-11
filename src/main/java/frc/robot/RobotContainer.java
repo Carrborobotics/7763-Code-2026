@@ -79,7 +79,7 @@ public class RobotContainer {
 
     // call utility class for calculating shooter parameters based on robot pose
     // set targeting mode to one of the 3 modes: BASIC, SOTM, SOTM_CONVERGED
-    private final ShooterCalc shootcalc = new ShooterCalc(s_Swerve, ShooterCalc.TargetingMode.SOTM_CONVERGED);
+    private final ShooterCalc shootcalc = new ShooterCalc(s_Swerve, ShooterCalc.TargetingMode.SOTM);
 
     public Swerve getSwerve() {
         return s_Swerve;
@@ -123,6 +123,7 @@ public class RobotContainer {
         );
 
         NamedCommands.registerCommand("Shoot_5s", shootCmd().withTimeout(5.0));
+        NamedCommands.registerCommand("Shoot_Off", shooter.stopCmd());
         NamedCommands.registerCommand("Intake_On", intake.setIntakeSpeed(0.5));
         NamedCommands.registerCommand("Intake_Off", intake.setIntakeSpeed(0));
         NamedCommands.registerCommand("Rack_Extend", rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
@@ -180,7 +181,7 @@ public class RobotContainer {
         //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
         driverController.start().whileTrue(intake.setIntakeSpeed(-0.2)).onFalse(intake.stopCmd()); // reverse intake
         driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // normal floor speed
-        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(-0.2)))
+        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(0.2)))
             .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed (ejecting balls)
         
     }

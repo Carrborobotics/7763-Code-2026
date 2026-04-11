@@ -47,7 +47,7 @@ public final class Constants {
     public static final double MAX_HOOD_ANGLE = 300.0; // units, not really degrees (previously 400.0)
 
     public static final class Intake {
-        public static final double FORWARD_SPEED = 0.5; // was 0.5
+        public static final double FORWARD_SPEED = 0.9; // was 0.5, 0.6 moving to 0.9 with net
         public static final double REVERSE_SPEED = 0.2;
     }
     public static final class CANConstants {
@@ -167,6 +167,7 @@ public final class Constants {
         /* Swerve Profiling Values */
         /** Meters per Second */
         public static final double maxSpeed = 4.5; // 4.5 FOR COMP, 0.5 for test mode
+        public static final double maxSpeedSOTM = 1.0; 
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //10 FOR COMP, 2.0 for test mode
         /*

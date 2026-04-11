@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot Start - Backup"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake_On"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot Pickup after Shoot"
+            "pathName": "Depot Side Bump Start2"
           }
         },
         {
@@ -32,6 +20,30 @@
           "type": "wait",
           "data": {
             "waitTime": 4.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake_On"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Rack_Extend"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot Pickup after Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
           }
         }
       ]

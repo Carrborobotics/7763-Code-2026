@@ -3,48 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6,
-        "y": 5.4
+        "x": 6.0,
+        "y": 7.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8165063509461097,
-        "y": 5.275
+        "x": 7.0,
+        "y": 7.4
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.75,
-        "y": 6.0
+        "x": 7.7,
+        "y": 5.0
       },
       "prevControl": {
-        "x": 0.5334936490538903,
-        "y": 6.125
+        "x": 7.7,
+        "y": 5.789
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [],
-  "eventMarkers": [
+  "rotationTargets": [
     {
-      "name": "Rack_Extend",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "Intake_On",
       "waypointRelativePos": 0.5,
-      "endWaypointRelativePos": null,
-      "command": null
+      "rotationDegrees": 90.0
     }
   ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.75,
     "maxAcceleration": 2.5,
@@ -55,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Starts",
+  "folder": "Pickups",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
