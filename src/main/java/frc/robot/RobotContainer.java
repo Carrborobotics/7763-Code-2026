@@ -137,7 +137,8 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(shootcalc.getTurretAngle()), turret));
+        //disabling turret movement for finals to play defense
+        //turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(shootcalc.getTurretAngle()), turret));
         shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-shootcalc.getHoodAngle()), shooterHood)));
 
         configureButtonBindings();
@@ -180,14 +181,18 @@ public class RobotContainer {
         // testing indexer(floor) speeds
         //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
         driverController.start().whileTrue(intake.setIntakeSpeed(-0.2)).onFalse(intake.stopCmd()); // reverse intake
-        driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // normal floor speed
+        driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // reverse floor speed
         driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(0.2)))
-            .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed (ejecting balls)
+            .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed and fwd kicker
         
     }
 
+    // Command passCmd() {
+    //    return shooter.continuousSetShooterSpeed(shootcalc).alongWith(floor.setFloorSpeed(0.5)).alongWith(turret.setTurretAngle(Math.toDegrees(0)));
+    //}
+
     public Command shootCmd() {
-        return shooter.continuousSetShooterSpeed(shootcalc).alongWith(floor.setFloorSpeed(0.35));
+        return shooter.continuousSetShooterSpeed(shootcalc).alongWith(floor.setFloorSpeed(0.5));
     }
     public Command agitateCommand() {
         return new SequentialCommandGroup(
