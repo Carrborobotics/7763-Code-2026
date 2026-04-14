@@ -74,7 +74,6 @@ public class RobotContainer {
     private final Turret turret;
     private final ShooterHood shooterHood;
 
-    // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
 
     // call utility class for calculating shooter parameters based on robot pose
@@ -85,10 +84,6 @@ public class RobotContainer {
         return s_Swerve;
     }
 
-    /* Alliance colors */
-    // private final Color redBumper = Color.kDarkRed;
-    // private final Color blueBumper = Color.kDarkBlue;
-    // private Color original_color;
     public Pose2d globalRobotPose;
 
     public RobotContainer() {
@@ -100,8 +95,8 @@ public class RobotContainer {
             this.turret = new Turret(new TurretIOReal());
             this.shooterHood = new ShooterHood(new ShooterHoodIOReal());
         } else {
-            this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
-            this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
+            this.rack = new Rack(new RackIOSim()); 
+            this.intake = new Intake(new IntakeIOSim());
             this.floor = new Floor(new FloorIOSim());
             this.shooter = new Shooter(new ShooterIOSim());
             this.turret = new Turret(new TurretIOSim());
@@ -117,15 +112,13 @@ public class RobotContainer {
                     () -> -translationAxis.get(),
                     () -> -strafeAxis.get(),
                     () -> -rotationAxis.get()
-                    // () -> false,
-                    // () -> false
             )
         );
 
         NamedCommands.registerCommand("Shoot_5s", shootCmd().withTimeout(5.0));
         NamedCommands.registerCommand("Shoot_Off", shooter.stopCmd());
-        NamedCommands.registerCommand("Intake_On", intake.setIntakeSpeed(0.5));
-        NamedCommands.registerCommand("Intake_Off", intake.setIntakeSpeed(0));
+        NamedCommands.registerCommand("Intake_On", intake.forwardCmd());
+        NamedCommands.registerCommand("Intake_Off", intake.stopCmd());
         NamedCommands.registerCommand("Rack_Extend", rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
         NamedCommands.registerCommand("Rack_Retract", rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
         NamedCommands.registerCommand("Rack_80pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.8));
@@ -137,8 +130,10 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        //disabling turret movement for finals to play defense
-        //turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(shootcalc.getTurretAngle()), turret));
+        // ------------------------- 
+        // DEFAULT COMMANDS
+        // ------------------------- 
+        turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(shootcalc.getTurretAngle()), turret));
         shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-shootcalc.getHoodAngle()), shooterHood)));
 
         configureButtonBindings();
@@ -154,7 +149,7 @@ public class RobotContainer {
         driverController.povRight().onTrue(turret.modifyOffsetCmd(TURRET_ADJUST_AMOUNT));   // increase turret angle offset by 1 degrees
 
         // run the intake
-        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(Constants.Intake.FORWARD_SPEED))
+        driverController.leftBumper().whileTrue(intake.forwardCmd())
             .onFalse(intake.stopCmd());
 
         // rack goes out (deployed)
@@ -164,27 +159,20 @@ public class RobotContainer {
 
         // attempt to reset hood
         Trigger hoodLimitSensed = new Trigger(() -> shooterHood.IsOverloaded()).debounce(0.75, DebounceType.kBoth);
-        driverController.a().onTrue(shooterHood.setSpeedCmd(0.5).until(hoodLimitSensed));
+        driverController.start().onTrue(shooterHood.setSpeedCmd(0.5).until(hoodLimitSensed));
         
         driverController.rightBumper().whileTrue(shootCmd())
             .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
-            //.alongWith(floor.setFloorSpeed(-0.25)))
-            //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
-        //driverController.x().onTrue(shooter.setShooterSpeed(0));
-        //driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+        driverController.a().whileTrue(intake.reverseCmd()).onFalse(intake.stopCmd()); // reverse intake
 
-        // partial rack position
-        driverController.x().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50));
+        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(0.2)))
+        .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed and fwd kicker
+        
+        driverController.x().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50)); // partial rack position
+
         driverController.y().onTrue(agitateCommand());
 
-        // testing indexer(floor) speeds
-        //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
-        driverController.start().whileTrue(intake.setIntakeSpeed(-0.2)).onFalse(intake.stopCmd()); // reverse intake
-        driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // reverse floor speed
-        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(0.2)))
-            .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed and fwd kicker
-        
     }
 
     // Command passCmd() {
@@ -194,6 +182,7 @@ public class RobotContainer {
     public Command shootCmd() {
         return shooter.continuousSetShooterSpeed(shootcalc).alongWith(floor.setFloorSpeed(0.5));
     }
+
     public Command agitateCommand() {
         return new SequentialCommandGroup(
             rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00),
@@ -207,17 +196,6 @@ public class RobotContainer {
             rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00)
         );
     }
-
-    public Command shootAndSqueezeCommand() {
-        return shooter.setShooterSpeed(-0.5).withTimeout(1).andThen(
-            shooter.continuousSetShooterSpeed(shootcalc)
-                .alongWith(floor.setFloorSpeed(-0.6))
-                .alongWith(
-                    rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.9)
-                )
-        );
-    }
-
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

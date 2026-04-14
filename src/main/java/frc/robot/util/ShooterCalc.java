@@ -217,7 +217,7 @@ public class ShooterCalc {
         Pose2d robotPose = this.getRelativeRobotPose();
         // If we are near the trench then drop the hood to lowest position
         // TODO: set real trench dimensions ;; 170 - 194 inches =~~ 4.3 - 4.9 meters
-        if  ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
+        if ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
             (robotPose.getX() > 12.5 && robotPose.getX() < 13.2)) {
             return Constants.MIN_HOOD_ANGLE;
         }

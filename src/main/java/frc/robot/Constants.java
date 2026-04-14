@@ -31,13 +31,13 @@ import frc.robot.subsystems.swerve.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.12;
     public static final double stickDeadbandDivider = 1.0; // 1 FOR COMP, 5 for test mode.
+    
     public static final double RACK_GEARING = 9.0; // 9:1
     public static final double INTAKE_GEARING = 1.25; // 12t:15t = 1.25:1
     public static final double TURRET_ROTATION_GEARING = 12.0; // 12:1
     public static final double SHOOTER_HOOD_GEARING = 715.5; // 715.5:1 (wow)
-    
-    public static final double SHOOTER_GEARING = 1.0; // TODO: Need real shooter motor gear ratio
-    public static final double FLOOR_GEARING = 1.0; // TODO: Need real floor motor gear ratio
+    public static final double SHOOTER_GEARING = 1.0;
+    public static final double FLOOR_GEARING = 1.0;
     public static final double shooterRPS = 100;
     
     public static final double RACK_EXTEND_POSITION = -32000.0; // was -34000
@@ -48,27 +48,22 @@ public final class Constants {
 
     public static final class Intake {
         public static final double FORWARD_SPEED = 0.9; // was 0.5, 0.6 moving to 0.9 with net
-        public static final double REVERSE_SPEED = 0.2;
+        public static final double REVERSE_SPEED = -0.2;
     }
+
     public static final class CANConstants {
         public static final int intakeId = 42;
         public static final int rackId = 41;
         public static final int rackId2 = 43;
-
         public static final int turretId = 21; // on drivetrain
-
         public static final int shooterLeft = 22;
         public static final int shooterRight = 23;
         public static final int kickerId = 24;
         public static final int shooterHoodId = 25;
         public static final int floorId = 30;
-        //public static final int shooterHoodId = 33;
-
         /* CANBusses */
         public static final CANBus canBus = new CANBus("rio");
         public static final CANBus canBusDriveTrain = new CANBus("Drivetrain");
-         
-
     }
 
     public static final class Localization {
@@ -264,11 +259,11 @@ public final class Constants {
 
         public static final Transform3d kRobotToCam = new Transform3d(
             new Translation3d(
-                0.317258, 
+                0.317258,
                 Units.inchesToMeters(1.5), 
                 0.2794
             ), // X and Y were swapped?
-                  new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(0)));
+            new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(0)));
 
  //public static final Transform3d kRobotToCam = new Transform3d(
    //         new Translation3d(Units.inchesToMeters(9.15), Units.inchesToMeters(0.0), Units.inchesToMeters(7.25)), // X and Y were swapped?
