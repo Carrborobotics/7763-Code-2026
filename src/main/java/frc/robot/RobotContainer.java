@@ -111,7 +111,8 @@ public class RobotContainer {
                     s_Swerve,
                     () -> -translationAxis.get(),
                     () -> -strafeAxis.get(),
-                    () -> -rotationAxis.get()
+                    () -> -rotationAxis.get(),
+                    () -> driverController.rightBumper().getAsBoolean() // same button as shoot command
             )
         );
 
@@ -161,8 +162,7 @@ public class RobotContainer {
         Trigger hoodLimitSensed = new Trigger(() -> shooterHood.IsOverloaded()).debounce(0.75, DebounceType.kBoth);
         driverController.start().onTrue(shooterHood.setSpeedCmd(0.5).until(hoodLimitSensed));
         
-        driverController.rightBumper().whileTrue(shootCmd())
-            .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
+        //driverController.rightBumper().whileTrue(shootCmd()).onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
         driverController.a().whileTrue(intake.reverseCmd()).onFalse(intake.stopCmd()); // reverse intake
 

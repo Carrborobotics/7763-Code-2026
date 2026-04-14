@@ -49,8 +49,6 @@ public class Swerve extends SubsystemBase {
     private static final LoggedTunableNumber kPr = new LoggedTunableNumber("LocalSwerve/Gains/kPr", 0.015);
     private static final LoggedTunableNumber kIr = new LoggedTunableNumber("LocalSwerve/Gains/kIr", 0.0);
     private static final LoggedTunableNumber kDr = new LoggedTunableNumber("LocalSwerve/Gains/kDr", 0.0);
-    public static final LoggedTunableNumber maxSpeed = new LoggedTunableNumber("LocalSwerve/MaxSpd",  Constants.Swerve.maxSpeed / 2.5);
-    public static final LoggedTunableNumber maxAngularVelocity = new LoggedTunableNumber("LocalSwerve/MaxAng",  Constants.Swerve.maxAngularVelocity / 4.0);
     private static final LoggedTunableNumber rotationTolerance = new LoggedTunableNumber("LocalSwerve/Tol/kTr", 1.5);
     private static final LoggedTunableNumber positionTolerance = new LoggedTunableNumber("LocalSwerve/Tol/kTp", 0.75);
     public final PIDController xPID, yPID, rPID; 
@@ -179,13 +177,13 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
+    // public void setModuleStates(SwerveModuleState[] desiredStates) {
+    //     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
-        }
-    }
+    //     for (SwerveModule mod : mSwerveMods) {
+    //         mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+    //     }
+    // }
 
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];

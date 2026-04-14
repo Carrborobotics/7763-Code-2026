@@ -162,9 +162,10 @@ public final class Constants {
         /* Swerve Profiling Values */
         /** Meters per Second */
         public static final double maxSpeed = 4.5; // 4.5 FOR COMP, 0.5 for test mode
-        public static final double maxSpeedSOTM = 1.0; 
+        public static final double maxSpeedSOTM = 0.5; 
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //10 FOR COMP, 2.0 for test mode
+        public static final double maxAngularVelocitySOTM = 2.0;
         /*
          * These are theorectial values to start with, tune after
          * Kraken FOC-DIS (L1.0): ft/s = 12.9 | m/s = 3.93192
