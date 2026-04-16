@@ -47,8 +47,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.simulation.VisionSystemSim;
 
 public class Vision {
-    private final PhotonCamera camera;
-    private final PhotonPoseEstimator photonEstimator;
+    private final PhotonCamera cameraC, cameraR;
+    private final PhotonPoseEstimator photonEstimatorC, photonEstimatorR;
     private Matrix<N3, N1> curStdDevs = kMultiTagStdDevs; // safe default; updated each cycle
     private AprilTagFieldLayout kTagLayout;
     private Pose2d lastPose = new Pose2d();
@@ -57,11 +57,13 @@ public class Vision {
     private VisionSystemSim visionSim;
 
     public Vision() {
-        camera = new PhotonCamera(kCameraName);
+        cameraC = new PhotonCamera(kCameraNameC);
+        cameraR = new PhotonCamera(kCameraNameR);
         kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
         // PhotonVision v2026: use the 2-arg constructor (fieldTags, robotToCamera).
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToCam);
+        photonEstimatorC = new PhotonPoseEstimator(kTagLayout, kRobotToCamC);
+        photonEstimatorR = new PhotonPoseEstimator(kTagLayout, kRobotToCamR);
 
         if (Robot.isSimulation()) {
             visionSim = new VisionSystemSim("main");
@@ -79,27 +81,32 @@ public class Vision {
      *     used for estimation.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        SmartDashboard.putBoolean("vision/cam connected", camera.isConnected());
+        SmartDashboard.putBoolean("vision/cam c connected", cameraC.isConnected());
+        SmartDashboard.putBoolean("vision/cam r connected", cameraR.isConnected());
 
         // FIX 1: Call getAllUnreadResults() exactly once and reuse the list.
-        List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-        SmartDashboard.putNumber("vision/results", results.size());
+        List<PhotonPipelineResult> resultsC = cameraC.getAllUnreadResults();
+        List<PhotonPipelineResult> resultsR = cameraR.getAllUnreadResults();
+        SmartDashboard.putNumber("vision/results C", resultsC.size());
+        SmartDashboard.putNumber("vision/results R", resultsR.size());
 
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
 
-        for (var result : results) {
+
+        for (var result : resultsR) {
             // FIX 2: Try coprocessor multi-tag first, fall back to single-tag.
-            visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
-            if (visionEst.isEmpty()) {
-                //visionEst = photonEstimator.estimateSingleTagPose(result);
-                //photonEstimator.estimateCopro
-            }
-
+            visionEst = photonEstimatorR.estimateLowestAmbiguityPose(result);
             if (visionEst.isEmpty()) continue;
-
             //updateEstimationStdDevs(visionEst, result.getTargets());
             lastPose = visionEst.get().estimatedPose.toPose2d();
-            SmartDashboard.putBoolean("vision/has tag?", true);
+        }
+
+        for (var result : resultsC) {
+            // FIX 2: Try coprocessor multi-tag first, fall back to single-tag.
+            visionEst = photonEstimatorC.estimateLowestAmbiguityPose(result);
+            if (visionEst.isEmpty()) continue;
+            //updateEstimationStdDevs(visionEst, result.getTargets());
+            lastPose = visionEst.get().estimatedPose.toPose2d();
         }
 
         if (visionEst.isEmpty()) {
@@ -109,58 +116,58 @@ public class Vision {
         return visionEst;
     }
 
-    /**
-     * Calculates new standard deviations based on number of tags, estimation strategy,
-     * and distance from the tags.
-     *
-     * @param estimatedPose The estimated pose to guess standard deviations for.
-     * @param targets All targets in this camera frame.
-     */
-    private void updateEstimationStdDevs(
-            Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
-        if (estimatedPose.isEmpty()) {
-            curStdDevs = kSingleTagStdDevs;
-            return;
-        }
+    // /**
+    //  * Calculates new standard deviations based on number of tags, estimation strategy,
+    //  * and distance from the tags.
+    //  *
+    //  * @param estimatedPose The estimated pose to guess standard deviations for.
+    //  * @param targets All targets in this camera frame.
+    //  */
+    // private void updateEstimationStdDevs(
+    //         Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+    //     if (estimatedPose.isEmpty()) {
+    //         curStdDevs = kSingleTagStdDevs;
+    //         return;
+    //     }
 
-        var estStdDevs = kSingleTagStdDevs;
-        int numTags = 0;
-        double avgDist = 0;
+    //     var estStdDevs = kSingleTagStdDevs;
+    //     int numTags = 0;
+    //     double avgDist = 0;
 
-        for (var tgt : targets) {
-            var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty()) continue;
-            numTags++;
-            avgDist += tagPose.get()
-                    .toPose2d()
-                    .getTranslation()
-                    .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
+    //     for (var tgt : targets) {
+    //         var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+    //         if (tagPose.isEmpty()) continue;
+    //         numTags++;
+    //         avgDist += tagPose.get()
+    //                 .toPose2d()
+    //                 .getTranslation()
+    //                 .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
 
-            SmartDashboard.putNumber("vision/tag id", tgt.getFiducialId());
-        }
+    //         SmartDashboard.putNumber("vision/tag id", tgt.getFiducialId());
+    //     }
 
-        if (numTags == 0) {
-            curStdDevs = kSingleTagStdDevs;
-            return;
-        }
+    //     if (numTags == 0) {
+    //         curStdDevs = kSingleTagStdDevs;
+    //         return;
+    //     }
 
-        avgDist /= numTags;
+    //     avgDist /= numTags;
 
-        if (numTags > 1) {
-            estStdDevs = kMultiTagStdDevs;
-        }
+    //     if (numTags > 1) {
+    //         estStdDevs = kMultiTagStdDevs;
+    //     }
 
-        // If only one tag and it's far away, trust it very little
-        if (numTags == 1 && avgDist > 4) {
-            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        } else {
-            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-        }
+    //     // If only one tag and it's far away, trust it very little
+    //     if (numTags == 1 && avgDist > 4) {
+    //         estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    //     } else {
+    //         estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+    //     }
 
-        curStdDevs = estStdDevs;
-        SmartDashboard.putNumber("vision/avg tag dist", avgDist);
-        SmartDashboard.putNumber("vision/num tags", numTags);
-    }
+    //     curStdDevs = estStdDevs;
+    //     SmartDashboard.putNumber("vision/avg tag dist", avgDist);
+    //     SmartDashboard.putNumber("vision/num tags", numTags);
+    // }
 
     /**
      * Returns the latest standard deviations of the estimated pose from

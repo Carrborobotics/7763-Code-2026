@@ -256,15 +256,25 @@ public final class Constants {
         public static final double kCamHeight = 0.41;
         public static final double kTagHeight = 1.27;
         public static final double kCamPitch = Math.PI / 4; // ~45 degrees (pi/4 rad)
-        public static final String kCameraName = "Arducam_OV9281_USB_Camera";
+        public static final String kCameraNameC = "Arducam_OV9281_USB_Camera";
+        public static final String kCameraNameR = "Arducam_OV9782_USB_Camera";
 
-        public static final Transform3d kRobotToCam = new Transform3d(
+        public static final Transform3d kRobotToCamC = new Transform3d(
             new Translation3d(
-                0.317258,
-                Units.inchesToMeters(1.5), 
-                0.2794
+                Units.inchesToMeters(12.5), 
+                Units.inchesToMeters(1.5),
+                Units.inchesToMeters(11)
             ), // X and Y were swapped?
             new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(0)));
+
+        public static final Transform3d kRobotToCamR = new Transform3d(
+            new Translation3d(
+                Units.inchesToMeters(11.5), // x fwd
+                Units.inchesToMeters(11.5), // y <-> over
+                Units.inchesToMeters(11) // z=height
+            ), // X and Y were swapped?
+            new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(270)));
+
 
  //public static final Transform3d kRobotToCam = new Transform3d(
    //         new Translation3d(Units.inchesToMeters(9.15), Units.inchesToMeters(0.0), Units.inchesToMeters(7.25)), // X and Y were swapped?
