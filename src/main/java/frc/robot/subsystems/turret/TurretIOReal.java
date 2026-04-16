@@ -28,7 +28,7 @@ public class TurretIOReal implements TurretIO {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Basic PID from TurretConstants (only kP/kI/kD applied to Slot0)
-        config.Slot0.kP = 30.0; //TurretConstants.TalonFXGains.kP();
+        config.Slot0.kP = 10.0; //TurretConstants.TalonFXGains.kP(); // was 30 at states
         config.Slot0.kI = 0.0; //TurretConstants.TalonFXGains.kI();
         config.Slot0.kD = 0.0; //TurretConstants.TalonFXGains.kD();
         config.Slot0.kS = 5.0; //TurretConstants.TalonFXGains.kS();
