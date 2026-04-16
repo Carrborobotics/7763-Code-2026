@@ -201,11 +201,11 @@ public class ShooterCalc {
         double targetAngle = Math.atan2(toTarget.getY(), toTarget.getX()); // radians
         double turretAngle = targetAngle - robotPose.getRotation().getRadians();
 
-        // we need to pre-rotate the angle by 45-deg clockwise and then modulo the angle 
-        // and then post-rotate the angle by 45-deg counter-clockwise.
-        turretAngle = turretAngle - Math.PI / 4.0 ;
+        // we need to pre-rotate the angle by 90-deg clockwise and then modulo the angle 
+        // and then post-rotate the angle by 90-deg counter-clockwise.
+        turretAngle = turretAngle - Math.PI / 2.0 ;
         turretAngle = MathUtil.angleModulus(turretAngle); // normalize to [-pi, pi]
-        turretAngle = turretAngle + Math.PI / 4.0 ;
+        turretAngle = turretAngle + Math.PI / 2.0 ;
 
         SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretAngle));        
         // important to return as degrees b/c other calculations were in radians!
