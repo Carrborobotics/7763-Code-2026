@@ -261,17 +261,17 @@ public final class Constants {
 
         public static final Transform3d kRobotToCamC = new Transform3d(
             new Translation3d(
-                Units.inchesToMeters(12.5), 
-                Units.inchesToMeters(1.5),
-                Units.inchesToMeters(11)
+                Units.inchesToMeters(13), 
+                Units.inchesToMeters(1.75),
+                Units.inchesToMeters(12)
             ), // X and Y were swapped?
             new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(0)));
 
         public static final Transform3d kRobotToCamR = new Transform3d(
             new Translation3d(
-                Units.inchesToMeters(11.5), // x fwd
+                Units.inchesToMeters(11.25), // x fwd
                 Units.inchesToMeters(11.5), // y <-> over
-                Units.inchesToMeters(11) // z=height
+                Units.inchesToMeters(12.25) // z=height
             ), // X and Y were swapped?
             new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(270)));
 

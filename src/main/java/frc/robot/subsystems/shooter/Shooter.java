@@ -81,7 +81,7 @@ public class Shooter extends SubsystemBase{
         super.periodic();
         this.io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
-        SmartDashboard.putBoolean("Is shooter Overloaded?", this.IsOverloaded());
+        SmartDashboard.putBoolean("shooter/Overloaded?", this.IsOverloaded());
         SmartDashboard.putString("shooter/shooter voltage", this.inputs.appliedVolts.toString());
         SmartDashboard.putString("shooter/shooter supply current", this.inputs.supplyCurrent.toString());
         SmartDashboard.putString("shooter/shooter torque current", this.inputs.torqueCurrent.toString());

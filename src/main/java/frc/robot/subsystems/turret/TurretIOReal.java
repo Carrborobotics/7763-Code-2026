@@ -27,12 +27,11 @@ public class TurretIOReal implements TurretIO {
         var config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        // Basic PID from TurretConstants (only kP/kI/kD applied to Slot0)
-        config.Slot0.kP = 10.0; //TurretConstants.TalonFXGains.kP(); // was 30 at states
-        config.Slot0.kI = 0.0; //TurretConstants.TalonFXGains.kI();
-        config.Slot0.kD = 0.0; //TurretConstants.TalonFXGains.kD();
-        config.Slot0.kS = 5.0; //TurretConstants.TalonFXGains.kS();
-        config.Slot0.kV = 10.0; //TurretConstants.TalonFXGains.kV();
+        config.Slot0.kP = 30.0;
+        config.Slot0.kI = 0.0;
+        config.Slot0.kD = 0.0;
+        config.Slot0.kS = 5.0;
+        config.Slot0.kV = 10.0;
         // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
         // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
         // the configurator applies it to the controller.
