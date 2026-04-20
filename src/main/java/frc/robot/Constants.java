@@ -3,8 +3,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
 
-//import java.time.YearMonth;
-
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -13,6 +11,8 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.FlippingUtil;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -70,6 +70,8 @@ public final class Constants {
     }
 
     public static final class Localization {
+
+        public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
         // Field Dimensions
         public static final double fieldWidth = FlippingUtil.fieldSizeY;
@@ -263,6 +265,7 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
+
         public static final double kCameraRangeScaler = 0.1;
         public static final double kCameraAimScaler = 0.1;
         public static final double kCamHeight = 0.41;

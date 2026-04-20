@@ -26,8 +26,6 @@ package frc.robot.subsystems.vision;
 
 import static frc.robot.Constants.VisionConstants.*;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 // import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,6 +33,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Robot;
 
 import java.util.List;
@@ -50,7 +49,6 @@ public class Vision {
     private final PhotonCamera cameraC, cameraR;
     private final PhotonPoseEstimator photonEstimatorC, photonEstimatorR;
     private Matrix<N3, N1> curStdDevs = kMultiTagStdDevs; // safe default; updated each cycle
-    private AprilTagFieldLayout kTagLayout;
     private Pose2d lastPose = new Pose2d();
 
     // Simulation
@@ -59,15 +57,14 @@ public class Vision {
     public Vision() {
         cameraC = new PhotonCamera(kCameraNameC);
         cameraR = new PhotonCamera(kCameraNameR);
-        kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
         // PhotonVision v2026: use the 2-arg constructor (fieldTags, robotToCamera).
-        photonEstimatorC = new PhotonPoseEstimator(kTagLayout, kRobotToCamC);
-        photonEstimatorR = new PhotonPoseEstimator(kTagLayout, kRobotToCamR);
+        photonEstimatorC = new PhotonPoseEstimator(Constants.Localization.kTagLayout, kRobotToCamC);
+        photonEstimatorR = new PhotonPoseEstimator(Constants.Localization.kTagLayout, kRobotToCamR);
 
         if (Robot.isSimulation()) {
             visionSim = new VisionSystemSim("main");
-            visionSim.addAprilTags(kTagLayout);
+            visionSim.addAprilTags(Constants.Localization.kTagLayout);
         }
     }
 
