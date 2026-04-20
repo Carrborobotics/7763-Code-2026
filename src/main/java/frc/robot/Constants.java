@@ -3,6 +3,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
 
+//import java.time.YearMonth;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -74,15 +76,24 @@ public final class Constants {
         public static final double fieldLength = FlippingUtil.fieldSizeX;
 
         // Robot Dimensions
-        public static final double robotFrameLength = Units.inchesToMeters(27.5);
-        public static final double bumperWidth = Units.inchesToMeters(3);
+        //public static final double robotFrameLength = Units.inchesToMeters(27);
+        //public static final double bumperWidth = Units.inchesToMeters(3);
 
         // Field Waypoints
-        public static final Translation2d hubPosition = new Translation2d(4.625594,4.034536);
-        public static final double trenchline = Units.inchesToMeters(181.56);
-        public static final double yMidline = Units.inchesToMeters(158.32);
-        public static final Translation2d lowerPassTarget = new Translation2d(Units.inchesToMeters(90), Units.inchesToMeters(50));
-        public static final Translation2d upperPassTarget = new Translation2d(Units.inchesToMeters(90), Units.inchesToMeters(316.64 - 50));
+        public static final double fieldX = Units.inchesToMeters(650.12); // AndyMark
+        public static final double fieldY = Units.inchesToMeters(316.64); // AndyMark
+        public static final double trenchline = Units.inchesToMeters(181.56); // AndyMark
+        public static final double yMidline = fieldY / 2.0;
+        public static final Translation2d hubPosition = new Translation2d(trenchline, yMidline);
+        public static final double oppositeTrenchline = fieldX - trenchline;
+
+        
+        // passing zone locations
+        public static final double passTargetX = Units.inchesToMeters(90); // somewhat arbitrary, as the alliance zone is ~158"
+        public static final double lowerPassTargetY = Units.inchesToMeters(50);
+        public static final double upperPassTargetY = fieldY - Units.inchesToMeters(50);
+        public static final Translation2d lowerPassTarget = new Translation2d(passTargetX, lowerPassTargetY);
+        public static final Translation2d upperPassTarget = new Translation2d(passTargetX, upperPassTargetY);
     }
 
     public static final class Swerve {

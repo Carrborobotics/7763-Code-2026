@@ -5,6 +5,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
@@ -216,9 +217,15 @@ public class ShooterCalc {
     public double getHoodAngle() {
         Pose2d robotPose = this.getRelativeRobotPose();
         // If we are near the trench then drop the hood to lowest position
-        // TODO: set real trench dimensions ;; 170 - 194 inches =~~ 4.3 - 4.9 meters
-        if ((robotPose.getX() > 4.3 && robotPose.getX() < 4.9) ||
-            (robotPose.getX() > 12.5 && robotPose.getX() < 13.2)) {
+        double safeDistance = Units.inchesToMeters(12); // 12 inches of buffer on either side of the trench
+        double ourTrenchSafeStartX = Constants.Localization.trenchline - safeDistance;
+        double ourTrenchSafeEndX = Constants.Localization.trenchline + safeDistance;
+        double oppositeTrenchSafeStartX = Constants.Localization.oppositeTrenchline - safeDistance;
+        double oppositeTrenchSafeEndX = Constants.Localization.oppositeTrenchline + safeDistance;
+
+        // previously was 4.3 - 4.9 meters, but we are using more accurate field dimensions now.
+        if ((robotPose.getX() > ourTrenchSafeStartX && robotPose.getX() < ourTrenchSafeEndX) ||
+            (robotPose.getX() > oppositeTrenchSafeStartX && robotPose.getX() < oppositeTrenchSafeEndX)) {
             return Constants.MIN_HOOD_ANGLE;
         }
 
