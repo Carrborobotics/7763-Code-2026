@@ -1,14 +1,11 @@
 package frc.robot;
 
-//import static edu.wpi.first.units.Units.Degrees;
-
-//import java.util.EnumMap;
-//import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -18,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.floor.Floor;
 import frc.robot.subsystems.floor.FloorIOReal;
@@ -37,16 +35,9 @@ import frc.robot.subsystems.shooterhood.ShooterHoodIOSim;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIOReal;
-import frc.robot.subsystems.turret.TurretIOSim;   
+import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.util.ShooterCalc;
 
-
-// hood reset debounce
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-//import static edu.wpi.first.units.Units.Degrees;
-//import frc.robot.Constants;
 
 public class RobotContainer {
     double SHOOTER_ADJUST_AMOUNT = 2.0; // amount to adjust shooter speed by when pressing the POV up/down buttons
