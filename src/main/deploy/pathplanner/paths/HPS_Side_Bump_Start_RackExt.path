@@ -3,44 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6,
-        "y": 5.4
+        "x": 3.5,
+        "y": 2.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8165063509461097,
-        "y": 5.275
+        "x": 2.085786437626905,
+        "y": 1.085786437626905
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "HPS Bump Start"
     },
     {
       "anchor": {
-        "x": 0.75,
-        "y": 6.0
+        "x": 1.0,
+        "y": 0.65
       },
       "prevControl": {
-        "x": 0.5334936490538903,
-        "y": 6.125
+        "x": 2.499999999999999,
+        "y": 0.65
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "HPS Intake"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Rack_Extend",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "Intake_On",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.2982456140350877,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -61,7 +60,7 @@
   "folder": "Starts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 45.0
   },
   "useDefaultConstraints": true
 }

@@ -31,41 +31,39 @@ import frc.robot.subsystems.swerve.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.12;
     public static final double stickDeadbandDivider = 1.0; // 1 FOR COMP, 5 for test mode.
+    
     public static final double RACK_GEARING = 9.0; // 9:1
     public static final double INTAKE_GEARING = 1.25; // 12t:15t = 1.25:1
     public static final double TURRET_ROTATION_GEARING = 12.0; // 12:1
     public static final double SHOOTER_HOOD_GEARING = 715.5; // 715.5:1 (wow)
-    
-    public static final double SHOOTER_GEARING = 1.0; // TODO: Need real shooter motor gear ratio
-    public static final double FLOOR_GEARING = 1.0; // TODO: Need real floor motor gear ratio
+    public static final double SHOOTER_GEARING = 1.0;
+    public static final double FLOOR_GEARING = 1.0;
     public static final double shooterRPS = 100;
     
-    public static final double RACK_EXTEND_POSITION = -34000.0;
+    public static final double RACK_EXTEND_POSITION = -32000.0; // was -34000
     public static final double RACK_RETRACT_POSITION = 0.0;
     
+    public static final double MIN_HOOD_ANGLE = 100.0; // units, not really degrees
+    public static final double MAX_HOOD_ANGLE = 300.0; // units, not really degrees (previously 400.0)
+
     public static final class Intake {
-        public static final double FORWARD_SPEED = 1.0; // was 0.5
-        public static final double REVERSE_SPEED = 0.2;
+        public static final double FORWARD_SPEED = 0.9; // was 0.5, 0.6 moving to 0.9 with net
+        public static final double REVERSE_SPEED = -0.2;
     }
+
     public static final class CANConstants {
         public static final int intakeId = 42;
         public static final int rackId = 41;
         public static final int rackId2 = 43;
-
         public static final int turretId = 21; // on drivetrain
-
         public static final int shooterLeft = 22;
         public static final int shooterRight = 23;
         public static final int kickerId = 24;
         public static final int shooterHoodId = 25;
         public static final int floorId = 30;
-        //public static final int shooterHoodId = 33;
-
         /* CANBusses */
         public static final CANBus canBus = new CANBus("rio");
         public static final CANBus canBusDriveTrain = new CANBus("Drivetrain");
-         
-
     }
 
     public static final class Localization {
@@ -164,8 +162,10 @@ public final class Constants {
         /* Swerve Profiling Values */
         /** Meters per Second */
         public static final double maxSpeed = 4.5; // 4.5 FOR COMP, 0.5 for test mode
+        public static final double maxSpeedSOTM = 0.5; 
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //10 FOR COMP, 2.0 for test mode
+        public static final double maxAngularVelocitySOTM = 2.0;
         /*
          * These are theorectial values to start with, tune after
          * Kraken FOC-DIS (L1.0): ft/s = 12.9 | m/s = 3.93192
@@ -259,8 +259,12 @@ public final class Constants {
         public static final String kCameraName = "Arducam_OV9281_USB_Camera";
 
         public static final Transform3d kRobotToCam = new Transform3d(
-            new Translation3d(0.317258, Units.inchesToMeters(0.0), 0.2794), // X and Y were swapped?
-                  new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(30), Units.degreesToRadians(0)));
+            new Translation3d(
+                0.317258,
+                Units.inchesToMeters(1.5), 
+                0.2794
+            ), // X and Y were swapped?
+            new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(0)));
 
  //public static final Transform3d kRobotToCam = new Transform3d(
    //         new Translation3d(Units.inchesToMeters(9.15), Units.inchesToMeters(0.0), Units.inchesToMeters(7.25)), // X and Y were swapped?

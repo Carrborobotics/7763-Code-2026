@@ -9,28 +9,15 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.MathUtil;
-//import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-//import edu.wpi.first.units.Units;
-//import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-//import edu.wpi.first.wpilibj2.command.InstantCommand;
-//import edu.wpi.first.wpilibj2.command.RunCommand;
-//import edu.wpi.first.wpilibj2.command.WaitCommand;
-//import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-//import edu.wpi.first.wpilibj2.command.button.Trigger;
-//import frc.robot.Constants.Localization.ReefFace;
-//import frc.robot.commands.LocalSwerve;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.floor.Floor;
 import frc.robot.subsystems.floor.FloorIOReal;
@@ -49,11 +36,10 @@ import frc.robot.subsystems.shooterhood.ShooterHoodIOReal;
 import frc.robot.subsystems.shooterhood.ShooterHoodIOSim;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.turret.Turret;
-// import frc.robot.subsystems.led.LedSubsystem;
-// import frc.robot.subsystems.led.LedSubsystem.LedMode;
-//import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIOReal;
 import frc.robot.subsystems.turret.TurretIOSim;   
+import frc.robot.util.ShooterCalc;
+
 
 // hood reset debounce
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -88,17 +74,16 @@ public class RobotContainer {
     private final Turret turret;
     private final ShooterHood shooterHood;
 
-    // private final LedSubsystem m_led = new LedSubsystem();
     private final Field2d targetField;
+
+    // call utility class for calculating shooter parameters based on robot pose
+    // set targeting mode to one of the 3 modes: BASIC, SOTM, SOTM_CONVERGED
+    private final ShooterCalc shootcalc = new ShooterCalc(s_Swerve, ShooterCalc.TargetingMode.SOTM);
 
     public Swerve getSwerve() {
         return s_Swerve;
     }
 
-    /* Alliance colors */
-    // private final Color redBumper = Color.kDarkRed;
-    // private final Color blueBumper = Color.kDarkBlue;
-    // private Color original_color;
     public Pose2d globalRobotPose;
 
     public RobotContainer() {
@@ -110,8 +95,8 @@ public class RobotContainer {
             this.turret = new Turret(new TurretIOReal());
             this.shooterHood = new ShooterHood(new ShooterHoodIOReal());
         } else {
-            this.rack = new Rack(new RackIOSim()); // Simulated rack for testing
-            this.intake = new Intake(new IntakeIOSim()); // Simulated intake for testing
+            this.rack = new Rack(new RackIOSim()); 
+            this.intake = new Intake(new IntakeIOSim());
             this.floor = new Floor(new FloorIOSim());
             this.shooter = new Shooter(new ShooterIOSim());
             this.turret = new Turret(new TurretIOSim());
@@ -127,22 +112,30 @@ public class RobotContainer {
                     () -> -translationAxis.get(),
                     () -> -strafeAxis.get(),
                     () -> -rotationAxis.get(),
-                    () -> false,
-                    () -> false
+                    () -> driverController.rightBumper().getAsBoolean() // same button as shoot command
             )
         );
 
         NamedCommands.registerCommand("Shoot_5s", shootCmd().withTimeout(5.0));
-        NamedCommands.registerCommand("Intake_On", intake.setIntakeSpeed(0.5));
-        NamedCommands.registerCommand("Intake_Off", intake.setIntakeSpeed(0));
+        NamedCommands.registerCommand("Shoot_Off", shooter.stopCmd());
+        NamedCommands.registerCommand("Intake_On", intake.forwardCmd());
+        NamedCommands.registerCommand("Intake_Off", intake.stopCmd());
         NamedCommands.registerCommand("Rack_Extend", rack.rackToCmd(Constants.RACK_EXTEND_POSITION));
         NamedCommands.registerCommand("Rack_Retract", rack.rackToCmd(Constants.RACK_RETRACT_POSITION));
+        NamedCommands.registerCommand("Rack_80pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.8));
+        NamedCommands.registerCommand("Rack_70pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.7));
+        NamedCommands.registerCommand("Rack_60pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.6));
+        NamedCommands.registerCommand("Rack_50pct", rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.5));
+        NamedCommands.registerCommand("Agitate", agitateCommand());
         
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret));
-        shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood)));
+        // ------------------------- 
+        // DEFAULT COMMANDS
+        // ------------------------- 
+        turret.setDefaultCommand(Commands.run(() -> turret.setTurretAngle(shootcalc.getTurretAngle()), turret));
+        shooterHood.setDefaultCommand((Commands.run(() -> shooterHood.setShooterHoodAngle(-shootcalc.getHoodAngle()), shooterHood)));
 
         configureButtonBindings();
     }
@@ -157,7 +150,7 @@ public class RobotContainer {
         driverController.povRight().onTrue(turret.modifyOffsetCmd(TURRET_ADJUST_AMOUNT));   // increase turret angle offset by 1 degrees
 
         // run the intake
-        driverController.leftBumper().whileTrue(intake.setIntakeSpeed(Constants.Intake.FORWARD_SPEED))
+        driverController.leftBumper().whileTrue(intake.forwardCmd())
             .onFalse(intake.stopCmd());
 
         // rack goes out (deployed)
@@ -167,70 +160,41 @@ public class RobotContainer {
 
         // attempt to reset hood
         Trigger hoodLimitSensed = new Trigger(() -> shooterHood.IsOverloaded()).debounce(0.75, DebounceType.kBoth);
-        driverController.a().onTrue(shooterHood.setSpeedCmd(0.5).until(hoodLimitSensed));
+        driverController.start().onTrue(shooterHood.setSpeedCmd(0.5).until(hoodLimitSensed));
         
-        driverController.rightBumper().whileTrue(shootCmd())
-            .onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
-            //.alongWith(floor.setFloorSpeed(-0.25)))
-            //.onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
+        //driverController.rightBumper().whileTrue(shootCmd()).onFalse(shooter.stopCmd().alongWith(floor.stopCmd()));
 
-        //driverController.x().onTrue(shooter.setShooterSpeed(0));
-        //driverController.y().onTrue(shooterHood.shooterHoodToCmd(-100));
+        driverController.a().whileTrue(intake.reverseCmd()).onFalse(intake.stopCmd()); // reverse intake
 
-        // sixty pct positin
-        driverController.x().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50));
+        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(0.2)))
+        .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed and fwd kicker
+        
+        driverController.x().onTrue(rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50)); // partial rack position
+
         driverController.y().onTrue(agitateCommand());
 
-        // testing indexer(floor) speeds
-        //driverController.start().whileTrue(floor.setFloorSpeed(-0.5)).onFalse(floor.stopCmd()); // turbo floor speed
-        driverController.start().whileTrue(intake.setIntakeSpeed(-0.2)).onFalse(intake.stopCmd()); // reverse intake
-        driverController.back().whileTrue(floor.setFloorSpeed(-0.2)).onFalse(floor.stopCmd()); // normal floor speed
-        driverController.b().whileTrue(floor.setFloorSpeed(-0.2).alongWith(shooter.setShooterSpeed(-0.2)))
-            .onFalse(floor.stopCmd().alongWith(shooter.stopCmd())); // reverse floor speed (ejecting balls)
-        
     }
 
+    // Command passCmd() {
+    //    return shooter.continuousSetShooterSpeed(shootcalc).alongWith(floor.setFloorSpeed(0.5)).alongWith(turret.setTurretAngle(Math.toDegrees(0)));
+    //}
+
     public Command shootCmd() {
-        return shooter.continuousSetShooterSpeed(s_Swerve).alongWith(floor.setFloorSpeed(0.2));
+        return shooter.continuousSetShooterSpeed(shootcalc).alongWith(floor.setFloorSpeed(0.5));
     }
+
     public Command agitateCommand() {
         return new SequentialCommandGroup(
             rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00),
-            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.70),
-            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.85),
-            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.70),
+            new WaitCommand(0.5),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50),
+            new WaitCommand(0.5),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.75),
+            new WaitCommand(0.5),
+            rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.50),
+            new WaitCommand(0.5),
             rack.rackToCmd(Constants.RACK_EXTEND_POSITION*1.00)
         );
-    }
-
-    public Command shootAndSqueezeCommand() {
-        return shooter.setShooterSpeed(-0.5).withTimeout(1).andThen(
-            shooter.continuousSetShooterSpeed(s_Swerve)
-                .alongWith(floor.setFloorSpeed(-0.2))
-                .alongWith(
-                    rack.rackToCmd(Constants.RACK_EXTEND_POSITION*0.9)
-                )
-        );
-    }
-
-    // ── Targeting ──────────────────────────────────────────────────────────────
-    private double getTurretAngle() {
-        Pose2d robotPose = Swerve.flipIfRed(s_Swerve.getRobotPose());
-        Translation2d target = s_Swerve.getTargetForRobotPose(robotPose);
-        Translation2d toTarget = robotPose.getTranslation().minus(target);
-        double targetAngle = Math.toDegrees(Math.atan2(toTarget.getY(), toTarget.getX()));
-        double turretAngle = targetAngle - robotPose.getRotation().getDegrees();
-        turretAngle = MathUtil.inputModulus(turretAngle + 180, -185, 185);
-        SmartDashboard.putNumber("Turret Angle", turretAngle);
-        SmartDashboard.putString("Target", target.toString());
-        return -(MathUtil.clamp(turretAngle, -185.0, 185.0));
-    }
-
-    private double getHoodAngle() {
-        double targetDistance = s_Swerve.getTargetDistanceForHood();
-        double hoodAngle = targetDistance * 60;
-        SmartDashboard.putNumber("Hood Angle", hoodAngle);
-        return Math.abs(MathUtil.clamp(hoodAngle, 100.0, 400.0));
     }
 
     /**
@@ -240,8 +204,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.getSelected()
-            .deadlineFor(Commands.run(() -> turret.setTurretAngle(getTurretAngle()), turret))
-            .alongWith((Commands.run(() -> shooterHood.setShooterHoodAngle(-getHoodAngle()), shooterHood)));
+            .deadlineFor(Commands.run(() -> turret.setTurretAngle(shootcalc.getTurretAngle()), turret))
+            .alongWith((Commands.run(() -> shooterHood.setShooterHoodAngle(-shootcalc.getHoodAngle()), shooterHood)));
     }
 
     public Turret getTurret() {

@@ -28,7 +28,7 @@ public class TurretIOReal implements TurretIO {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Basic PID from TurretConstants (only kP/kI/kD applied to Slot0)
-        config.Slot0.kP = 100.0; //TurretConstants.TalonFXGains.kP();
+        config.Slot0.kP = 30.0; //TurretConstants.TalonFXGains.kP();
         config.Slot0.kI = 0.0; //TurretConstants.TalonFXGains.kI();
         config.Slot0.kD = 0.0; //TurretConstants.TalonFXGains.kD();
         config.Slot0.kS = 5.0; //TurretConstants.TalonFXGains.kS();
@@ -36,10 +36,11 @@ public class TurretIOReal implements TurretIO {
         // Configure sensor-to-mechanism ratio so CTRE scales between encoder rotations and
         // mechanism rotations (e.g. gearbox ratio). Use the config.Feedback field so
         // the configurator applies it to the controller.
-        config.Feedback.SensorToMechanismRatio = 39.0;
+        config.Feedback.SensorToMechanismRatio = 26.0; // was 39.0 at elon
 
         // Set invert and apply configuration
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        // no longer inverted post elon 
+        //config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         motor.getConfigurator().apply(config);
 
         // Zero the encoder
@@ -76,7 +77,7 @@ public class TurretIOReal implements TurretIO {
         Angle adjustedPosition = Degrees.of(position.in(Degrees) + this.offset.in(Degrees));
         // Convert Angle -> rotations (rotations = radians / 2pi)
         double rotations = adjustedPosition.in(Radians) / (2.0 * Math.PI);
-        motor.setControl(positionRequest.withPosition(rotations));
+        motor.setControl(positionRequest.withPosition(-rotations));
     }
 
     @Override

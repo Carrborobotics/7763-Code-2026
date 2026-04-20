@@ -6,12 +6,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 //import frc.robot.Constants.Swerve;
-import frc.robot.subsystems.shooterhood.ShooterHood;
+//import frc.robot.subsystems.shooterhood.ShooterHood;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.ShooterCalc;
+
 import static edu.wpi.first.units.Units.*;
-import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.Constants;
-import frc.robot.subsystems.swerve.Swerve;
+//import edu.wpi.first.math.geometry.Pose2d;
+// import frc.robot.Constants;
+// import frc.robot.subsystems.swerve.Swerve;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase{
@@ -59,8 +61,8 @@ public class Shooter extends SubsystemBase{
     /**
      * Continuously set shooter speed (use with Commands.run or whileTrue)
      */
-    public Command continuousSetShooterSpeed(Swerve swerve) {
-        return run(() -> this.io.setSpeed(swerve.getTargetSpeed()));
+    public Command continuousSetShooterSpeed(ShooterCalc shootcalc) {
+        return run(() -> this.io.setSpeed(shootcalc.getTargetSpeed()));
     }
 
     /**
@@ -85,6 +87,6 @@ public class Shooter extends SubsystemBase{
         SmartDashboard.putString("shooter/shooter torque current", this.inputs.torqueCurrent.toString());
         SmartDashboard.putString("shooter/shooter motor temp", this.inputs.temperature.toString());   
         SmartDashboard.putString("shooter/shooter velocity", this.inputs.velocity.toString());  
-        SmartDashboard.putString("shooter/kicker velocity", this.inputs.kickerVelocity.toString());   
-    }
+        SmartDashboard.putString("shooter/kicker velocity", this.inputs.kickerVelocity.toString());
+    }   
 }

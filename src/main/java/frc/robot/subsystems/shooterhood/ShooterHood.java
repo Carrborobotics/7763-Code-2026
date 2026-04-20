@@ -46,10 +46,7 @@ public class ShooterHood extends SubsystemBase {
         this.goal = RobotState.getGoalInstance();
     }
     
-    // TODO: Next 3 things are all basically the same command, we should probably unify them
-    public Command shooterHoodToCmd(double degree_value) {
-        return Commands.runOnce(() -> this.setpoint = Degrees.of(degree_value));
-    }
+    // TODO: Next 2 things are all basically the same command, we should probably unify them
     public Command setPosition(Angle position) {
         return runOnce(() -> this.setpoint = Degrees.of(position.in(Degrees)));
     }
@@ -60,7 +57,6 @@ public class ShooterHood extends SubsystemBase {
     public Command setSpeedCmd(double val) {
         return runOnce(() -> this.io.setSpeed(val));
     }   
-
 
     public double getTargetShooterHoodDegrees() {
         return this.setpoint.in(Degrees);

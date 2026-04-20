@@ -3,34 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5,
-        "y": 2.5
+        "x": 7.7,
+        "y": 5.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.085786437626905,
-        "y": 1.085786437626905
+        "x": 7.7,
+        "y": 6.0
       },
       "isLocked": false,
-      "linkedName": "HPS Bump Start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0,
-        "y": 0.65
+        "x": 5.83148181011535,
+        "y": 7.378908606921029
       },
       "prevControl": {
-        "x": 2.499999999999999,
-        "y": 0.65
+        "x": 7.225140023464216,
+        "y": 7.274784717417953
+      },
+      "nextControl": {
+        "x": 4.43114463176575,
+        "y": 7.483531499556344
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.8376574977817213,
+        "y": 7.378908606921029
+      },
+      "prevControl": {
+        "x": 3.527146184560781,
+        "y": 7.455866792369122
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "HPS Intake"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.9289940828402417,
       "rotationDegrees": 0.0
     }
   ],
@@ -50,10 +70,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Starts",
+  "folder": "Traverse",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 45.0
+    "velocity": 0.0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

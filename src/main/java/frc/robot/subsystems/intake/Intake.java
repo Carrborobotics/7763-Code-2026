@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
 import static edu.wpi.first.units.Units.*;
+import frc.robot.Constants;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -43,6 +44,14 @@ public class Intake extends SubsystemBase{
 
     public Command setIntakeSpeed(double speed) {
         return runOnce(() -> this.io.setSpeed(speed));
+    }
+
+    public Command forwardCmd() {
+        return this.setIntakeSpeed(Constants.Intake.FORWARD_SPEED);
+    }
+    
+    public Command reverseCmd() {
+        return this.setIntakeSpeed(Constants.Intake.REVERSE_SPEED);
     }
 
     /**

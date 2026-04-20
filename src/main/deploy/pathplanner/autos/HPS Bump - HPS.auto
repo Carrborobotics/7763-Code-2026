@@ -9,6 +9,36 @@
           "data": {
             "pathName": "HPS Side Bump Start"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Rack_Extend"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
         }
       ]
     }

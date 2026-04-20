@@ -3,7 +3,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 //import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
+//import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,7 +47,7 @@ public class FloorIOReal implements FloorIO {
         floorConfig.Voltage.PeakForwardVoltage = 12;
         floorConfig.Voltage.PeakReverseVoltage = -12;
 
-        floorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        //floorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         floorMotor.getConfigurator().apply(floorConfig);
 

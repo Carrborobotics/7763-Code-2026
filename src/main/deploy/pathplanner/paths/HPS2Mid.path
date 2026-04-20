@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0,
-        "y": 2.15
+        "x": 2.5,
+        "y": 0.65
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Outpost Side Pickup END"
     },
     {
       "anchor": {
-        "x": 4.63,
-        "y": 2.4
+        "x": 5.75,
+        "y": 0.65
       },
       "prevControl": {
-        "x": 6.127078867724332,
-        "y": 2.493567429232771
+        "x": 4.75,
+        "y": 0.6500000000000001
       },
       "nextControl": {
-        "x": 2.1348685537927787,
-        "y": 2.244054284612048
+        "x": 6.75,
+        "y": 0.65
       },
       "isLocked": false,
       "linkedName": null
@@ -40,29 +40,29 @@
         "y": 3.0
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Outpost End"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.66,
-      "rotationDegrees": 5.0
-    },
-    {
-      "waypointRelativePos": 1.2,
-      "rotationDegrees": 14.999999999999998
-    },
-    {
-      "waypointRelativePos": 1.5,
+      "waypointRelativePos": 0.0,
       "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.209072978303748,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.3254437869822477,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.32429245283018937,
-      "maxWaypointRelativePos": 0.6238207547169813,
+      "minWaypointRelativePos": 0.3,
+      "maxWaypointRelativePos": 0.6,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 2.5,
@@ -74,7 +74,7 @@
     },
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.6485849056603756,
+      "minWaypointRelativePos": 1.6,
       "maxWaypointRelativePos": 2.0,
       "constraints": {
         "maxVelocity": 1.0,
@@ -87,8 +87,8 @@
     },
     {
       "name": "Shooting Speed",
-      "minWaypointRelativePos": 1.15,
-      "maxWaypointRelativePos": 1.349056603773585,
+      "minWaypointRelativePos": 1.2,
+      "maxWaypointRelativePos": 1.3,
       "constraints": {
         "maxVelocity": 0.5,
         "maxAcceleration": 2.5,
@@ -102,10 +102,15 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Aim Hub",
-      "waypointRelativePos": 1.1509433962264153,
-      "endWaypointRelativePos": 1.35,
-      "command": null
+      "name": "Intake_On",
+      "waypointRelativePos": 1.338785046728971,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake_On"
+        }
+      }
     }
   ],
   "globalConstraints": {
