@@ -91,9 +91,11 @@ public final class Constants {
 
         
         // passing zone locations
-        public static final double passTargetX = Units.inchesToMeters(90); // somewhat arbitrary, as the alliance zone is ~158"
-        public static final double lowerPassTargetY = Units.inchesToMeters(50);
-        public static final double upperPassTargetY = fieldY - Units.inchesToMeters(50);
+        // was previously xoff=90 ; yoff=50
+        public static final double passTargetX = Units.inchesToMeters(110); // somewhat arbitrary, as the alliance zone is ~158"
+        public static final double passTargetY = Units.inchesToMeters(80); 
+        public static final double lowerPassTargetY = passTargetY;
+        public static final double upperPassTargetY = fieldY - passTargetY;
         public static final Translation2d lowerPassTarget = new Translation2d(passTargetX, lowerPassTargetY);
         public static final Translation2d upperPassTarget = new Translation2d(passTargetX, upperPassTargetY);
     }

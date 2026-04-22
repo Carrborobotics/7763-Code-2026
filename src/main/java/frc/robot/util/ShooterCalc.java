@@ -3,6 +3,9 @@ package frc.robot.util;
 import java.util.List;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -36,7 +39,7 @@ public class ShooterCalc {
     }
 
     // Shoot on the move scale factor
-    public double SOTM_SCALAR = -1.5 ; // multiple of robot velocity vector; should be -1.0 to subtract 
+    public double SOTM_SCALAR = -1.0 ; // multiple of robot velocity vector; should be -1.0 to subtract 
 
     /**
      * Get the current targeting algorithm mode.
@@ -45,8 +48,28 @@ public class ShooterCalc {
         return this.targetingMode;
     }
 
-    public Pose2d getRelativeRobotPose() {
-        return Swerve.flipIfRed(s_Swerve.getRobotPose());
+    public Pose2d getRelativeTurretPose() {
+        var robotPose = s_Swerve.getRobotPose();
+        //double robotAngleRad = robotPose.getRotation().getRadians();
+
+        var turretOffsetPose = new Pose2d(
+            Units.inchesToMeters(-7.4), // forward
+            Units.inchesToMeters(-8.5), // left
+            //robotPose.getRotation() 
+            new Rotation2d(0)
+        ).rotateBy(robotPose.getRotation().times(-1));
+        
+        Transform2d turretOffset = new Transform2d(turretOffsetPose.getX(), turretOffsetPose.getY(), new Rotation2d(0));
+                
+        Pose2d turretPose = robotPose.transformBy(turretOffset);
+        
+        var turretPoseFlip =  Swerve.flipIfRed(turretPose);
+        SmartDashboard.putString("Turret/pose", turretPoseFlip.toString());
+        SmartDashboard.putNumber("Turret/adj-x", turretOffset.getX());
+        SmartDashboard.putNumber("Turret/adj-y", turretOffset.getY());
+        
+        return turretPoseFlip;
+        //return Swerve.flipIfRed(s_Swerve.getRobotPose());
     }
 
     /* 
@@ -67,7 +90,7 @@ public class ShooterCalc {
 
     // SmartDashboard.putString("Target/rpose-for-dist", robotPose.toString());
     public Translation2d getVectorToTarget() {
-        Pose2d robotPose = getRelativeRobotPose();
+        Pose2d robotPose = getRelativeTurretPose();
         Translation2d target = getTargetForRobotPose(robotPose);
         return target.minus(robotPose.getTranslation());
     }
@@ -178,11 +201,12 @@ public class ShooterCalc {
         return getTargetSpeed(dist);
     }
 
+
     // ── Targeting ──────────────────────────────────────────────────────────────
     
     // Get turret angle based on the current targeting mode (BASIC, SOTM, or SOTM_CONVERGED).
     public double getTurretAngle() {
-        Pose2d robotPose = getRelativeRobotPose();
+        Pose2d robotPose = getRelativeTurretPose();
         // Select the target vector based on targeting mode
         Translation2d toTarget = switch (targetingMode) {
             case BASIC -> this.getVectorToTarget();
@@ -215,7 +239,7 @@ public class ShooterCalc {
     }
     
     public double getHoodAngle() {
-        Pose2d robotPose = this.getRelativeRobotPose();
+        Pose2d robotPose = this.getRelativeTurretPose();
         // If we are near the trench then drop the hood to lowest position
         double safeDistance = Units.inchesToMeters(12); // 12 inches of buffer on either side of the trench
         double ourTrenchSafeStartX = Constants.Localization.trenchline - safeDistance;
