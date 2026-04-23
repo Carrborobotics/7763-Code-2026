@@ -47,7 +47,7 @@ public final class Constants {
     public static final double RACK_RETRACT_POSITION = 0.0;
     
     public static final double MIN_HOOD_ANGLE = 100.0; // units, not really degrees
-    public static final double MAX_HOOD_ANGLE = 300.0; // units, not really degrees (previously 400.0)
+    public static final double MAX_HOOD_ANGLE = 380.0; // units, not really degrees (previously 400.0)
 
     public static final class Intake {
         public static final double FORWARD_SPEED = 0.9; // was 0.5, 0.6 moving to 0.9 with net

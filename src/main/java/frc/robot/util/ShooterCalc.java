@@ -49,24 +49,32 @@ public class ShooterCalc {
     }
 
     public Pose2d getRelativeTurretPose() {
-        var robotPose = s_Swerve.getRobotPose();
-        //double robotAngleRad = robotPose.getRotation().getRadians();
+        Pose2d robotPose = s_Swerve.getRobotPose();
 
+        // the otto method
+        double robotTurnRad = robotPose.getRotation().getRadians();
+        double turretX = 0.286 * Math.cos(robotTurnRad + 0.854) + robotPose.getX();
+        double turretY = 0.286 * Math.sin(robotTurnRad + 0.854) + robotPose.getY();
+        Pose2d turretPose = new Pose2d(turretX, turretY, robotPose.getRotation());
+
+        //
+        // This is an attempt to offset the turret from the robot's pose
+        // I am not certain it actually works as we intended.
+        /*
         var turretOffsetPose = new Pose2d(
             Units.inchesToMeters(-7.4), // forward
             Units.inchesToMeters(-8.5), // left
             //robotPose.getRotation() 
             new Rotation2d(0)
         ).rotateBy(robotPose.getRotation().times(-1));
-        
         Transform2d turretOffset = new Transform2d(turretOffsetPose.getX(), turretOffsetPose.getY(), new Rotation2d(0));
-                
         Pose2d turretPose = robotPose.transformBy(turretOffset);
-        
-        var turretPoseFlip =  Swerve.flipIfRed(turretPose);
+        */
+        //Pose2d turretPose = robotPose;
+        Pose2d turretPoseFlip =  Swerve.flipIfRed(turretPose);
         SmartDashboard.putString("Turret/pose", turretPoseFlip.toString());
-        SmartDashboard.putNumber("Turret/adj-x", turretOffset.getX());
-        SmartDashboard.putNumber("Turret/adj-y", turretOffset.getY());
+        // SmartDashboard.putNumber("Turret/adj-x", turretOffset.getX());
+        // SmartDashboard.putNumber("Turret/adj-y", turretOffset.getY());
         
         return turretPoseFlip;
         //return Swerve.flipIfRed(s_Swerve.getRobotPose());
@@ -241,11 +249,13 @@ public class ShooterCalc {
     public double getHoodAngle() {
         Pose2d robotPose = this.getRelativeTurretPose();
         // If we are near the trench then drop the hood to lowest position
-        double safeDistance = Units.inchesToMeters(12); // 12 inches of buffer on either side of the trench
-        double ourTrenchSafeStartX = Constants.Localization.trenchline - safeDistance;
-        double ourTrenchSafeEndX = Constants.Localization.trenchline + safeDistance;
-        double oppositeTrenchSafeStartX = Constants.Localization.oppositeTrenchline - safeDistance;
-        double oppositeTrenchSafeEndX = Constants.Localization.oppositeTrenchline + safeDistance;
+        double safeDistanceNear = Units.inchesToMeters(12); // 12 inches of buffer on either side of the trench
+        double safeDistanceFar = Units.inchesToMeters(30); // 30 inches of buffer on either side of the far trench
+
+        double ourTrenchSafeStartX = Constants.Localization.trenchline - safeDistanceNear;
+        double ourTrenchSafeEndX = Constants.Localization.trenchline + safeDistanceNear;
+        double oppositeTrenchSafeStartX = Constants.Localization.oppositeTrenchline - safeDistanceFar;
+        double oppositeTrenchSafeEndX = Constants.Localization.oppositeTrenchline + safeDistanceFar;
 
         // previously was 4.3 - 4.9 meters, but we are using more accurate field dimensions now.
         if ((robotPose.getX() > ourTrenchSafeStartX && robotPose.getX() < ourTrenchSafeEndX) ||

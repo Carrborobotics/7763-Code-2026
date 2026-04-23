@@ -26,8 +26,9 @@ public class TurretIOReal implements TurretIO {
 
         var config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        config.Slot0.kP = 30.0;
+        config.Voltage.PeakForwardVoltage = 9; // TODO: attempt to voltage limit
+        config.Voltage.PeakReverseVoltage = -9;
+        config.Slot0.kP = 90.0;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kS = 5.0;
