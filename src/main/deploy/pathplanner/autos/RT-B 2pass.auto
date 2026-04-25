@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right trench - mid pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right mid - bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right bump - shoot - trench"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right trench - close mid sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right mid close - bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right bump - shoot - trench"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Autos",
+  "choreoAuto": false
+}

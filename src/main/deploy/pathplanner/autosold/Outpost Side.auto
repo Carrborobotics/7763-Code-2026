@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Start - Backup"
+            "pathName": "Outpost Start - Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost Pickup End - Outpost End"
           }
         }
       ]

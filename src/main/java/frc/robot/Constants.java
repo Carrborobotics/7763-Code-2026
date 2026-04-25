@@ -279,7 +279,7 @@ public final class Constants {
         public static final Transform3d kRobotToCamC = new Transform3d(
             new Translation3d(
                 Units.inchesToMeters(13), 
-                Units.inchesToMeters(1.75),
+                Units.inchesToMeters(-2.5), // was +1.75
                 Units.inchesToMeters(12)
             ), // X and Y were swapped?
             new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(25), Units.degreesToRadians(0)));

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5,
-        "y": 0.6
+        "x": 3.4618072289156623,
+        "y": 2.526975903614458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2500135709259643,
-        "y": 0.5973951432261797
+        "x": 2.3690361445783132,
+        "y": 2.5379036144578313
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "right bump"
     },
     {
       "anchor": {
-        "x": 1.614,
-        "y": 1.429
+        "x": 3.5820120481927713,
+        "y": 0.691120481927711
       },
       "prevControl": {
-        "x": 1.3974936490538905,
-        "y": 1.554
+        "x": 2.303469879518072,
+        "y": 0.6911204819277111
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "right trench"
     }
   ],
   "rotationTargets": [],
@@ -36,16 +36,17 @@
       "name": "Shoot_5s",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Shoot_5s"
-        }
-      }
+      "command": null
+    },
+    {
+      "name": "Shoot_Off",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.75,
+    "maxVelocity": 0.5,
     "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -54,13 +55,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
-  },
-  "reversed": false,
-  "folder": "Starts",
-  "idealStartingState": {
-    "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "reversed": false,
+  "folder": "Ends",
+  "idealStartingState": {
+    "velocity": 1.0,
+    "rotation": 45.0
+  },
+  "useDefaultConstraints": false
 }

@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left trench - mid pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left mid - trench"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 6.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_Off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left trench - close mid sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left mid close - trench"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Autos",
+  "choreoAuto": false
+}

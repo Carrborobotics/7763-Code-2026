@@ -1,0 +1,190 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.336767950650835,
+        "y": 6.301052630527318
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.336767950650835,
+        "y": 7.023896110692135
+      },
+      "isLocked": true,
+      "linkedName": "Depot Side Pickup END"
+    },
+    {
+      "anchor": {
+        "x": 4.987775297616079,
+        "y": 7.50645833332999
+      },
+      "prevControl": {
+        "x": 6.247225355941478,
+        "y": 7.50645833332999
+      },
+      "nextControl": {
+        "x": 3.3366686793679023,
+        "y": 7.50645833332999
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.330349702377985,
+        "y": 6.840877976187133
+      },
+      "prevControl": {
+        "x": 3.330349702377985,
+        "y": 7.401469513942178
+      },
+      "nextControl": {
+        "x": 3.330349702377985,
+        "y": 6.264127249784841
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.436383928568461,
+        "y": 5.992589285710942
+      },
+      "prevControl": {
+        "x": 2.8535493786335095,
+        "y": 6.001284390189745
+      },
+      "nextControl": {
+        "x": 1.725126488092271,
+        "y": 5.977764333751709
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.8311607142827466,
+        "y": 5.992589285710942
+      },
+      "prevControl": {
+        "x": 1.7387637009711774,
+        "y": 5.992589285710942
+      },
+      "nextControl": {
+        "x": 0.5811607142827466,
+        "y": 5.992589285710942
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.6729241071398895,
+        "y": 5.992589285710942
+      },
+      "prevControl": {
+        "x": 1.216153273806556,
+        "y": 5.992589285710942
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Depot Pickup",
+      "minWaypointRelativePos": 3.356299212598427,
+      "maxWaypointRelativePos": 5.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 1.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Shooting",
+      "minWaypointRelativePos": 1.0875984251968507,
+      "maxWaypointRelativePos": 2.5246062992125995,
+      "constraints": {
+        "maxVelocity": 0.54,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Shoot_5s",
+      "waypointRelativePos": 1.24,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Shoot_Off",
+      "waypointRelativePos": 2.52,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Shoot_Off"
+        }
+      }
+    },
+    {
+      "name": "Intake_On",
+      "waypointRelativePos": 3.755841121495327,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake_On"
+        }
+      }
+    },
+    {
+      "name": "Intake_Off",
+      "waypointRelativePos": 4.7897196261682184,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake_Off"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.75,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

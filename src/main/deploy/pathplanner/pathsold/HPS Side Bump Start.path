@@ -4,46 +4,39 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 0.6
+        "y": 2.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2500135709259643,
-        "y": 0.5973951432261797
+        "x": 2.085786437626905,
+        "y": 1.085786437626905
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "HPS Bump Start"
     },
     {
       "anchor": {
-        "x": 1.614,
-        "y": 1.429
+        "x": 1.0,
+        "y": 0.65
       },
       "prevControl": {
-        "x": 1.3974936490538905,
-        "y": 1.554
+        "x": 2.499999999999999,
+        "y": 0.65
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "HPS Intake"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Shoot_5s",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Shoot_5s"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.75,
     "maxAcceleration": 2.5,
@@ -54,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Starts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 45.0
   },
   "useDefaultConstraints": true
 }

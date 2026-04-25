@@ -9,6 +9,12 @@
           "data": {
             "pathName": "Outpost Start - Backup"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot_5s"
+          }
         }
       ]
     }

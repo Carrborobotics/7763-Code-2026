@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5,
-        "y": 0.6
+        "x": 1.1997710843373495,
+        "y": 6.570228915662651
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2500135709259643,
-        "y": 0.5973951432261797
+        "x": 1.942855421686747,
+        "y": 7.783204819277108
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "depot pickup done"
     },
     {
       "anchor": {
-        "x": 1.614,
-        "y": 1.429
+        "x": 8.641542168674698,
+        "y": 7.520939759036144
       },
       "prevControl": {
-        "x": 1.3974936490538905,
-        "y": 1.554
+        "x": 7.6415421686746985,
+        "y": 7.520939759036144
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "left defense"
     }
   ],
   "rotationTargets": [],
@@ -33,15 +33,10 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot_5s",
-      "waypointRelativePos": 0,
+      "name": "Rack_Retract",
+      "waypointRelativePos": 0.2253101736972688,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Shoot_5s"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -54,10 +49,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Starts",
+  "folder": "Traverse",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
