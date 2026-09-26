@@ -185,3 +185,11 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+
+# Claude Code personal settings
+.claude/settings.local.json
+
+# Shot log written by the robot in simulation
+shots.csv
+# Python cache
+__pycache__/
