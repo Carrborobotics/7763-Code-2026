@@ -50,6 +50,8 @@ public final class Constants {
 
     public static final class Driver {
         public static final int PORT = 0;
+        /** Controller ports logged as DS/Joystick0, DS/Joystick1, ... (0 = driver, 1 = operator). */
+        public static final int LOGGED_JOYSTICK_PORTS = 2;
         public static final double DEADBAND = 0.12;
         /** POV up/down changes the flywheel speed offset by this much. */
         public static final double FLYWHEEL_OFFSET_STEP_RPS = 2.0;

@@ -35,6 +35,7 @@ final class Talons {
             DriverStation.reportError(name + " (TalonFX " + id + ") config failed: " + status, false);
         }
         Health.register(name + " (" + id + ")", motor);
+        MotorTelemetry.register(name, id, bus, motor, cfg);
         return motor;
     }
 }

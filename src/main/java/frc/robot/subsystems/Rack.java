@@ -43,5 +43,8 @@ public final class Rack {
         DogLog.log("Rack/RotA", a.getPosition().getValueAsDouble());
         DogLog.log("Rack/RotB", b.getPosition().getValueAsDouble());
         DogLog.log("Rack/StatorAmpsA", a.getStatorCurrent().getValueAsDouble());
+        // Match Logs app: Mechanisms tab and 3D view joints (motor rotations, 0 = retracted)
+        DogLog.log("Mechanisms/Rack/Position", a.getPosition().getValueAsDouble(), "rot");
+        DogLog.log("Mechanisms/Rack/Setpoint", goalRot, "rot");
     }
 }

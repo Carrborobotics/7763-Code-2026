@@ -88,7 +88,9 @@ public final class CustomSwerve extends SubsystemBase implements SwerveDrive {
         field.setRobotPose(pose);
         DogLog.log("Drive/Pose", pose);
         DogLog.log("Drive/GyroYawDeg", gyroYaw.getValueAsDouble());
-        DogLog.log("Drive/MeasuredStates", moduleStates());
+        SwerveModuleState[] states = moduleStates();
+        DogLog.log("Drive/MeasuredStates", states);
+        DogLog.log("Drive/ModuleAngles", SwerveDrive.moduleAnglesDeg(states));
         DogLog.log("Drive/CommandedSpeeds", lastCommanded);
         for (SwerveModule m : modules) {
             DogLog.log("Drive/CANcoderDeg/" + m.name, m.cancoderDegrees());

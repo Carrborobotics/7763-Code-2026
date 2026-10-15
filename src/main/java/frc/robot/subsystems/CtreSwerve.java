@@ -117,6 +117,8 @@ public final class CtreSwerve extends SubsystemBase implements SwerveDrive {
             String name = Drive.MODULES[i].name();
             Health.register(name + " drive (" + Drive.MODULES[i].driveId() + ")", module.getDriveMotor());
             Health.register(name + " steer (" + Drive.MODULES[i].steerId() + ")", module.getSteerMotor());
+            MotorTelemetry.register(name + " drive", Drive.MODULES[i].driveId(), CAN.DRIVETRAIN, module.getDriveMotor(), driveInitial);
+            MotorTelemetry.register(name + " steer", Drive.MODULES[i].steerId(), CAN.DRIVETRAIN, module.getSteerMotor(), steerInitial);
             Health.register(name + " CANcoder (" + Drive.MODULES[i].cancoderId() + ")", module.getEncoder());
         }
         Health.register("Pigeon (" + CAN.PIGEON + ")", drivetrain.getPigeon2());
@@ -131,6 +133,7 @@ public final class CtreSwerve extends SubsystemBase implements SwerveDrive {
         field.setRobotPose(state.Pose);
         DogLog.log("Drive/Pose", state.Pose);
         DogLog.log("Drive/MeasuredStates", state.ModuleStates);
+        DogLog.log("Drive/ModuleAngles", SwerveDrive.moduleAnglesDeg(state.ModuleStates));
         DogLog.log("Drive/TargetStates", state.ModuleTargets);
         DogLog.log("Drive/OdometryHz", 1.0 / Math.max(1e-3, state.OdometryPeriod));
         DogLog.log("Drive/FailedDaqs", state.FailedDaqs);

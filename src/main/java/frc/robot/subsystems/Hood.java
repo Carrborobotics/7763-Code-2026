@@ -62,5 +62,8 @@ public final class Hood {
         DogLog.log("Hood/GoalUnits", goalUnits);
         DogLog.log("Hood/Units", units());
         DogLog.log("Hood/StatorAmps", statorAmps());
+        // Match Logs app: Mechanisms tab and 3D view joints (legacy hood units, see Constants.Hood)
+        DogLog.log("Mechanisms/Hood/Position", units(), "hood units");
+        DogLog.log("Mechanisms/Hood/Setpoint", goalUnits, "hood units");
     }
 }

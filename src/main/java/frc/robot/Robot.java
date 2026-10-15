@@ -30,6 +30,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -58,6 +59,7 @@ import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Health;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.MechanismSim;
+import frc.robot.subsystems.MotorTelemetry;
 import frc.robot.subsystems.Rack;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.SwerveDrive;
@@ -102,6 +104,7 @@ public class Robot extends TimedRobot {
     private double lastHubChangeInS = Double.POSITIVE_INFINITY;
     private double nextHealthCheckS = 0;
     private double nextSimBallS = 0;
+    private double lastLoopS = Double.NaN;
 
     // Dashboard keys (Elastic reads these; see elastic-layout.json).
     private static final String TILT_TOGGLE = "Driver/Tilt Compensation";
@@ -112,7 +115,15 @@ public class Robot extends TimedRobot {
     private static final Path SHOT_FILE = Filesystem.getOperatingDirectory().toPath().resolve("shots.csv");
 
     public Robot() {
-        DogLog.setOptions(new DogLogOptions().withCaptureDs(true).withNtPublish(true));
+        // Extras: battery, brownouts, CAN utilization/errors and DS state under SystemStats/ (CarboVis match view).
+        DogLog.setOptions(new DogLogOptions().withCaptureDs(true).withNtPublish(true).withLogExtras(true));
+        // PDH per-channel currents, total current/power and temperature go into DogLog's SystemStats/.
+        // Auto-detects a REV PDH (CAN 1) or CTRE PDP (CAN 0); if neither answers, telemetry just goes without it.
+        try {
+            DogLog.setPdh(new PowerDistribution());
+        } catch (RuntimeException e) {
+            DriverStation.reportWarning("No power distribution hub found for logging: " + e.getMessage(), false);
+        }
 
         registerNamedCommands(); // must happen before autos are loaded
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -255,6 +266,8 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run(); // drivetrain odometry, auto commands, button bindings
         double now = Timer.getFPGATimestamp();
+        if (!Double.isNaN(lastLoopS)) DogLog.log("System/LoopTimeMs", (now - lastLoopS) * 1000.0, "ms");
+        lastLoopS = now;
         Tuning.update();
         vision.addMeasurements(drive::addVisionMeasurement);
 
@@ -280,6 +293,7 @@ public class Robot extends TimedRobot {
             publishHealth();
         }
         log(shot, hub, now);
+        MotorTelemetry.update();
     }
 
     private void apply(Setpoints sp) {
@@ -459,6 +473,12 @@ public class Robot extends TimedRobot {
         DogLog.log("Hub/ChangeInS", hub.secondsUntilChange());
         DogLog.log("Hub/Known", hub.known());
         DogLog.log("MatchTime", DriverStation.getMatchTime());
+        DogLog.log("DS/MatchTime", DriverStation.getMatchTime(), "s");
+        for (int port = 0; port < Driver.LOGGED_JOYSTICK_PORTS; port++) {
+            boolean connected = DriverStation.isJoystickConnected(port);
+            DogLog.log("DS/Joystick" + port + "/Connected", connected);
+            DogLog.log("DS/Joystick" + port + "/Name", connected ? DriverStation.getJoystickName(port) : "");
+        }
         DogLog.log("IsRed", isRed());
         turret.log();
         hood.log();

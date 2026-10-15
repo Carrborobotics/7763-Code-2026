@@ -27,6 +27,10 @@ import frc.robot.Constants.Field;
  * <p>Each camera publishes a plain-English status to SmartDashboard ("Vision/Front Status",
  * "Vision/Side Status") saying why it is or isn't updating the pose, plus its raw estimate before
  * filtering ("Vision/Side/RawPose") so a bad robot-to-camera transform is easy to spot.
+ *
+ * <p>For the CarboVis match view, every loop each camera also logs its mount (RobotToCamera), health
+ * (Connected, TagCount, LatencyMs, FPS) and the tags in its latest result (TagIds, TagYawDeg,
+ * TagDistanceM: same length and order, empty when none, yaw CCW+ so a tag on the LEFT is positive).
  */
 public final class Vision {
     /** Where accepted measurements go (the drivetrain's pose estimator). */
@@ -39,14 +43,63 @@ public final class Vision {
         final String label;
         final PhotonCamera camera;
         final PhotonPoseEstimator estimator;
+        final double[] robotToCamera;
         int accepted = 0;
         String status = "starting";
+        // Tags in the latest result, re-logged every loop until a new result arrives.
+        long[] tagIds = new long[0];
+        double[] tagYawDeg = new double[0];
+        double[] tagDistanceM = new double[0];
+        double latencyMs = 0;
+        double fps = 0;
+        long lastCaptureMicros = 0;
 
         Camera(String label, String photonName, Transform3d robotToCamera) {
             this.label = label;
             camera = new PhotonCamera(photonName);
             estimator = new PhotonPoseEstimator(Field.TAGS, robotToCamera);
+            this.robotToCamera = mountArray(robotToCamera);
         }
+
+        void recordTags(PhotonPipelineResult result) {
+            List<PhotonTrackedTarget> targets = result.getTargets();
+            int n = targets.size();
+            tagIds = new long[n];
+            tagYawDeg = new double[n];
+            tagDistanceM = new double[n];
+            for (int i = 0; i < n; i++) {
+                Transform3d t = targets.get(i).getBestCameraToTarget();
+                tagIds[i] = targets.get(i).getFiducialId();
+                tagYawDeg[i] = tagYawDeg(t);
+                tagDistanceM[i] = tagFloorDistanceM(t);
+            }
+            latencyMs = result.metadata.getLatencyMillis();
+            long capture = result.metadata.getCaptureTimestampMicros();
+            if (lastCaptureMicros > 0 && capture > lastCaptureMicros) fps = 1e6 / (capture - lastCaptureMicros);
+            lastCaptureMicros = capture;
+        }
+
+        void clearTags() {
+            tagIds = new long[0];
+            tagYawDeg = new double[0];
+            tagDistanceM = new double[0];
+        }
+    }
+
+    /** Horizontal angle from the camera's center line to the tag, degrees, CCW+ (tag on the LEFT is positive). */
+    static double tagYawDeg(Transform3d cameraToTarget) {
+        return Math.toDegrees(Math.atan2(cameraToTarget.getY(), cameraToTarget.getX()));
+    }
+
+    /** Floor-plane distance from the camera to the tag, meters. */
+    static double tagFloorDistanceM(Transform3d cameraToTarget) {
+        return Math.hypot(cameraToTarget.getX(), cameraToTarget.getY());
+    }
+
+    /** {x m, y m, z m, roll deg, pitch deg, yaw deg}, robot center to camera. */
+    static double[] mountArray(Transform3d m) {
+        return new double[] {m.getX(), m.getY(), m.getZ(), Math.toDegrees(m.getRotation().getX()),
+                Math.toDegrees(m.getRotation().getY()), Math.toDegrees(m.getRotation().getZ())};
     }
 
     private final List<Camera> cameras = List.of(
@@ -61,15 +114,27 @@ public final class Vision {
 
     public void addMeasurements(Consumer poseEstimator) {
         for (Camera cam : cameras) {
-            if (!cam.camera.isConnected()) {
+            boolean connected = cam.camera.isConnected();
+            if (!connected) {
                 cam.status = "NOT CONNECTED (camera name in PhotonVision must match Constants.Vision)";
+                cam.clearTags(); // don't keep drawing tags from a camera that's gone
             }
             for (PhotonPipelineResult result : cam.camera.getAllUnreadResults()) {
+                cam.recordTags(result);
                 cam.status = process(cam, result, poseEstimator);
             }
+            String key = "Vision/" + cam.label + "/";
             SmartDashboard.putString("Vision/" + cam.label + " Status", cam.status);
-            DogLog.log("Vision/" + cam.label + "/Status", cam.status);
-            DogLog.log("Vision/" + cam.label + "/Accepted", cam.accepted);
+            DogLog.log(key + "Status", cam.status);
+            DogLog.log(key + "Accepted", cam.accepted);
+            DogLog.log(key + "RobotToCamera", cam.robotToCamera);
+            DogLog.log(key + "Connected", connected);
+            DogLog.log(key + "TagCount", (double) cam.tagIds.length);
+            DogLog.log(key + "LatencyMs", cam.latencyMs, "ms");
+            DogLog.log(key + "FPS", cam.fps);
+            DogLog.log(key + "TagIds", cam.tagIds);
+            DogLog.log(key + "TagYawDeg", cam.tagYawDeg, "deg");
+            DogLog.log(key + "TagDistanceM", cam.tagDistanceM, "m");
         }
     }
 

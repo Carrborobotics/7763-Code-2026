@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -61,6 +62,13 @@ public interface SwerveDrive extends Subsystem {
     double sysIdPositionM();
 
     double sysIdVelocityMps();
+
+    /** Wheel angles relative to the robot (deg, CCW+, 0 = forward) in FL, FR, BL, BR order, for the match view. */
+    static double[] moduleAnglesDeg(SwerveModuleState[] states) {
+        double[] deg = new double[states.length];
+        for (int i = 0; i < states.length; i++) deg[i] = states[i].angle.getDegrees();
+        return deg;
+    }
 
     /** Hook up PathPlanner. Both implementations call this once from their constructor. */
     static void configurePathPlanner(SwerveDrive drive) {

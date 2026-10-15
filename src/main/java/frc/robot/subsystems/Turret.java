@@ -47,5 +47,8 @@ public final class Turret {
         DogLog.log("Turret/GoalDeg", goalDeg);
         DogLog.log("Turret/Deg", degrees());
         DogLog.log("Turret/StatorAmps", motor.getStatorCurrent().getValueAsDouble());
+        // Match Logs app: Mechanisms tab and 3D view joints
+        DogLog.log("Mechanisms/Turret/Position", degrees(), "deg");
+        DogLog.log("Mechanisms/Turret/Setpoint", goalDeg, "deg");
     }
 }
