@@ -291,6 +291,9 @@ public final class Constants {
         public static final double FLYWHEEL_MOI = 0.003;
         public static final double ROLLER_MOI = 0.0005;
         public static final double RACK_MOI = 0.0005;
+        /** Per swerve wheel: a quarter of a ~60 kg robot at the 2 in wheel radius (15 kg * 0.0508^2). */
+        public static final double DRIVE_MOI = 0.04;
+        public static final double STEER_MOI = 0.01;
         /** Fraction of flywheel speed lost when a simulated ball goes through. */
         public static final double BALL_SPEED_LOSS = 0.12;
         public static final double BALL_INTERVAL_S = 0.3;

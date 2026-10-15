@@ -15,7 +15,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -46,9 +45,7 @@ public final class CustomSwerve extends SubsystemBase implements SwerveDrive {
     private final SwerveDrivePoseEstimator estimator;
     private final Field2d field = new Field2d();
 
-    // Simulation has no physics for the modules, so integrate the commanded speeds instead.
     private ChassisSpeeds lastCommanded = new ChassisSpeeds();
-    private Pose2d simPose = new Pose2d();
 
     public CustomSwerve() {
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -77,13 +74,6 @@ public final class CustomSwerve extends SubsystemBase implements SwerveDrive {
         BaseStatusSignal.refreshAll(allSignals);
         estimator.update(gyroRotation(), modulePositions());
 
-        if (RobotBase.isSimulation()) {
-            simPose = simPose.exp(new Twist2d(
-                    lastCommanded.vxMetersPerSecond * Constants.LOOP_PERIOD_S,
-                    lastCommanded.vyMetersPerSecond * Constants.LOOP_PERIOD_S,
-                    lastCommanded.omegaRadiansPerSecond * Constants.LOOP_PERIOD_S));
-        }
-
         Pose2d pose = getPose();
         field.setRobotPose(pose);
         DogLog.log("Drive/Pose", pose);
@@ -95,6 +85,13 @@ public final class CustomSwerve extends SubsystemBase implements SwerveDrive {
         for (SwerveModule m : modules) {
             DogLog.log("Drive/CANcoderDeg/" + m.name, m.cancoderDegrees());
         }
+    }
+
+    /** Sim: the modules have physics (MechanismSim); turn the simulated gyro by what the wheels did. */
+    @Override
+    public void simulationPeriodic() {
+        double omega = KINEMATICS.toChassisSpeeds(moduleStates()).omegaRadiansPerSecond;
+        gyro.getSimState().addYaw(Math.toDegrees(omega * Constants.LOOP_PERIOD_S));
     }
 
     // ---- driving ----
@@ -124,18 +121,17 @@ public final class CustomSwerve extends SubsystemBase implements SwerveDrive {
 
     @Override
     public Pose2d getPose() {
-        return RobotBase.isSimulation() ? simPose : estimator.getEstimatedPosition();
+        return estimator.getEstimatedPosition();
     }
 
     @Override
     public void setPose(Pose2d pose) {
         estimator.resetPosition(gyroRotation(), modulePositions(), pose);
-        simPose = pose;
     }
 
     @Override
     public ChassisSpeeds getRobotRelativeSpeeds() {
-        return RobotBase.isSimulation() ? lastCommanded : KINEMATICS.toChassisSpeeds(moduleStates());
+        return KINEMATICS.toChassisSpeeds(moduleStates());
     }
 
     @Override

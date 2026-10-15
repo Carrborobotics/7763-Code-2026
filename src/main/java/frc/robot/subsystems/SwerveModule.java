@@ -17,10 +17,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.Drive;
+import frc.robot.Constants.Sim;
 
 /** One swerve module: Kraken drive, Kraken steer, CANcoder. Units are wheel rotations. */
 final class SwerveModule {
@@ -75,7 +78,11 @@ final class SwerveModule {
         steerPos = steer.getPosition();
         steerVel = steer.getVelocity();
 
+        // Sim: the CANcoder reads its offset, so every wheel boots pointing straight ahead.
+        if (RobotBase.isSimulation()) encoder.getSimState().setRawPosition(offset.getRotations());
         seedSteerFromCancoder();
+        MechanismSim.add(steer, steerCfg, DCMotor.getKrakenX60Foc(1), Sim.STEER_MOI);
+        MechanismSim.add(drive, driveCfg, DCMotor.getKrakenX60Foc(1), Sim.DRIVE_MOI);
     }
 
     /** Point the steer encoder at the true wheel angle. Waits for a fresh CANcoder reading first. */
