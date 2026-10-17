@@ -60,6 +60,11 @@ in simulation and checks the shoot chain end to end.
 
 ## Data workflows
 
+- **CarboVis match view:** the log keys it reads are specified in
+  https://github.com/Carrborobotics/CarboVis/blob/main/logging-needed/match-view-logging.md (source of truth; edit it
+  there). Don't rename or change the type/units/sign of `Vision/<cam>/...`, `Drive/Pose`, `Drive/ModuleAngles`,
+  `DS/...`, `System/LoopTimeMs`, `Motors/<name>/...` or `Mechanisms/...` keys without checking that file first.
+
 - **Shot table from real shots:** drive + shoot, press MARK MADE / MARK MISSED on the Shots tab after each volley.
   Copy `/home/lvuser/shots.csv` off the robot (`scp lvuser@10.77.63.2:shots.csv .`) and run
   `python tools/analyze_shots.py shots.csv` for a suggested `SHOT_TABLE`.

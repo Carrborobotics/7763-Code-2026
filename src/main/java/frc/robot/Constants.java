@@ -139,6 +139,8 @@ public final class Constants {
 
     public static final class Health {
         public static final double LOW_BATTERY_V = 11.5;
+        /** roboRIO 2 disables motor outputs below this (default 6.75 V; the RIO itself resets near 6.3 V). */
+        public static final double BROWNOUT_V = 6.5;
         public static final double CHECK_PERIOD_S = 0.5;
     }
 
@@ -157,11 +159,14 @@ public final class Constants {
     }
 
     public static final class Floor {
-        public static final double FEED_DUTY = 0.5;
+        public static final double FEED_DUTY = 0.67;
+        /** Anti-jam: the floor runs backwards this long after Shoot is pressed (overlaps flywheel spin-up). UNTUNED. */
+        public static final double UNJAM_S = 0.5;
+        public static final double UNJAM_DUTY = -0.3;
     }
 
     public static final class Kicker {
-        public static final double FEED_DUTY = 0.5;
+        public static final double FEED_DUTY = 1;
     }
 
     /** Reverse-everything button: every roller in the superstructure runs backwards. UNTUNED guesses. */

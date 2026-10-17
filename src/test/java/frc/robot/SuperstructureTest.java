@@ -35,6 +35,8 @@ class SuperstructureTest {
     /** Flywheel at speed and turret on target, so feeding is never held back. */
     private static final Measured READY = new Measured(0, true, 0);
     private static final Measured NOT_READY = new Measured(0, false, 10);
+    /** First time after Shoot is pressed (at t=0) that the floor runs forwards. */
+    private static final double AFTER_UNJAM = Floor.UNJAM_S + 0.01;
 
     private Setpoints at(double t) {
         return ss.update(t, SHOT, READY);
@@ -63,7 +65,21 @@ class SuperstructureTest {
         Setpoints sp = at(0);
         assertEquals(52.0, sp.flywheelRps(), EPS);
         assertEquals(Kicker.FEED_DUTY, sp.kickerDuty(), EPS);
-        assertEquals(Floor.FEED_DUTY, sp.floorDuty(), EPS);
+        assertEquals(Floor.FEED_DUTY, at(AFTER_UNJAM).floorDuty(), EPS);
+    }
+
+    @Test
+    void floorRunsBackwardsBrieflyAtTheStartOfEveryShot() {
+        ss.setFeed(FeedMode.SHOOT);
+        assertEquals(Floor.UNJAM_DUTY, at(0).floorDuty(), EPS);
+        assertEquals(Floor.UNJAM_DUTY, at(Floor.UNJAM_S - 0.01).floorDuty(), EPS);
+        assertEquals(Floor.FEED_DUTY, at(AFTER_UNJAM).floorDuty(), EPS);
+
+        ss.setFeed(FeedMode.OFF);
+        assertEquals(0, at(2.0).floorDuty());
+        ss.setFeed(FeedMode.SHOOT);
+        assertEquals(Floor.UNJAM_DUTY, at(3.0).floorDuty(), EPS, "a new press unjams again");
+        assertEquals(Floor.UNJAM_DUTY, ss.update(3.1, SHOT, NOT_READY).floorDuty(), EPS, "even while waiting for ready");
     }
 
     @Test
@@ -195,9 +211,9 @@ class SuperstructureTest {
         ss.setFeed(FeedMode.SHOOT);
         Setpoints sp = ss.update(0, SHOT, NOT_READY);
         assertEquals(52.0, sp.flywheelRps(), EPS);
-        assertEquals(0, sp.floorDuty());
         assertEquals(0, sp.kickerDuty());
-        assertEquals(Floor.FEED_DUTY, ss.update(0.1, SHOT, READY).floorDuty(), EPS);
+        assertEquals(0, ss.update(AFTER_UNJAM, SHOT, NOT_READY).floorDuty());
+        assertEquals(Floor.FEED_DUTY, ss.update(AFTER_UNJAM + 0.1, SHOT, READY).floorDuty(), EPS);
     }
 
     @Test
@@ -205,7 +221,7 @@ class SuperstructureTest {
         ss.setFeed(FeedMode.SHOOT);
         ss.update(0, SHOT, READY);
         // A ball knocks the flywheel off speed: feeding must not stall.
-        assertEquals(Floor.FEED_DUTY, ss.update(0.1, SHOT, NOT_READY).floorDuty(), EPS);
+        assertEquals(Floor.FEED_DUTY, ss.update(AFTER_UNJAM, SHOT, NOT_READY).floorDuty(), EPS);
     }
 
     @Test
@@ -220,7 +236,7 @@ class SuperstructureTest {
     void waitForReadyCanBeTurnedOff() {
         ss.setWaitForReady(false);
         ss.setFeed(FeedMode.SHOOT);
-        assertEquals(Floor.FEED_DUTY, ss.update(0, SHOT, NOT_READY).floorDuty(), EPS);
+        assertEquals(Kicker.FEED_DUTY, ss.update(0, SHOT, NOT_READY).kickerDuty(), EPS);
     }
 
     @Test
@@ -230,7 +246,7 @@ class SuperstructureTest {
         ss.setFeed(FeedMode.OFF);
         at(0.5);
         ss.setFeed(FeedMode.SHOOT);
-        assertEquals(0, ss.update(1.0, SHOT, NOT_READY).floorDuty(), "new press waits for ready again");
+        assertEquals(0, ss.update(1.0, SHOT, NOT_READY).kickerDuty(), "new press waits for ready again");
     }
 
     @Test
@@ -239,9 +255,10 @@ class SuperstructureTest {
         ss.setHoldFire(true);
         Setpoints sp = at(0);
         assertEquals(52.0, sp.flywheelRps(), EPS);
-        assertEquals(0, sp.floorDuty());
+        assertEquals(0, sp.kickerDuty());
+        assertEquals(0, at(AFTER_UNJAM).floorDuty());
         assertTrue(ss.isHoldingFire());
         ss.setHoldFire(false);
-        assertEquals(Floor.FEED_DUTY, at(0.1).floorDuty(), EPS);
+        assertEquals(Floor.FEED_DUTY, at(AFTER_UNJAM + 0.1).floorDuty(), EPS);
     }
 }

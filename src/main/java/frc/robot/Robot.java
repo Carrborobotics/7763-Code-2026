@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -115,6 +116,7 @@ public class Robot extends TimedRobot {
     private static final Path SHOT_FILE = Filesystem.getOperatingDirectory().toPath().resolve("shots.csv");
 
     public Robot() {
+        RobotController.setBrownoutVoltage(Constants.Health.BROWNOUT_V); // roboRIO 2 only; not saved across reboots
         // Extras: battery, brownouts, CAN utilization/errors and DS state under SystemStats/ (CarboVis match view).
         DogLog.setOptions(new DogLogOptions().withCaptureDs(true).withNtPublish(true).withLogExtras(true));
         // PDH per-channel currents, total current/power and temperature go into DogLog's SystemStats/.
@@ -179,8 +181,8 @@ public class Robot extends TimedRobot {
 
         controller.povUp().onTrue(Commands.runOnce(() -> superstructure.adjustFlywheelOffset(Driver.FLYWHEEL_OFFSET_STEP_RPS)));
         controller.povDown().onTrue(Commands.runOnce(() -> superstructure.adjustFlywheelOffset(-Driver.FLYWHEEL_OFFSET_STEP_RPS)));
-        controller.povLeft().onTrue(Commands.runOnce(() -> superstructure.adjustTurretOffset(-Driver.TURRET_OFFSET_STEP_DEG)));
-        controller.povRight().onTrue(Commands.runOnce(() -> superstructure.adjustTurretOffset(Driver.TURRET_OFFSET_STEP_DEG)));
+        controller.povLeft().onTrue(Commands.runOnce(() -> superstructure.adjustTurretOffset(Driver.TURRET_OFFSET_STEP_DEG)));
+        controller.povRight().onTrue(Commands.runOnce(() -> superstructure.adjustTurretOffset(-Driver.TURRET_OFFSET_STEP_DEG)));
 
         controller.start().onTrue(Commands.runOnce(() -> superstructure.startHoodHoming(Timer.getFPGATimestamp())));
         controller.back().onTrue(Commands.runOnce(() -> drive.resetHeading(isRed() ? Rotation2d.kPi : Rotation2d.kZero)));

@@ -63,6 +63,8 @@ public final class Tuning {
     // ---- feed gating ----
     public static final Value TURRET_ON_TARGET_DEG = add("Feed/Turret On Target deg", Constants.Feed.TURRET_ON_TARGET_DEG);
     public static final Value FEED_GATE_TIMEOUT_S = add("Feed/Gate Timeout s", Constants.Feed.GATE_TIMEOUT_S);
+    public static final Value FLOOR_UNJAM_S = add("Feed/Floor Unjam s", Constants.Floor.UNJAM_S);
+    public static final Value FLOOR_UNJAM_DUTY = add("Feed/Floor Unjam duty", Constants.Floor.UNJAM_DUTY);
 
     // ---- reverse-all ----
     public static final Value REVERSE_INTAKE = add("Reverse/Intake duty", Constants.Reverse.INTAKE_DUTY);

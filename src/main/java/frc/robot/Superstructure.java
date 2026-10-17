@@ -176,6 +176,10 @@ public final class Superstructure {
                 kicker = Kicker.FEED_DUTY;
                 floor = Floor.FEED_DUTY;
             }
+            // Anti-jam: back the floor off briefly at the start of every shot. Mostly hidden by flywheel spin-up.
+            if (nowS - shootStartS < Tuning.FLOOR_UNJAM_S.get()) {
+                floor = Tuning.FLOOR_UNJAM_DUTY.get();
+            }
         } else {
             shootStartS = Double.NaN;
             feeding = false;
